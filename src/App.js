@@ -1,24 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginForm from './Login/login'; // ajuste para o caminho correto
+import Secretaria from './InicioSec/secretaria'; // ajuste para o caminho correto
+import Professor from './InicioProf/prof'; // ajuste para o caminho correto
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginForm />} />
+        <Route path="/inicioSec/secretaria" element={<Secretaria />} />
+        <Route path="/inicioProf/professor" element={<Professor />} /> {/* corrigido aqui */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 
