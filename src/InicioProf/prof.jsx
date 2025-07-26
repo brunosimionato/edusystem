@@ -61,9 +61,7 @@ const ProfessorDashboard = () => {
       icon: BookOpen,
       submenu: [
         { id: 'lessons-plan', label: 'Plano de Aula' },
-        { id: 'lessons-materials', label: 'Materiais' },
         { id: 'lessons-content', label: 'Conteúdo Programático' },
-        { id: 'lessons-resources', label: 'Recursos Didáticos' }
       ]
     },
     {
@@ -73,8 +71,6 @@ const ProfessorDashboard = () => {
       submenu: [
         { id: 'assessments-create', label: 'Criar Avaliação' },
         { id: 'assessments-grades', label: 'Lançar Notas' },
-        { id: 'assessments-results', label: 'Resultados' },
-        { id: 'assessments-recovery', label: 'Recuperação' }
       ]
     },
     {
@@ -82,40 +78,7 @@ const ProfessorDashboard = () => {
       label: 'Frequência',
       icon: CheckCircle,
       submenu: [
-        { id: 'attendance-daily', label: 'Chamada Diária' },
-        { id: 'attendance-reports', label: 'Relatórios' },
-        { id: 'attendance-absences', label: 'Faltas' }
-      ]
-    },
-    {
-      id: 'reports',
-      label: 'Relatórios',
-      icon: BarChart3,
-      submenu: [
-        { id: 'reports-performance', label: 'Desempenho da Turma' },
-        { id: 'reports-individual', label: 'Individual do Aluno' },
-        { id: 'reports-attendance', label: 'Frequência' },
-        { id: 'reports-grades', label: 'Notas' }
-      ]
-    },
-    {
-      id: 'communication',
-      label: 'Comunicação',
-      icon: MessageCircle,
-      submenu: [
-        { id: 'communication-parents', label: 'Pais/Responsáveis' },
-        { id: 'communication-coordination', label: 'Coordenação' },
-        { id: 'communication-announcements', label: 'Comunicados' }
-      ]
-    },
-    {
-      id: 'calendar',
-      label: 'Calendário',
-      icon: Calendar,
-      submenu: [
-        { id: 'calendar-schedule', label: 'Minha Agenda' },
-        { id: 'calendar-academic', label: 'Calendário Acadêmico' },
-        { id: 'calendar-events', label: 'Eventos' }
+        { id: 'attendance-daily', label: 'Chamada' },
       ]
     },
     {
@@ -124,7 +87,6 @@ const ProfessorDashboard = () => {
       icon: Settings,
       submenu: [
         { id: 'profile-info', label: 'Informações Pessoais' },
-        { id: 'profile-subjects', label: 'Minhas Disciplinas' },
         { id: 'profile-schedule', label: 'Horário de Trabalho' }
       ]
     }
@@ -139,76 +101,24 @@ const ProfessorDashboard = () => {
 
   const todaySchedule = [
     {
-      time: '07:30',
+      time: '07:30 - 08:20',
       subject: 'Matemática',
       class: '8º A',
-      room: 'Sala 15',
-      status: 'completed'
     },
     {
-      time: '08:20',
+      time: '08:20 - 09:10',
+      subject: 'Matemática',
+      class: '8º A',
+    },
+    {
+      time: '09:30-10:20',
       subject: 'Matemática',
       class: '9º B',
-      room: 'Sala 12',
-      status: 'completed'
-    },
-    {
-      time: '09:30',
-      subject: 'Álgebra',
-      class: '1º EM A',
-      room: 'Sala 8',
-      status: 'current'
     },
     {
       time: '14:00',
-      subject: 'Geometria',
-      class: '2º EM C',
-      room: 'Sala 10',
-      status: 'upcoming'
-    }
-  ];
-
-  const recentActivities = [
-    { 
-      action: 'Notas lançadas', 
-      description: 'Prova de Matemática - 8º A', 
-      time: '30 min atrás' 
-    },
-    { 
-      action: 'Chamada realizada', 
-      description: '9º B - 4ª aula', 
-      time: '1 hora atrás' 
-    },
-    { 
-      action: 'Material enviado', 
-      description: 'Lista de exercícios - 1º EM A', 
-      time: '2 horas atrás' 
-    },
-    { 
-      action: 'Plano de aula criado', 
-      description: 'Função Quadrática - 2º EM', 
-      time: '1 dia atrás' 
-    }
-  ];
-
-  const upcomingTasks = [
-    {
-      priority: 'high',
-      task: 'Correção de Provas',
-      description: '8º A e 9º B - Matemática',
-      deadline: 'Hoje, 18:00'
-    },
-    {
-      priority: 'medium',
-      task: 'Conselho de Classe',
-      description: 'Reunião do 3º Bimestre',
-      deadline: 'Amanhã, 14:00'
-    },
-    {
-      priority: 'low',
-      task: 'Relatório Mensal',
-      description: 'Desempenho das turmas',
-      deadline: '30/11/2024'
+      subject: 'Matemática',
+      class: '7º C',
     }
   ];
 
@@ -341,47 +251,6 @@ const ProfessorDashboard = () => {
                 {item.status === 'current' && <Clock className="status-current" />}
                 {item.status === 'upcoming' && <AlertCircle className="status-upcoming" />}
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Activities */}
-      <div className="section-card">
-        <div className="section-header">
-          <h3 className="section-title">Atividades Recentes</h3>
-          <a href="#" className="section-link">Ver todas</a>
-        </div>
-        <div className="activity-feed">
-          {recentActivities.map((activity, index) => (
-            <div key={index} className="activity-item">
-              <div className="activity-indicator"></div>
-              <div className="activity-content">
-                <div className="activity-title">{activity.action}</div>
-                <div className="activity-description">{activity.description}</div>
-              </div>
-              <div className="activity-time">{activity.time}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Upcoming Tasks */}
-      <div className="section-card">
-        <div className="section-header">
-          <h3 className="section-title">Próximas Tarefas</h3>
-        </div>
-        <div className="tasks-list">
-          {upcomingTasks.map((task, index) => (
-            <div key={index} className={`task-item priority-${task.priority}`}>
-              <div className="task-priority">
-                <div className={`priority-indicator ${task.priority}`}></div>
-              </div>
-              <div className="task-content">
-                <div className="task-title">{task.task}</div>
-                <div className="task-description">{task.description}</div>
-              </div>
-              <div className="task-deadline">{task.deadline}</div>
             </div>
           ))}
         </div>

@@ -45,8 +45,6 @@ const Dashboard = () => {
       submenu: [
         { id: 'students-list', label: 'Lista de Alunos' },
         { id: 'students-add', label: 'Cadastrar Aluno' },
-        { id: 'students-enrollment', label: 'Matrículas' },
-        { id: 'students-documents', label: 'Documentação' }
       ]
     },
     {
@@ -57,7 +55,6 @@ const Dashboard = () => {
         { id: 'teachers-list', label: 'Lista de Professores' },
         { id: 'teachers-add', label: 'Cadastrar Professor' },
         { id: 'teachers-schedule', label: 'Horários' },
-        { id: 'teachers-evaluation', label: 'Avaliações' }
       ]
     },
     {
@@ -68,7 +65,6 @@ const Dashboard = () => {
         { id: 'classes-list', label: 'Lista de Turmas' },
         { id: 'classes-add', label: 'Criar Turma' },
         { id: 'classes-schedule', label: 'Grade Horária' },
-        { id: 'classes-attendance', label: 'Frequência' }
       ]
     },
     {
@@ -78,29 +74,6 @@ const Dashboard = () => {
       submenu: [
         { id: 'subjects-list', label: 'Lista de Disciplinas' },
         { id: 'subjects-add', label: 'Cadastrar Disciplina' },
-        { id: 'subjects-curriculum', label: 'Currículo' }
-      ]
-    },
-    {
-      id: 'calendar',
-      label: 'Calendário',
-      icon: Calendar,
-      submenu: [
-        { id: 'calendar-academic', label: 'Calendário Acadêmico' },
-        { id: 'calendar-events', label: 'Eventos' },
-        { id: 'calendar-holidays', label: 'Feriados' }
-      ]
-    },
-    {
-      id: 'reports',
-      label: 'Relatórios',
-      icon: BarChart3,
-      submenu: [
-        { id: 'reports-students', label: 'Relatório de Alunos' },
-        { id: 'reports-teachers', label: 'Relatório de Professores' },
-        { id: 'reports-attendance', label: 'Frequência' },
-        { id: 'reports-grades', label: 'Notas' },
-        { id: 'reports-financial', label: 'Financeiro' }
       ]
     },
     {
@@ -108,9 +81,9 @@ const Dashboard = () => {
       label: 'Documentos',
       icon: FileText,
       submenu: [
-        { id: 'documents-certificates', label: 'Certificados' },
         { id: 'documents-declarations', label: 'Declarações' },
-        { id: 'documents-transcripts', label: 'Histórico Escolar' }
+        { id: 'documents-transcripts', label: 'Histórico Escolar' },
+        { id: 'reports-grades', label: 'Boletins' }
       ]
     },
     {
@@ -120,7 +93,6 @@ const Dashboard = () => {
       submenu: [
         { id: 'assessments-exams', label: 'Provas' },
         { id: 'assessments-grades', label: 'Notas' },
-        { id: 'assessments-recovery', label: 'Recuperação' }
       ]
     },
     {
@@ -128,7 +100,6 @@ const Dashboard = () => {
       label: 'Configurações',
       icon: Settings,
       submenu: [
-        { id: 'settings-school', label: 'Dados da Escola' },
         { id: 'settings-users', label: 'Usuários' },
         { id: 'settings-system', label: 'Sistema' }
       ]
@@ -165,22 +136,6 @@ const Dashboard = () => {
     }
   ];
 
-  const upcomingEvents = [
-    {
-      day: '25',
-      month: 'NOV',
-      title: 'Conselho de Classe',
-      description: 'Avaliação do 3º Bimestre',
-      color: 'blue'
-    },
-    {
-      day: '30',
-      month: 'NOV',
-      title: 'Reunião de Pais',
-      description: 'Ensino Fundamental II',
-      color: 'green'
-    }
-  ];
 
   const quickActions = [
     {
@@ -197,13 +152,13 @@ const Dashboard = () => {
     },
     {
       icon: BarChart3,
-      text: 'Gerar Relatório',
+      text: 'Declarações',
       color: 'purple',
       onClick: () => setActiveSection('reports')
     },
     {
       icon: Calendar,
-      text: 'Agendar Evento',
+      text: 'Horários',
       color: 'orange',
       onClick: () => setActiveSection('calendar-events')
     }
@@ -311,27 +266,6 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
-
-      {/* Upcoming Events */}
-      <div className="section-card">
-        <div className="section-header">
-          <h3 className="section-title">Próximos Eventos</h3>
-        </div>
-        <div className="events-list">
-          {upcomingEvents.map((event, index) => (
-            <div key={index} className={`event-item ${event.color}`}>
-              <div className="event-date">
-                <div className="event-day">{event.day}</div>
-                <div className="event-month">{event.month}</div>
-              </div>
-              <div className="event-info">
-                <div className="event-title">{event.title}</div>
-                <div className="event-description">{event.description}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 
@@ -401,13 +335,13 @@ const Dashboard = () => {
               <p>Visão geral do sistema de gestão escolar</p>
             </div>
             
-            <div className="header-actions">
+<div className="header-actions">
               {/* Barra de Pesquisa */}
               <div className="search-container">
                 <Search className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Buscar..."
+                  placeholder="Buscar aluno, turma..."
                   className="search-input"
                 />
               </div>
@@ -415,7 +349,7 @@ const Dashboard = () => {
               {/* Notificações */}
               <button className="notification-button">
                 <Bell />
-                <span className="notification-badge">3</span>
+                <span className="notification-badge">5</span>
               </button>
             </div>
           </div>
