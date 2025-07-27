@@ -1,0 +1,51 @@
+/* Layout Professor */
+.dashboard-container-prof {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.dashboard-container-prof > .sidebar-prof {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  height: calc(100vh - 80px);
+  width: 280px;
+}
+
+.dashboard-container-prof > .main-content-prof {
+  margin-left: 280px;
+  margin-top: 80px;
+  width: calc(100vw - 280px);
+  min-height: calc(100vh - 80px);
+}
+
+.main-content-prof {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area-prof {
+  flex: 1;
+  padding: 40px 32px 32px 32px;
+  background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .main-content-prof {
+    margin-left: 0;
+    width: 100vw;
+    margin-top: 160px;
+  }
+  
+  .content-area-prof {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-area-prof {
+    padding: 12px;
+  }
+}
