@@ -45,7 +45,7 @@ body {
 /* Área de Conteúdo */
 .content-area {
   flex: 1;
-  padding: 40px 32px 32px 32px;
+  padding: 40px 32px 32px 32px; 
   background: #f8fafc;
 }
 

@@ -1,18 +1,19 @@
+// Seu arquivo: src/pages/Secretaria/Secretaria.jsx (ou onde quer que esteja)
 import React from 'react';
 import { Users, GraduationCap, BookOpen, School, UserPlus, Plus, BarChart3, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './secretaria.css';
 
+// REMOVA ESTA LINHA: import LayoutSec from '../../components/Layout/LayoutSec';
+
 const Secretaria = () => {
   const navigate = useNavigate();
-
   const dashboardStats = [
     { label: 'Total de Alunos', value: '1.247', icon: Users, color: 'blue' },
     { label: 'Professores Ativos', value: '87', icon: GraduationCap, color: 'green' },
     { label: 'Turmas Ativas', value: '42', icon: School, color: 'purple' },
     { label: 'Disciplinas', value: '23', icon: BookOpen, color: 'orange' }
   ];
-
   const recentActivities = [
     {
       action: 'Novo aluno matriculado',
@@ -30,7 +31,6 @@ const Secretaria = () => {
       time: '5 horas atrás'
     },
   ];
-
   const quickActions = [
     {
       icon: UserPlus,
@@ -57,8 +57,8 @@ const Secretaria = () => {
       onClick: () => navigate('/secretaria/grade-horaria')
     }
   ];
-
   return (
+    // REMOVA AS TAGS <LayoutSec> E </LayoutSec> AQUI!
     <div className="dashboard-content">
       {/* Stats Cards */}
       <div className="stats-grid">
@@ -76,7 +76,6 @@ const Secretaria = () => {
           </div>
         ))}
       </div>
-
       {/* Quick Actions */}
       <div className="section-card">
         <div className="section-header">
@@ -97,7 +96,6 @@ const Secretaria = () => {
           ))}
         </div>
       </div>
-
       {/* Recent Activities */}
       <div className="section-card">
         <div className="section-header">
@@ -117,7 +115,7 @@ const Secretaria = () => {
         </div>
       </div>
     </div>
+    // REMOVA AS TAGS <LayoutSec> E </LayoutSec> AQUI!
   );
 };
-
 export default Secretaria;
