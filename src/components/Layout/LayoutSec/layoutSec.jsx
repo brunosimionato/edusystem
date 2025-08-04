@@ -1,21 +1,19 @@
+// Seu arquivo: src/components/Layout/LayoutSec.jsx
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import HeaderSec from '../../Header/HeaderSec/headerSec';
-import SideBarSec from '../../SideBar/SideBarSec/sideBarSec';
+import { Outlet } from 'react-router-dom'; // <--- IMPORTANTE: Mantenha esta importação
+import HeaderSec from '../../Header/HeaderSec/headerSec'; // Verifique o caminho
+import SideBarSec from '../../SideBar/SideBarSec/sideBarSec'; // Verifique o caminho
 import './layoutSec.css';
 
-const LayoutSec = () => {
+const LayoutSec = () => { // <--- Não precisa de '{ children }' aqui
   return (
     <div className="dashboard-container">
       <HeaderSec />
       <SideBarSec />
       <main className="main-content">
-        <div className="content-area">
-          <Outlet />
-        </div>
+        <Outlet />  {/* <--- IMPORTANTE: Mantenha o <Outlet /> aqui */}
       </main>
     </div>
   );
 };
-
 export default LayoutSec;
