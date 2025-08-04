@@ -11,9 +11,7 @@ const LayoutSec = () => { // <--- Não precisa de '{ children }' aqui
       <HeaderSec />
       <SideBarSec />
       <main className="main-content">
-        <div className="content-area">
-          <Outlet /> {/* <--- IMPORTANTE: Mantenha o <Outlet /> aqui */}
-        </div>
+        <Outlet />  {/* <--- IMPORTANTE: Mantenha o <Outlet /> aqui */}
       </main>
     </div>
   );

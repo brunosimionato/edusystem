@@ -1,27 +1,20 @@
 .unified-header {
   background: white;
+  grid-column: span 2;
   border-bottom: 1px solid #e2e8f0;
   padding: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: subgrid;
   align-items: center;
-  position: fixed;
-  top: 0;        
-  left: 0;        
-  right: 0;
-  height: 80px;
-  z-index: 1001;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Header Left - Alinhado com a Sidebar */
 .header-left {
-  width: 280px;
-  min-width: 280px;
   display: flex;
   align-items: center;
   padding: 0 32px;
   border-right: 1px solid #e2e8f0;
-  background: white;
   height: 100%;
 }
 
