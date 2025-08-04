@@ -1,418 +1,624 @@
-/* Animações de Entrada */
+/* src/pages/CadastroAluno/cadastroAluno.css */
+/* --------------------------------------------------- */
+/* 1. Variáveis CSS (Custom Properties) */
+/* Define cores, espaçamentos, raios de borda e */
+/* tamanhos de fonte para consistência e fácil manutenção. */
+/* --------------------------------------------------- */
+:root {
+    /* Cores */
+    --color-primary: #3b82f6; /* Azul */
+    --color-primary-dark: #2563eb;
+    --color-success: #10b981; /* Verde */
+    --color-success-dark: #059669;
+    --color-danger: #ef4444; /* Vermelho */
+    --color-danger-dark: #dc2626;
+    --color-text-dark: #1e293b;
+    --color-text-medium: #374151;
+    --color-text-light: #64748b;
+    --color-placeholder: #94a3b8;
+    --color-border: #e2e8f0;
+    --color-background-light: #f8fafc;
+    --color-background-medium: #f1f5f9;
+    --color-white: white;
+    /* Espaçamentos */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --spacing-xxl: 24px;
+    --spacing-xxxl: 32px;
+    /* Raios de Borda */
+    --border-radius-sm: 6px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 16px;
+    /* Especificações de Input - Ajustado para tamanho menor */
+    --input-padding-y: 8px; /* Reduzido de 12px */
+    --input-padding-x: 12px; /* Reduzido de 16px */
+    --input-icon-left: 10px; /* Posição ajustada do ícone */
+    --input-padding-left-with-icon: 36px; /* Padding ajustado para o ícone */
+}
+/* --------------------------------------------------- */
+/* 2. Estilos Base e Resets Globais */
+/* --------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+input::placeholder {
+  font-size: 12px;
+}
+/* --------------------------------------------------- */
+/* 3. Animações */
+/* --------------------------------------------------- */
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(var(--spacing-xxxl));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
-/* Cadastro Aluno - Container Principal */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(calc(-1 * var(--spacing-xl)));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* --------------------------------------------------- */
+/* 4. Container Principal do Formulário */
+/* --------------------------------------------------- */
 .cadastro-aluno-form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  margin-top: 730px;
-  padding: 24px;
-  animation: slideUp 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxxl);
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    animation: slideUp 0.3s ease-out;
 }
-
-/* Título Principal */
 .cadastro-aluno-form-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 8px;
-  text-align: center;
+    font-size: var(--font-size-xxxl);
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-sm);
+    text-align: center;
 }
-
-/* Seções do Formulário */
+/* --------------------------------------------------- */
+/* 5. Seções do Formulário */
+/* --------------------------------------------------- */
 .cadastro-aluno-form-section {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  overflow: hidden;
-  width: 100%;
-  transition: all 0.10s ease;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    width: 100%;
+    transition: all 0.2s ease;
 }
-
 .cadastro-aluno-form-section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
-
-/* Cabeçalhos das Seções */
 .cadastro-aluno-section-header {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-  padding: 20px 30px 10px 30px;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: 0;
-  background: #f8fafc;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-dark);
+    /* Ajustado para centralizar verticalmente e horizontalmente */
+    padding: var(--spacing-lg) var(--spacing-xxxl); /* Preenchimento superior e inferior iguais */
+    text-align: left; /* Centraliza o texto horizontalmente */
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0;
+    background: var(--color-background-light);
 }
-
-/* Grid do Formulário */
+/* Estilos para subtítulos de seção (equivalente a H3) */
+.cadastro-aluno-sub-section-header {
+    font-size: var(--font-size-lg); /* Tamanho ligeiramente menor que o cabeçalho principal */
+    font-weight: 600;
+    color: var(--color-text-dark);
+    padding: var(--spacing-md) var(--spacing-xxxl); /* Preenchimento vertical simétrico */
+    text-align: left; /* Alinhado à esquerda */
+    margin-top: var(--spacing-xxl); /* Espaçamento acima */
+    margin-bottom: var(--spacing-sm); /* Espaçamento abaixo */
+}
+/* --------------------------------------------------- */
+/* 6. Layout de Grid do Formulário e Grupos de Campos */
+/* --------------------------------------------------- */
 .cadastro-aluno-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  padding: 24px 30px;
+    display: grid;
+    /* Usando um grid de 12 colunas para flexibilidade com as classes de largura */
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--spacing-xxl);
+    padding: var(--spacing-xxl) var(--spacing-xxxl);
 }
-
-/* Grupos de Formulário */
 .cadastro-aluno-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    /* Span padrão para um layout de 2 colunas (6/12 = 1/2) */
+    grid-column: span 6;
 }
-
+/* Classes Modificadoras de Largura */
 .cadastro-aluno-form-group.full-width {
-  grid-column: 1 / -1;
+    grid-column: span 12;
 }
-
+.cadastro-aluno-form-group.two-thirds-width {
+    grid-column: span 8; /* 8/12 = 2/3 */
+}
+.cadastro-aluno-form-group.third-width {
+    grid-column: span 4; /* 4/12 = 1/3 */
+}
+.cadastro-aluno-form-group.half-width {
+    grid-column: span 6; /* 6/12 = 1/2 (padrão, mas explícito para clareza) */
+}
+.cadastro-aluno-form-group.quarter-width {
+    grid-column: span 3; /* 3/12 = 1/4 */
+}
+.cadastro-aluno-form-group.three-quarters-width {
+    grid-column: span 9; /* 9/12 = 3/4 */
+}
 /* Labels */
 .cadastro-aluno-form-group label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 4px;
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--color-text-medium);
+    margin-bottom: var(--spacing-xs);
 }
-
-/* Input Wrapper com Ícones */
+/* Wrapper de Input com Ícones */
 .cadastro-aluno-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
-
 .cadastro-aluno-input-icon {
-  position: absolute;
-  left: 12px;
-  color: #64748b;
-  pointer-events: none;
-  z-index: 1;
+    position: absolute;
+    left: var(--input-icon-left);
+    color: var(--color-text-light);
+    pointer-events: none;
+    z-index: 1;
 }
-
-/* Inputs e Selects */
+/* --------------------------------------------------- */
+/* 7. Inputs e Selects do Formulário */
+/* --------------------------------------------------- */
 .cadastro-aluno-input,
 .cadastro-aluno-select {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 14px;
-  background: white;
-  transition: all 0.3s ease;
-  color: #1e293b;
+    width: 100%;
+    padding: var(--input-padding-y) var(--input-padding-x); /* Padding menor */
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    background: var(--color-white);
+    transition: all 0.3s ease;
+    color: var(--color-text-dark);
 }
-
 .cadastro-aluno-input-wrapper .cadastro-aluno-input {
-  padding-left: 44px;
+    padding-left: var(--input-padding-left-with-icon); /* Padding ajustado para o ícone */
 }
-
+.cadastro-aluno-input::placeholder {
+    color: var(--color-placeholder);
+}
+/* Estados de Foco */
 .cadastro-aluno-input:focus,
 .cadastro-aluno-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
-
-.cadastro-aluno-input::placeholder {
-  color: #94a3b8;
+/* Estado Inválido para Acessibilidade/Validação */
+.cadastro-aluno-input:invalid {
+    border-color: var(--color-danger);
 }
-
+.cadastro-aluno-input:invalid:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
 /* Checkbox */
 .cadastro-aluno-checkbox {
-  width: auto !important;
-  margin-right: 8px;
-  accent-color: #3b82f6;
+    width: auto !important;
+    margin-right: var(--spacing-sm);
+    accent-color: var(--color-primary);
 }
-
-/* Seção do Histórico Escolar */
+/* --------------------------------------------------- */
+/* 8. Seção de Histórico Escolar (Exibição Condicional) */
+/* --------------------------------------------------- */
 #gradeEntrySection {
-  animation: slideDown 0.3s ease-out;
+    animation: slideDown 0.3s ease-out;
+    background: var(--color-white); /* Cor de fundo */
+    border: 1px solid var(--color-border); /* Borda */
+    border-radius: var(--border-radius-lg); /* Raio de borda maior */
+    overflow: hidden; /* Importante para o raio de borda com conteúdo interno */
+    width: 100%; /* Largura total */
+    transition: all 0.2s ease; /* Transição para o hover */
+    /* Removido o padding e box-shadow direto, pois o conteúdo interno já gerencia o espaçamento */
 }
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+#gradeEntrySection:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra ao passar o mouse */
 }
-
-/* Cabeçalho da Tabela de Notas */
 .grade-table-header {
-  display: grid;
-  grid-template-columns: 150px 120px 1fr 120px;
-  gap: 16px;
-  padding: 16px 30px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600;
-  color: #374151;
-  font-size: 14px;
+    display: grid;
+    /* Mantendo larguras explícitas para as colunas da tabela de notas */
+    grid-template-columns: 150px 120px 1fr 120px;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-xxxl);
+    background: var(--color-background-light);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 600;
+    color: var(--color-text-medium);
+    font-size: var(--font-size-md);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
 }
-
 .grade-header-item {
-  text-align: center;
+    text-align: center;
 }
-
 .grades-header {
-  text-align: left;
+    text-align: left;
 }
-
-/* Container das Linhas de Notas */
 #gradeRowsContainer {
-  padding: 0 30px 20px 30px;
+    padding: 0 var(--spacing-xxxl) var(--spacing-xl) var(--spacing-xxxl);
+    background-color: var(--color-white);
 }
-
-/* Linhas de Entrada de Notas */
+/* Ajuste do grid para as linhas de entrada de notas */
 .grade-entry-row-dynamic {
-  display: grid;
-  grid-template-columns: 150px 120px 1fr 120px;
-  gap: 16px;
-  align-items: start;
-  padding: 20px 0;
-  border-bottom: 1px solid #f1f5f9;
+    display: grid;
+    /* Define 4 colunas para alinhar com o cabeçalho: Ano, 6º Ano, Espaço para Notas, Botão Remover */
+    grid-template-columns: 150px 120px 1fr 120px; /* Alterado para 4 colunas, com 1fr para flexibilidade */
+    /* Define duas linhas: uma para os inputs iniciais e outra para a seção de notas */
+    grid-template-rows: auto auto;
+    gap: var(--spacing-lg); /* Espaçamento entre as células do grid */
+    align-items: start;
+    padding: var(--spacing-xl) 0;
+    border-bottom: 1px solid var(--color-background-medium);
 }
-
 .grade-entry-row-dynamic:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
-
-/* Células da Grade */
-.grade-entry-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 500;
-  color: #1e293b;
+/* Posicionamento explícito das células dentro da linha dinâmica */
+.grade-entry-row-dynamic > .grade-entry-cell:nth-child(1) { /* Célula do Ano */
+    grid-column: 1;
+    grid-row: 1;
+    justify-content: center;
+    background: var(--color-background-medium);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-md);
 }
-
-.grade-entry-cell:first-child {
-  justify-content: center;
-  background: #f1f5f9;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 14px;
+.grade-entry-row-dynamic > .grade-entry-cell:nth-child(2) { /* Célula do 6º Ano */
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: center;
 }
-
-.grade-entry-cell:last-child {
-  justify-content: center;
+.grade-entry-row-dynamic > .grade-entry-cell:nth-child(4) { /* Célula do Botão Remover */
+    grid-column: 4; /* Alterado de 3 para 4 */
+    grid-row: 1;
+    justify-content: center;
 }
-
-/* Grid de Notas por Disciplina */
-.discipline-grades-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+/* Célula que contém os rótulos e inputs das disciplinas (Notas) */
+.grade-entry-row-dynamic > .grade-entry-cell:nth-child(3) {
+    grid-column: 1 / -1; /* Ocupa todas as colunas disponíveis (agora 4) */
+    grid-row: 2; /* Move para a segunda linha */
+    flex-direction: column; /* Mantém labels e inputs empilhados dentro desta célula */
+    align-items: stretch; /* Estica para a largura total */
+    justify-content: flex-start;
+    gap: 5px; /* Espaçamento entre a linha de labels e a de inputs */
+    padding-top: var(--spacing-md); /* Adiciona um espaço acima da seção de notas */
+}
+/* Estilos para as linhas de rótulos e inputs a partir do 6º ano */
+.discipline-label-row,
+.discipline-input-row {
+    display: grid;
+    /* Define 8 colunas de largura igual, uma para cada disciplina */
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px; /* Espaçamento entre as colunas */
+    width: 100%;
+    /* Adiciona rolagem horizontal se o conteúdo for muito largo */
+    overflow-x: auto;
+    padding-bottom: 5px; /* Espaço entre a linha de labels e a de inputs */
+}
+/* Estilos para as colunas individuais dentro das linhas de rótulos e inputs */
+.discipline-column {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
+    padding: 5px 0;
+}
+.discipline-label-row .discipline-column label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--color-text-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+.discipline-input-row .discipline-column input {
+    width: 100%; /* Largura para os inputs de nota */
+    padding: 6px 8px;
+    font-size: 0.9em;
+    text-align: left;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+}
+/* Ajustes para o .grade-entry-cell que contém as notas para o 6º ano em diante */
+.grade-entry-cell > .discipline-label-row,
+.grade-entry-cell > .discipline-input-row {
+    margin-bottom: 0; /* Remove margens extras se houver */
+}
+/* Estilos base para a seção de histórico escolar para animação */
+.cadastro-aluno-form-section.academic-history {
+  max-height: 0; /* Começa colapsado */
+  opacity: 0; /* Começa invisível */
+  overflow: hidden; /* Esconde o conteúdo que transborda durante a transição */
+  transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s ease-out; /* Define a duração e tipo da transição */
+  padding-top: 0; /* Inicia sem padding */
+  padding-bottom: 0; /* Inicia sem padding */
+}
+/* Estilos quando a seção está expandida */
+.cadastro-aluno-form-section.academic-history.expanded {
+  max-height: 1000px; /* Um valor grande o suficiente para conter todo o conteúdo */
+  opacity: 1; /* Torna visível */
+  padding-top: 20px; /* Exemplo: Adicione o padding original aqui */
+  padding-bottom: 20px; /* Exemplo: Adicione o padding original aqui */
+}
+/* Certifique-se de que o padding da classe geral .cadastro-aluno-form-section não conflite. */
+/* Se .cadastro-aluno-form-section já tiver um padding padrão, você pode querer que ele seja aplicado apenas quando a seção estiver expandida. */
+/* Ajuste os valores de padding-top e padding-bottom em .expanded para o padding que você deseja quando a seção estiver visível. */
+/* --------------------------------------------------- */
+/* 9. Botões de Ação */
+/* --------------------------------------------------- */
+.cadastro-aluno-add-button,
+.cadastro-aluno-remove-button,
+.cadastro-aluno-submit-button,
+.cadastro-aluno-clear-button {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centraliza o conteúdo dos botões */
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xl); /* Padding ajustado */
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+/* Estilos Específicos dos Botões */
+.cadastro-aluno-add-button.green-button {
+    background: var(--color-success);
+    color: var(--color-white);
+    margin: var(--spacing-xl) var(--spacing-xxxl) var(--spacing-xxl) var(--spacing-xxxl);
+}
+.cadastro-aluno-add-button.green-button:hover {
+    background: var(--color-success-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.cadastro-aluno-remove-button {
+    background: var(--color-danger);
+    color: var(--color-white);
+    padding: var(--spacing-sm) var(--spacing-md); /* Padding menor para o botão de remover */
+    font-size: var(--font-size-sm); /* Fonte menor para o botão de remover */
+}
+.cadastro-aluno-remove-button:hover {
+    background: var(--color-danger-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.cadastro-aluno-form-actions {
+    display: flex;
+    justify-content: right;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xxl) 0;
+}
+.cadastro-aluno-clear-button.red-button {
+    background: var(--color-danger);
+    color: var(--color-white);
+}
+.cadastro-aluno-clear-button.red-button:hover {
+    background: var(--color-danger-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+.cadastro-aluno-submit-button.blue-button {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+.cadastro-aluno-submit-button.blue-button:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+/* --------------------------------------------------- */
+/* 10. Responsividade */
+/* --------------------------------------------------- */
+@media (max-width: 1200px) {
+    .cadastro-aluno-form-container {
+        padding: var(--spacing-lg);
+    }
+    .grade-table-header {
+        grid-template-columns: 120px 100px 1fr 100px;
+        gap: var(--spacing-md);
+    }
+    .grade-entry-row-dynamic {
+        grid-template-columns: 120px 100px 1fr 100px; /* Ajustado para 4 colunas com 1fr */
+        gap: var(--spacing-md);
+    }
+    .grade-entry-row-dynamic > .grade-entry-cell:nth-child(4) { /* Botão Remover */
+        grid-column: 4; /* Ajustado para a 4ª coluna */
+    }
+}
+@media (max-width: 768px) {
+    .cadastro-aluno-form-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xl);
+        padding: var(--spacing-xl);
+    }
+    .cadastro-aluno-form-group,
+    .cadastro-aluno-form-group.full-width,
+    .cadastro-aluno-form-group.two-thirds-width,
+    .cadastro-aluno-form-group.third-width,
+    .cadastro-aluno-form-group.half-width,
+    .cadastro-aluno-form-group.quarter-width,
+    .cadastro-aluno-form-group.three-quarters-width {
+        grid-column: span 1;
+    }
+    .cadastro-aluno-section-header {
+        padding: var(--spacing-lg) var(--spacing-xl) var(--spacing-sm) var(--spacing-xl);
+        font-size: var(--font-size-lg);
+    }
+    .grade-table-header {
+        /* No mobile, o cabeçalho também pode se empilhar ou simplificar */
+        grid-template-columns: 1fr; /* Uma coluna para empilhar */
+        grid-template-rows: auto;
+        gap: var(--spacing-sm);
+        text-align: left;
+    }
+    .grade-table-header .grade-header-item {
+        grid-column: auto; /* Reseta o posicionamento */
+        grid-row: auto; /* Reseta o posicionamento */
+        text-align: left; /* Alinha à esquerda no mobile */
+    }
+    .grade-table-header .grades-header.full-span {
+        grid-column: auto; /* Reseta */
+        grid-row: auto; /* Reseta */
+        padding-top: 0;
+    }
+    /* Ajuste do grid para as linhas de entrada de notas no mobile */
+    .grade-entry-row-dynamic {
+        grid-template-columns: 1fr; /* Uma coluna para empilhar */
+        grid-template-rows: auto; /* Permite que as linhas sejam determinadas pelo conteúdo */
+        gap: var(--spacing-sm);
+        align-items: stretch;
+    }
+    /* Reordenar itens para mobile */
+    .grade-entry-row-dynamic > .grade-entry-cell:nth-child(1) { /* Ano */
+        grid-column: 1;
+        grid-row: 1;
+        justify-content: flex-start;
+    }
+    .grade-entry-row-dynamic > .grade-entry-cell:nth-child(2) { /* 6º Ano */
+        grid-column: 1;
+        grid-row: 2;
+        justify-content: flex-start;
+    }
+    .grade-entry-row-dynamic > .grade-entry-cell:nth-child(4) { /* Botão Remover */
+        grid-column: 1;
+        grid-row: 3; /* Move para depois do 6º Ano */
+        justify-content: flex-start;
+    }
+    .grade-entry-row-dynamic > .grade-entry-cell:nth-child(3) { /* Notas */
+        grid-column: 1; /* Permanece na única coluna */
+        grid-row: 4; /* Move para a última posição */
+        flex-direction: column;
+        align-items: stretch;
+        padding-top: var(--spacing-sm);
+    }
+    .grade-entry-cell:first-child {
+        justify-content: flex-start;
+        margin-bottom: var(--spacing-sm);
+    }
+    .cadastro-aluno-form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    .cadastro-aluno-add-button.green-button {
+        margin: var(--spacing-lg) var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+    }
+    .cadastro-aluno-form-title {
+        font-size: var(--font-size-xxl);
+    }
+}
+@media (max-width: 480px) {
+    .cadastro-aluno-form-container {
+        padding: var(--spacing-md);
+        gap: var(--spacing-xxl);
+    }
+    .cadastro-aluno-form-grid {
+        padding: var(--spacing-lg);
+    }
+    .cadastro-aluno-section-header {
+        padding: var(--spacing-md) var(--spacing-lg) var(--spacing-xs) var(--spacing-lg);
+    }
+    #gradeRowsContainer {
+        padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    }
+    .cadastro-aluno-add-button.green-button {
+        margin: var(--spacing-md) var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+    }
+}
+/* Estilos específicos para o grid da seção de dados do responsável */
+.cadastro-aluno-form-grid.responsible-fields-grid {
+    grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+    grid-auto-rows: minmax(min-content, max-content);
+}
+/* Garante que os subtítulos (Mãe, Pai) e a linha divisória ocupem todas as 4 colunas
+    DENTRO do grid de responsáveis. */
+.cadastro-aluno-form-grid.responsible-fields-grid .cadastro-aluno-sub-section-header.full-width,
+.cadastro-aluno-form-grid.responsible-fields-grid .cadastro-aluno-divider.full-width {
+    grid-column: 1 / -1;
+}
+/* Garante que os grupos de formulário dentro da seção de responsável se ajustem às 4 colunas definidas */
+.cadastro-aluno-form-grid.responsible-fields-grid .cadastro-aluno-form-group {
+    grid-column: auto;
+}
+/* Estilo para a linha divisória */
+.cadastro-aluno-divider {
+    border: none;
+    border-top: 1px solid var(--color-background-medium);
+    margin-top: var(--spacing-sm) 0;
+}
+/* Estilos para campos com erro */
+.cadastro-aluno-input.input-error,
+.cadastro-aluno-select.input-error {
+  border-color: #e74c3c; /* Vermelho para indicar erro */
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+/* Estilos para mensagens de erro */
+.error-message {
+  color: #e74c3c; /* Vermelho */
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block; /* Garante que a mensagem fique em sua própria linha */
+  text-align: left; /* Alinha o texto do erro à esquerda */
+}
+/* Ajustes para o layout do histórico escolar para acomodar as mensagens de erro */
+.grade-entry-row-dynamic .grade-entry-cell {
+  position: relative; /* Permite posicionar a mensagem de erro */
+  padding-bottom: 25px; /* Adiciona espaço para a mensagem de erro */
+}
+.grade-entry-row-dynamic .grade-entry-cell .error-message {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
 }
-
-.discipline-grades-grid .cadastro-aluno-form-group {
-  margin-bottom: 0;
+/* Para as notas por disciplina, ajuste o espaçamento */
+.discipline-column {
+  position: relative;
+  padding-bottom: 25px; /* Espaço para a mensagem de erro */
 }
-
-.discipline-grades-grid label {
-  font-size: 12px;
-  color: #64748b;
-  margin-bottom: 4px;
+.discipline-column .error-message {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
 }
-
-/* Botões */
-.cadastro-aluno-add-button,
-.cadastro-aluno-remove-button,
-.cadastro-aluno-submit-button,
-.cadastro-aluno-clear-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
+/* Se você usa um grid para os campos, pode precisar ajustar o gap ou padding */
+.cadastro-aluno-form-grid {
+  gap: 20px; /* Aumente o gap se as mensagens de erro estiverem sobrepondo */
 }
-
-/* Botão Adicionar */
-.cadastro-aluno-add-button.green-button {
-  background: #10b981;
-  color: white;
-  margin: 20px 30px 24px 30px;
+/* Exemplo no cadastroAluno.css */
+.cadastro-aluno-input.input-error {
+  border-color: #ff4d4f !important; /* Use uma cor de erro forte */
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2); /* Adicione um box-shadow para destaque */
 }
-
-.cadastro-aluno-add-button.green-button:hover {
-  background: #059669;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-/* Botão Remover */
-.cadastro-aluno-remove-button {
-  background: #ef4444;
-  color: white;
-  padding: 8px 12px;
-  font-size: 12px;
-}
-
-.cadastro-aluno-remove-button:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Ações do Formulário */
-.cadastro-aluno-form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 24px 0;
-}
-
-/* Botão Limpar */
-.cadastro-aluno-clear-button.red-button {
-  background: #ef4444;
-  color: white;
-}
-
-.cadastro-aluno-clear-button.red-button:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Botão Cadastrar */
-.cadastro-aluno-submit-button.blue-button {
-  background: #3b82f6;
-  color: white;
-}
-
-.cadastro-aluno-submit-button.blue-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-/* Responsividade */
-@media (max-width: 1200px) {
-  .cadastro-aluno-form-container {
-    max-width: 100%;
-    padding: 16px;
-  }
-  
-  .grade-table-header,
-  .grade-entry-row-dynamic {
-    grid-template-columns: 120px 100px 1fr 100px;
-    gap: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  .cadastro-aluno-form-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 20px;
-  }
-  
-  .cadastro-aluno-section-header {
-    padding: 16px 20px 8px 20px;
-    font-size: 16px;
-  }
-  
-  .grade-table-header,
-  .grade-entry-row-dynamic {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    text-align: left;
-  }
-  
-  .grade-entry-cell {
-    justify-content: flex-start;
-    padding: 8px 0;
-  }
-  
-  .grade-entry-cell:first-child {
-    justify-content: center;
-    margin-bottom: 8px;
-  }
-  
-  .discipline-grades-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .cadastro-aluno-form-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .cadastro-aluno-add-button {
-    margin: 16px 20px 20px 20px;
-  }
-  
-  .cadastro-aluno-form-title {
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .cadastro-aluno-form-container {
-    padding: 12px;
-    gap: 24px;
-  }
-  
-  .cadastro-aluno-form-grid {
-    padding: 16px;
-  }
-  
-  .cadastro-aluno-section-header {
-    padding: 12px 16px 6px 16px;
-  }
-  
-  #gradeRowsContainer {
-    padding: 0 16px 16px 16px;
-  }
-  
-  .cadastro-aluno-add-button.green-button {
-    margin: 12px 16px 16px 16px;
-  }
-}
-
-/* Estados de Foco Melhorados */
-.cadastro-aluno-input:focus,
-.cadastro-aluno-select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Animações Suaves */
-.cadastro-aluno-form-section,
-.cadastro-aluno-add-button,
-.cadastro-aluno-remove-button,
-.cadastro-aluno-submit-button,
-.cadastro-aluno-clear-button {
-  transition: all 0.2s ease;
-}
-
-/* Melhorias na Acessibilidade */
-.cadastro-aluno-input:invalid {
-  border-color: #ef4444;
-}
-
-.cadastro-aluno-input:invalid:focus {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+/* Se houver outras regras para inputs, verifique a ordem e especificidade */
+.cadastro-aluno-input {
+  border: 1px solid #ccc;
 }
