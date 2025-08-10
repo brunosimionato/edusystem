@@ -9,6 +9,7 @@ import LayoutProf from './components/Layout/LayoutProf/layoutProf';
 // Secretaria
 import Secretaria from './Secretaria/InicioSec/secretaria';
 import CadastroAluno from './Secretaria/CadAluno/cadastroAluno';
+import CriarTurma from './Secretaria/CriarTurma/criarTurma';
 
 // Professor
 import Professor from './Professor/InicioProf/prof';
@@ -24,6 +25,7 @@ function App() {
         <Route path="/secretaria" element={<LayoutSec />}>
           <Route path="dashboard" element={<Secretaria />} />
           <Route path="cadastrar-aluno" element={<CadastroAluno />} />
+          <Route path="criar-turma" element={<CriarTurma />} />
         </Route>
 
         {/* Rotas do Professor */}

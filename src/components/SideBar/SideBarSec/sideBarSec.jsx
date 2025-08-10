@@ -21,20 +21,17 @@ const SideBarSec = () => {
   // Helper para obter o caminho completo de um item de menu
   const getPathForMenuItem = (item, parentId = null) => {
     if (item.path) {
-      return item.path; // Se o item já tem um path explícito, use-o
+      return item.path;
     }
     if (parentId) {
-      // Para submenus sem path explícito, construa o path com base no pai e no ID
       return `/secretaria/${parentId}/${item.id}`;
     }
-    // Para itens de menu principais sem submenu e sem path explícito, use o ID
     return `/secretaria/${item.id}`;
   };
 
   // Função para verificar se um item de menu está ativo
   const isItemActive = (item, parentId = null) => {
     const targetPath = getPathForMenuItem(item, parentId);
-    // Verifica se o caminho atual começa com o caminho do item (para sub-rotas)
     return location.pathname.startsWith(targetPath);
   };
 
@@ -43,15 +40,15 @@ const SideBarSec = () => {
       id: 'dashboard',
       label: 'Dashboard',
       icon: Home,
-      path: '/secretaria/dashboard' // Adicione o prefixo /secretaria/ aqui
+      path: '/secretaria/dashboard'
     },
     {
       id: 'students',
       label: 'Alunos',
       icon: Users,
       submenu: [
-        { id: 'students-list', label: 'Lista de Alunos', path: '/secretaria/alunos/lista' }, // Exemplo de path para lista
-        { id: 'students-add', label: 'Cadastrar Aluno', path: '/secretaria/cadastrar-aluno'}, // Este path será usado
+        { id: 'students-list', label: 'Lista de Alunos', path: '/secretaria/alunos/lista' },
+        { id: 'students-add', label: 'Cadastrar Aluno', path: '/secretaria/cadastrar-aluno' },
       ]
     },
     {
@@ -69,8 +66,8 @@ const SideBarSec = () => {
       label: 'Turmas',
       icon: School,
       submenu: [
+        { id: 'classes-add', label: 'Criar Turma', path: '/secretaria/criar-turma' },
         { id: 'classes-list', label: 'Lista de Turmas', path: '/secretaria/turmas/lista' },
-        { id: 'classes-add', label: 'Criar Turma', path: '/secretaria/turmas/criar' },
         { id: 'classes-schedule', label: 'Grade Horária', path: '/secretaria/turmas/grade' },
       ]
     },
@@ -113,18 +110,15 @@ const SideBarSec = () => {
     }
   ];
 
-  // Função para lidar com o clique nos itens de menu principais
   const handleMenuClick = (item) => {
     if (item.submenu) {
       toggleMenu(item.id);
     } else if (item.path) {
-      navigate(item.path); // Navega diretamente para o path definido
+      navigate(item.path);
     }
   };
 
-  // Função para lidar com o clique nos itens de submenu
   const handleSubmenuClick = (parentId, submenuItem) => {
-    // Usa o path definido no submenuItem, ou constrói um path padrão
     const targetPath = getPathForMenuItem(submenuItem, parentId);
     navigate(targetPath);
   };
@@ -141,6 +135,7 @@ const SideBarSec = () => {
           <p>Secretário(a)</p>
         </div>
       </div>
+
       {/* Navegação */}
       <nav className="navigation">
         <ul className="nav-menu">
@@ -178,6 +173,7 @@ const SideBarSec = () => {
           ))}
         </ul>
       </nav>
+
       {/* Footer da Sidebar */}
       <div className="sidebar-footer">
         <button className="logout-button" onClick={() => navigate('/')}>
