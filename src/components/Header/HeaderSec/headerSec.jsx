@@ -4,7 +4,7 @@ import './headerSec.css';
 
 const HeaderSec = ({ 
   pageTitle = 'Dashboard', 
-  pageDescription = 'Visão geral do sistema de gestão escolar.',
+  pageDescription = ' ',
   showNotifications = true,
   onSearch,
   searchPlaceholder = 'Buscar aluno, turma...'
