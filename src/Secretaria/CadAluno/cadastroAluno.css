@@ -401,6 +401,15 @@
   box-shadow: none;
 }
 
+.form-row-aluno-materias {
+  display: flex;
+  gap: 24px;
+  padding: 24px 30px;
+  align-items: flex-end;
+}
+
+
+
 .btn-add-aluno:hover {
   background-color: #0e9e73;
   transform: translateY(-2px);
@@ -422,30 +431,27 @@
 
 
 .btn-remove {
-  background: #fef2f2;
-  color: #ef4444;
+  background: #fee2e2;
+  color: #dc2626;
   border: none;
   cursor: pointer;
   padding: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px; 
+  border-radius: 10px; 
   transition: background-color 0.2s ease; 
-  border: 1px solid #e2e8f0; 
+  border: nome;
 }
 
 .btn-remove:hover {
-  background-color: rgba(220, 53, 69, 0.1); 
+  background: #fecaca;
 }
 
 
 .btn-remove:hover svg {
   color: #c82333; 
 }
-
-
-
 
 
 
@@ -462,4 +468,14 @@ textarea.input-error:hover {
   border: 1.5px solid #e74c3c !important;
   outline: none;
 }
+
+
+
+.input-general {
+  width: 100%; /* ou um valor fixo, se preferir */
+  padding: 10px; /* Ajuste conforme necessário */
+  margin-bottom: 10px; /* Espaçamento entre os inputs */
+  box-sizing: border-box; /* Para <div> não ultrapassar o tamanho */
+}
+
 
