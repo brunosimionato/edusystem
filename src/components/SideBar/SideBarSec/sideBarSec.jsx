@@ -47,8 +47,8 @@ const SideBarSec = () => {
       label: 'Alunos',
       icon: Users,
       submenu: [
-        { id: 'students-list', label: 'Lista de Alunos', path: '/secretaria/alunos/lista' },
         { id: 'students-add', label: 'Cadastrar Aluno', path: '/secretaria/cadastrar-aluno' },
+        { id: 'students-list', label: 'Lista de Alunos', path: '/secretaria/lista-aluno' },
       ]
     },
     {
@@ -66,8 +66,8 @@ const SideBarSec = () => {
       label: 'Turmas',
       icon: School,
       submenu: [
-        { id: 'classes-add', label: 'Criar Turma', path: '/secretaria/criar-turma' },
-        { id: 'classes-list', label: 'Lista de Turmas', path: '/secretaria/turmas/lista' },
+        { id: 'classes-add', label: 'Cadastrar Turma', path: '/secretaria/criar-turma' },
+        { id: 'classes-list', label: 'Lista de Turmas', path: '/secretaria/lista-turma' },
         { id: 'classes-schedule', label: 'Grade Horária', path: '/secretaria/turmas/grade' },
       ]
     },
