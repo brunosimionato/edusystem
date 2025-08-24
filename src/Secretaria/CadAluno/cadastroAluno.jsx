@@ -350,15 +350,24 @@ const CadastroAluno = () => {
     ]);
   };
 
-  const removerAnoEscolar = (index) => {
-    if (historicoEscolar.length === 1) {
-      alert(
-        "Para remover o único ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
-      );
-      return;
-    }
-    setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
-  };
+const removerAnoEscolar = (index) => {
+  // Impede remover se não for o último
+  if (index !== historicoEscolar.length - 1) {
+    alert("Os anos escolares devem ser excluídos em ordem decrescente.");
+    return;
+  }
+
+  // Impede remover se for o único
+  if (historicoEscolar.length === 1) {
+    alert(
+      "Para remover o único ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
+    );
+    return;
+  }
+
+  // Remove normalmente se for o último
+  setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
+};
 
   return (
     <div className="cadastro-container-aluno">
@@ -558,7 +567,7 @@ const CadastroAluno = () => {
           </div>
           {/* Responsável 1 */}
           <div className="form-section-aluno">
-            <div className="section-title-cad-aluno">Responsável 1</div>
+            <div className="section-title-cad-aluno">Responsável 1*</div>
             <div className="form-row-aluno">
               <div className="form-group-aluno flex-3">
                 <label htmlFor="nomeR1">Nome*</label>
@@ -621,7 +630,7 @@ const CadastroAluno = () => {
           {/* Responsável 2 */}
           <div className="form-section-aluno">
             <div className="section-title-cad-aluno">
-              Responsável 2 (Opcional)
+              Responsável 2
             </div>
             <div className="form-row-aluno">
               <div className="form-group-aluno flex-3">
@@ -906,7 +915,7 @@ const CadastroAluno = () => {
 
 
 
-
+          {/* Botões */}
           <div className="form-buttons-aluno">
             <button
               type="button"
@@ -926,3 +935,6 @@ const CadastroAluno = () => {
 };
 
 export default CadastroAluno;
+
+
+

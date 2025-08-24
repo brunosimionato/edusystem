@@ -22,21 +22,21 @@ const CriarTurma = () => {
   const [turmas, setTurmas] = useState([
     {
       id: 1,
-      nome: "1º Ano A",
+      nome: "1º ANO A",
       turno: "Manhã",
       quantidadeMaxima: 25,
       alunosMatriculados: 23,
     },
     {
       id: 2,
-      nome: "2º Ano B",
+      nome: "2º ANO B",
       turno: "Tarde",
       quantidadeMaxima: 30,
       alunosMatriculados: 28,
     },
     {
       id: 3,
-      nome: "3º Ano C",
+      nome: "3º ANO C",
       turno: "Manhã",
       quantidadeMaxima: 25,
       alunosMatriculados: 25,
