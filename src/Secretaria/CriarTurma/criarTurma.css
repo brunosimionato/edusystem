@@ -45,7 +45,7 @@
 /* Cabeçalho das seções */
 .cadastro-turma-section-header,
 .cadastro-turma-section-header-with-button {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: #1e293b;
   padding: 20px 30px;
@@ -241,7 +241,6 @@ textarea.input-error:hover {
   justify-content: flex-end;
   gap: 16px;
   padding: 15px 30px;
-  border-top: 1px solid #cbd5e1;
   background: #f1f5f9;
 }
 
@@ -271,14 +270,14 @@ textarea.input-error:hover {
 }
 
 .cadastro-turma-submit-button.blue-button {
-  background: #2563eb;
+  background: #3b82f6;
   color: white;
 }
 
 .cadastro-turma-submit-button.blue-button:hover {
-  background: #1e40af;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+  background: #2563eb;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 /* Lista de turmas */
@@ -338,6 +337,9 @@ textarea.input-error:hover {
 }
 
 .turma-turno {
+  display: inline-flex; /* ou flex */
+  justify-content: center; /* centraliza na horizontal */
+  align-items: center;     /* centraliza na vertical */
   padding: 4px 14px;
   border-radius: 20px;
   font-size: 12px;
@@ -345,6 +347,7 @@ textarea.input-error:hover {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 
 .turno-manhã {
   background: #bfdbfe;

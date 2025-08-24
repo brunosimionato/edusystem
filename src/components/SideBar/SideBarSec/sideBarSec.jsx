@@ -56,8 +56,8 @@ const SideBarSec = () => {
       label: 'Professores',
       icon: GraduationCap,
       submenu: [
+        { id: 'teachers-add', label: 'Cadastrar Professor', path: '/secretaria/cadastrar-professor' },
         { id: 'teachers-list', label: 'Lista de Professores', path: '/secretaria/professores/lista' },
-        { id: 'teachers-add', label: 'Cadastrar Professor', path: '/secretaria/professores/cadastro' },
         { id: 'teachers-schedule', label: 'Horários', path: '/secretaria/professores/horarios' },
       ]
     },
@@ -67,7 +67,6 @@ const SideBarSec = () => {
       icon: School,
       submenu: [
         { id: 'classes-add', label: 'Cadastrar Turma', path: '/secretaria/criar-turma' },
-        { id: 'classes-list', label: 'Lista de Turmas', path: '/secretaria/lista-turma' },
         { id: 'classes-schedule', label: 'Grade Horária', path: '/secretaria/turmas/grade' },
       ]
     },

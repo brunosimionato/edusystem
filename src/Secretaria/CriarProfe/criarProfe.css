@@ -1,0 +1,357 @@
+/* Container principal */
+.cadastro-container-professor {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideUp 0.8s ease-out;
+}
+
+.cadastro-title-professor {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: center;
+  padding: 30px;
+  margin: 0;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  overflow: hidden;
+}
+
+/* Formulário principal */
+.cadastro-form-professor {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Seção do Formulário */
+.form-section-professor {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+/* Título da Seção */
+.section-title-cad-professor {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 30px 15px 30px;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  letter-spacing: 0.5px;
+}
+
+/* Linha do Formulário */
+.form-row-professor {
+  display: flex;
+  gap: 24px;
+  padding: 24px 30px;
+  align-items: flex-end;
+}
+
+/* Grupo de Formulário (para campos individuais) */
+.form-group-professor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  min-width: 0;
+}
+
+/* Tamanhos */
+.form-group-professor.flex-1 { flex: 1; }
+.form-group-professor.flex-2 { flex: 2; }
+.form-group-professor.flex-3 { flex: 3; }
+.form-group-professor.small { min-width: 120px; max-width: 150px; }
+.form-group-professor.medium { min-width: 180px; max-width: 220px; }
+.form-group-professor.large { min-width: 300px; }
+
+/* Labels para inputs/selects flutuantes */
+.form-group-professor label:not(.disciplinas-main-label):not(.disciplina-checkbox) {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+/* Inputs e selects */
+.form-group-professor input:not(.checkbox-input),
+.form-group-professor select {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  transition: all 0.2s ease;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+.form-group-professor input:not(.checkbox-input):focus,
+.form-group-professor select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.form-group-professor input:not(.checkbox-input):hover,
+.form-group-professor select:hover {
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.form-group-professor input::placeholder {
+  color: #94a3b8;
+}
+
+/* ===== SEÇÃO DE DISCIPLINAS ===== */
+.disciplinas-group {
+  width: 100%;
+  position: relative;
+  margin-bottom: 0;
+}
+
+.disciplinas-main-label {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.disciplinas-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.disciplinas-container:hover {
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.disciplinas-container:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.disciplinas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.disciplina-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.disciplina-checkbox:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.checkbox-input {
+  margin: 0;
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+/* Responsividade para disciplinas */
+@media (max-width: 768px) {
+  .disciplinas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .disciplinas-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== ESTILOS DE ERRO ===== */
+.input-error {
+  border-color: #ef4444 !important;
+
+}
+
+.disciplinas-container.input-error {
+  border-color: #ef4444 !important;
+
+}
+
+.input-error-text {
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 8px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== BOTÕES ===== */
+.form-buttons-professor {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 24px 30px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.btn-primary-prof {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary-prof:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVIDADE GERAL ===== */
+@media (max-width: 1024px) {
+  .form-row-professor {
+    flex-wrap: wrap;
+  }
+  
+  .form-group-professor.small,
+  .form-group-professor.medium {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cadastro-container-professor {
+    gap: 24px;
+  }
+  
+  .form-row-professor {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .section-title-cad-professor {
+    padding: 15px 20px 12px 20px;
+    font-size: 16px;
+  }
+  
+  .form-buttons-professor {
+    padding: 20px;
+    flex-direction: column;
+  }
+  
+  .btn {
+    min-width: auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row-professor {
+    padding: 16px;
+  }
+  
+  .section-title-cad-professor {
+    padding: 12px 16px 10px 16px;
+  }
+  
+  .form-buttons-professor {
+    padding: 16px;
+  }
+}

@@ -42,7 +42,7 @@
 }
 
 .section-title-cad-aluno {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: #1e293b;
   padding: 20px 30px 15px 30px;
@@ -205,11 +205,12 @@
 /* Container dos Botões */
 .form-buttons-aluno {
   display: flex;
-  justify-content: right;
+  justify-content: flex-end;
   gap: 16px;
   padding: 24px 30px;
-  border-top: 1px solid #e2e8f0; 
-  background: #f8fafc;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
 }
 
 .btn {
@@ -225,7 +226,7 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 120px;
+  min-width: 140px;
   justify-content: center;
 }
 .btn-primary {

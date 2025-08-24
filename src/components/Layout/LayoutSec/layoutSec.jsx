@@ -15,7 +15,7 @@ const LayoutSec = () => {
     '/secretaria/cadastrar-aluno': 'Cadastro de Aluno',
     '/secretaria/lista-aluno': 'Lista de Alunos',
     '/secretaria/professores/lista': 'Lista de Professores',
-    '/secretaria/professores/cadastro': 'Cadastro de Professores',
+    '/secretaria/cadastrar-professor': 'Cadastro de Professores',
     '/secretaria/criar-turma': 'Cadastro de Turma',
     '/secretaria/lista-turma': 'Lista de Turmas',
     '/secretaria/disciplinas/lista': 'Lista de Disciplinas',
