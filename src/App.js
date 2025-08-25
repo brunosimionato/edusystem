@@ -10,7 +10,8 @@ import LayoutProf from './components/Layout/LayoutProf/layoutProf';
 import Secretaria from './Secretaria/InicioSec/secretaria';
 import CadastroAluno from './Secretaria/CadAluno/cadastroAluno';
 import ListaAluno from './Secretaria/ListaAluno/listaAluno';
-import CriarProfe  from './Secretaria/CriarProfe/criarProfe'; 
+import CriarProfe  from './Secretaria/CriarProfe/criarProfe';
+import ListaProfe  from './Secretaria/ListaProfe/listaProfe';
 import CriarTurma from './Secretaria/CriarTurma/criarTurma';
 
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="cadastrar-aluno" element={<CadastroAluno />} />
           <Route path="lista-aluno" element={<ListaAluno />} />
           <Route path ="cadastrar-professor" element={<CriarProfe />} />
+          <Route path ="lista-profe" element={<ListaProfe />} />
           <Route path="criar-turma" element={<CriarTurma />} />
 
         </Route>
