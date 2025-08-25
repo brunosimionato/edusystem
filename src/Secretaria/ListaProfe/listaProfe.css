@@ -1,0 +1,686 @@
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container principal */
+.cadastro-turma-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideUp 0.8s ease-out;
+}
+
+/* Seções do formulário */
+.cadastro-turma-form-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  transition: box-shadow 0.2s ease;
+}
+
+.cadastro-turma-form-section:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Cabeçalho das seções */
+.cadastro-turma-section-header {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Grid do formulário */
+.cadastro-turma-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 24px 30px;
+}
+
+/* Grupos */
+.cadastro-turma-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.cadastro-turma-form-group.full-width { grid-column: span 12; }
+
+.cadastro-turma-form-group label {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  transition: all 0.15s ease;
+  pointer-events: none;
+}
+
+/* Wrapper do input com ícone */
+.cadastro-turma-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Ícone dentro do input */
+.cadastro-turma-input-icon-professor {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+  font-size: 18px;
+}
+
+.cadastro-turma-input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  transition: all 0.18s ease;
+  color: #1e293b;
+  box-sizing: border-box;
+  height: 48px;
+}
+
+.search-input-lista-professor {
+  text-indent: 20px;
+}
+
+.cadastro-turma-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.cadastro-turma-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+  transform: translateY(-1px);
+}
+
+.cadastro-turma-input:hover {
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+/* Lista de professores */
+.professores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 30px;
+}
+
+.professor-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.professor-card:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.professor-card.inativo {
+  border-color: #fca5a5;
+}
+
+.professor-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.professor-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+}
+
+.professor-header.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.professor-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.professor-card.inativo .professor-avatar {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.professor-basic-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.professor-nome {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.professor-card.inativo .professor-nome {
+  color: #94a3b8;
+}
+
+.professor-formacao {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+.professor-status-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.ativo {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.inativo {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.disciplinas-count,
+.turmas-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.print-professor-button {
+  background: #10b981;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.print-professor-button:hover {
+  background-color: #0e9e73;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Detalhes expandidos do professor */
+.professor-details-container {
+  padding: 20px 20px 20px 20px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: -1px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.turma-nome-prof {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.contact-item svg {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* Seções do professor em colunas (duas colunas) */
+.professor-lista-section.horizontal {
+  display: flex;             /* Flex container */
+  flex-direction: row;       /* Itens lado a lado */
+  justify-content: space-between; /* Espaço entre colunas */
+  align-items: flex-start;   /* Alinha pelo topo */
+  gap: 24px;                 /* Espaçamento entre colunas */
+  align-items: center; 
+}
+
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.section-title svg {
+  color: #64748b;
+}
+
+/* Disciplinas */
+.disciplinas-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.disciplina-tag {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #e0f2fe;
+  color: #0369a1;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Tabela de turmas */
+.turmas-table-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.turmas-table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.turmas-table-header > :nth-child(2) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.turma-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 14px;
+}
+
+
+.turma-row > :nth-child(2) {
+  justify-self: center;
+  text-align: center;
+}
+
+.turma-row:last-child {
+  border-bottom: none;
+}
+
+.turma-nome {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Estilos para matérias - substituindo os antigos turnos */
+.turma-materia-prof {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+  min-width: 300px;
+
+  background: #dbeafe; /* Azul claro */
+  color: #1d4ed8;      /* Azul escuro */
+}
+
+/* Ações do professor */
+.professor-lista-actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.professor-lista-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center; /* centraliza verticalmente */
+  padding-top: 10px;
+}
+
+.action-button-professor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+    flex: 1; /* cada botão ocupa o mesmo espaço */
+  min-width: 100px; /* evita que fiquem muito pequenos */
+}
+
+.edit-button {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.edit-button:hover {
+  background: #d97706;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+}
+
+.deactivate-button {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.deactivate-button:hover {
+  background: #dc2626;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+.activate-button {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.activate-button:hover {
+  background: #15803d;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+}
+
+/* Estado vazio */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+.empty-state h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .professor-contact-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .professor-status-badges {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cadastro-turma-form-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .cadastro-turma-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .cadastro-turma-form-group.full-width {
+    grid-column: span 1;
+  }
+
+  .cadastro-turma-section-header {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+
+  .professores-list {
+    padding: 20px;
+  }
+
+  .professor-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .professor-basic-info {
+    text-align: center;
+  }
+
+  .professor-status-badges {
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .print-professor-button {
+    margin-left: 0;
+    align-self: center;
+  }
+
+  .professor-details-container {
+    padding: 16px;
+  }
+
+  .professor-actions {
+    justify-content: center;
+  }
+
+  .action-button-professor {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  /* Tabela de turmas responsiva */
+  .turmas-table-header,
+  .turma-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .turmas-table-header {
+    display: none;
+  }
+
+  .turma-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+    gap: 8px;
+  }
+
+  .turma-materia {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .cadastro-turma-form-container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .cadastro-turma-form-grid {
+    padding: 16px;
+  }
+
+  .cadastro-turma-section-header {
+    padding: 12px 16px;
+    font-size: 14px;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .professores-list {
+    padding: 16px;
+  }
+
+  .professor-card {
+    padding: 16px;
+  }
+
+  .professor-header {
+    padding: 0;
+  }
+
+  .professor-nome {
+    font-size: 15px;
+  }
+
+  .professor-contact-info {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .contact-item {
+    font-size: 12px;
+  }
+
+  .disciplinas-list {
+    gap: 6px;
+  }
+
+  .disciplina-tag {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .professor-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .action-button-professor {
+    width: 100%;
+  }
+}

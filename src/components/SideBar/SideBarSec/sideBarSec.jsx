@@ -57,7 +57,7 @@ const SideBarSec = () => {
       icon: GraduationCap,
       submenu: [
         { id: 'teachers-add', label: 'Cadastrar Professor', path: '/secretaria/cadastrar-professor' },
-        { id: 'teachers-list', label: 'Lista de Professores', path: '/secretaria/professores/lista' },
+        { id: 'teachers-list', label: 'Lista de Professores', path: '/secretaria/lista-profe' },
         { id: 'teachers-schedule', label: 'Horários', path: '/secretaria/professores/horarios' },
       ]
     },

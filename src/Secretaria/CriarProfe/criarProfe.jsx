@@ -18,6 +18,7 @@ const CriarProfe = () => {
     estado: "",
     formacao: "",
     disciplinas: [],
+    turmas: [], // Novo campo para turmas
   });
 
   const [camposInvalidos, setCamposInvalidos] = useState([]);
@@ -32,6 +33,27 @@ const CriarProfe = () => {
     "Artes",
     "Educação Física",
     "Religião",
+    "Ensino Globalizado",
+    "Espanhol",
+  ];
+
+  // Lista de turmas disponíveis (exemplo)
+  const turmasDisponiveis = [
+    "1º Ano A - Fundamental",
+    "1º Ano B - Fundamental",
+    "2º Ano A - Fundamental",
+    "2º Ano B - Fundamental",
+    "3º Ano A - Fundamental",
+    "3º Ano B - Fundamental",
+    "4º Ano A - Fundamental",
+    "4º Ano B - Fundamental",
+    "4º Ano C - Fundamental",
+    "5º Ano A - Fundamental",
+    "5º Ano B - Fundamental",
+    "6º Ano A - Fundamental",
+    "7º Ano A - Fundamental",
+    "8º Ano A - Fundamental",
+    "9º Ano A - Fundamental",
   ];
 
   // Máscaras
@@ -56,7 +78,6 @@ const CriarProfe = () => {
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
       const data = await response.json();
-
       if (!data.erro) {
         setFormData((prev) => ({
           ...prev,
@@ -84,8 +105,6 @@ const CriarProfe = () => {
       formattedValue = mascaraTelefone(value);
     } else if (name === "cep") {
       formattedValue = mascaraCEP(value);
-
-      // Quando tiver 8 números, busca o endereço
       const somenteNumeros = value.replace(/\D/g, "");
       if (somenteNumeros.length === 8) {
         buscarEndereco(somenteNumeros);
@@ -107,10 +126,19 @@ const CriarProfe = () => {
     });
   };
 
+  // Novo handler para a seleção de turmas
+  const handleTurmaChange = (turma) => {
+    setFormData((prev) => {
+      const turmas = prev.turmas.includes(turma)
+        ? prev.turmas.filter((t) => t !== turma)
+        : [...prev.turmas, turma];
+      return { ...prev, turmas };
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let invalidos = [];
-
     const camposObrigatorios = [
       "nome",
       "cpf",
@@ -135,6 +163,11 @@ const CriarProfe = () => {
 
     if (formData.disciplinas.length === 0) {
       invalidos.push("disciplinas");
+    }
+
+    // Validação para turmas
+    if (formData.turmas.length === 0) {
+      invalidos.push("turmas");
     }
 
     if (invalidos.length > 0) {
@@ -167,6 +200,7 @@ const CriarProfe = () => {
       estado: "",
       formacao: "",
       disciplinas: [],
+      turmas: [], // Resetar turmas ao limpar
     });
     setCamposInvalidos([]);
   };
@@ -262,7 +296,6 @@ const CriarProfe = () => {
               </div>
             </div>
           </div>
-
           {/* Endereço */}
           <div className="form-section-professor">
             <div className="section-title-cad-professor">Endereço</div>
@@ -344,7 +377,6 @@ const CriarProfe = () => {
               </div>
             </div>
           </div>
-
           {/* Formação e Disciplinas */}
           <div className="form-section-professor">
             <div className="section-title-cad-professor">
@@ -390,6 +422,44 @@ const CriarProfe = () => {
                   {camposInvalidos.includes("disciplinas") && (
                     <p className="input-error-text">
                       Selecione pelo menos uma disciplina.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Nova Seção: Turmas que Leciona */}
+          <div className="form-section-professor">
+            <div className="section-title-cad-professor">
+              Turmas que Leciona
+            </div>
+            <div className="form-row-professor">
+              <div className="form-group-professor disciplinas-group">
+                <label className="disciplinas-main-label">
+                  Selecionar Turmas*
+                </label>
+                <div
+                  className={`disciplinas-container ${
+                    camposInvalidos.includes("turmas") ? "input-error" : ""
+                  }`}
+                >
+                  <div className="disciplinas-grid">
+                    {turmasDisponiveis.map((turma) => (
+                      <label key={turma} className="disciplina-checkbox">
+                        <input
+                          type="checkbox"
+                          checked={formData.turmas.includes(turma)}
+                          onChange={() => handleTurmaChange(turma)}
+                          className="checkbox-input"
+                        />
+                        <span className="checkbox-text">{turma}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {camposInvalidos.includes("turmas") && (
+                    <p className="input-error-text">
+                      Selecione pelo menos uma turma.
                     </p>
                   )}
                 </div>
