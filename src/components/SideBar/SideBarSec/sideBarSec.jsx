@@ -5,8 +5,11 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './sideBarSec.css';
+import { useAuth } from '../../../context/AuthContext';
 
 const SideBarSec = () => {
+  const { logout } = useAuth()
+
   const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
@@ -122,6 +125,11 @@ const SideBarSec = () => {
     navigate(targetPath);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <aside className="sidebar">
       {/* Perfil do Usuário */}
@@ -175,7 +183,7 @@ const SideBarSec = () => {
 
       {/* Footer da Sidebar */}
       <div className="sidebar-footer">
-        <button className="logout-button" onClick={() => navigate('/')}>
+        <button className="logout-button" onClick={handleLogout}>
           <LogOut />
           Sair
         </button>

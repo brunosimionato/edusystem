@@ -164,9 +164,11 @@
   width: 100%;
 }
 
+/* Header do professor com botões à direita */
 .professor-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   padding: 20px;
 }
@@ -176,6 +178,15 @@
   user-select: none;
 }
 
+/* Container da info básica + avatar */
+.professor-basic-info-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+/* Avatar do professor */
 .professor-avatar {
   display: flex;
   align-items: center;
@@ -193,8 +204,8 @@
   color: #dc2626;
 }
 
+/* Info básica do professor */
 .professor-basic-info {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -218,76 +229,82 @@
   font-weight: 500;
 }
 
-.professor-status-badges {
+/* Container de ações do header */
+.professor-header-actions {
   display: flex;
-  align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-badge.ativo {
-  background-color: #dcfce7;
-  color: #15803d;
-}
-
-.status-badge.inativo {
-  background-color: #fef2f2;
-  color: #dc2626;
-}
-
-.disciplinas-count,
-.turmas-count {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: #e0f2fe;
-  color: #0369a1;
-}
-
-.print-professor-button {
-  background: #10b981;
-  color: #fff;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
-.print-professor-button:hover {
-  background-color: #0e9e73;
-  transform: translateY(-2px);
+/* Botões do professor */
+.action-button-professor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  min-width: 100px;
+  transition: all 0.2s ease;
+}
+
+/* Cores específicas */
+.edit-button-profe {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.edit-button-profe:hover {
+  background: #d97706;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+  transform: translateY(-1px);
+}
+
+.print-button-profe {
+  background: #10b981;
+  color: #fff;
+}
+
+.print-button-profe:hover {
+  background: #0e9e73;
+  color: #fff;
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.deactivate-button {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.deactivate-button:hover {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+  transform: translateY(-1px);
+}
+
+.activate-button {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.activate-button:hover {
+  background: #15803d;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+  transform: translateY(-1px);
 }
 
 /* Detalhes expandidos do professor */
 .professor-details-container {
-  padding: 20px 20px 20px 20px;
+  padding: 20px;
   border-top: 1px solid #f1f5f9;
   margin-top: -1px;
   display: flex;
@@ -295,36 +312,14 @@
   gap: 24px;
 }
 
-.turma-nome-prof {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #475569;
-}
-
-.contact-item svg {
-  color: #64748b;
-  flex-shrink: 0;
-}
-
-/* Seções do professor em colunas (duas colunas) */
+/* Disciplinas */
 .professor-lista-section.horizontal {
-  display: flex;             /* Flex container */
-  flex-direction: row;       /* Itens lado a lado */
-  justify-content: space-between; /* Espaço entre colunas */
-  align-items: flex-start;   /* Alinha pelo topo */
-  gap: 24px;                 /* Espaçamento entre colunas */
-  align-items: center; 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
 }
-
 
 .section-title {
   display: flex;
@@ -340,7 +335,6 @@
   color: #64748b;
 }
 
-/* Disciplinas */
 .disciplinas-list {
   display: flex;
   flex-wrap: wrap;
@@ -394,7 +388,6 @@
   font-size: 14px;
 }
 
-
 .turma-row > :nth-child(2) {
   justify-self: center;
   text-align: center;
@@ -404,12 +397,13 @@
   border-bottom: none;
 }
 
-.turma-nome {
-  font-weight: 500;
+.turma-nome-prof {
+  font-size: 15px;
+  font-weight: 700;
   color: #1e293b;
+  margin: 0;
 }
 
-/* Estilos para matérias - substituindo os antigos turnos */
 .turma-materia-prof {
   padding: 6px 12px;
   border-radius: 16px;
@@ -419,76 +413,8 @@
   letter-spacing: 0.05em;
   text-align: center;
   min-width: 300px;
-
-  background: #dbeafe; /* Azul claro */
-  color: #1d4ed8;      /* Azul escuro */
-}
-
-/* Ações do professor */
-.professor-lista-actions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.professor-lista-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center; /* centraliza verticalmente */
-  padding-top: 10px;
-}
-
-.action-button-professor {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-    flex: 1; /* cada botão ocupa o mesmo espaço */
-  min-width: 100px; /* evita que fiquem muito pequenos */
-}
-
-.edit-button {
-  background: #fef3c7;
-  color: #d97706;
-}
-
-.edit-button:hover {
-  background: #d97706;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
-}
-
-.deactivate-button {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.deactivate-button:hover {
-  background: #dc2626;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-}
-
-.activate-button {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.activate-button:hover {
-  background: #15803d;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 /* Estado vazio */
@@ -531,12 +457,6 @@
   .professor-contact-info {
     grid-template-columns: 1fr;
   }
-  
-  .professor-status-badges {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -570,33 +490,19 @@
     gap: 16px;
   }
 
-  .professor-basic-info {
-    text-align: center;
+  .professor-basic-info-container {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .professor-status-badges {
-    justify-content: center;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .print-professor-button {
-    margin-left: 0;
-    align-self: center;
-  }
-
-  .professor-details-container {
-    padding: 16px;
-  }
-
-  .professor-actions {
-    justify-content: center;
+  .professor-header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .action-button-professor {
-    flex: 1;
-    min-width: 120px;
-    justify-content: center;
+    width: 100%;
   }
 
   /* Tabela de turmas responsiva */
@@ -618,7 +524,7 @@
     gap: 8px;
   }
 
-  .turma-materia {
+  .turma-materia-prof {
     align-self: flex-start;
   }
 }
@@ -657,15 +563,6 @@
     font-size: 15px;
   }
 
-  .professor-contact-info {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .contact-item {
-    font-size: 12px;
-  }
-
   .disciplinas-list {
     gap: 6px;
   }
@@ -673,14 +570,5 @@
   .disciplina-tag {
     font-size: 11px;
     padding: 4px 8px;
-  }
-
-  .professor-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .action-button-professor {
-    width: 100%;
   }
 }
