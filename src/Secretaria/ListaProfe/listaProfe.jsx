@@ -10,7 +10,6 @@ import {
   GraduationCap,
   BookOpen,
   Users,
-  Calendar,
 } from "lucide-react";
 import "./listaProfe.css";
 
@@ -34,8 +33,6 @@ const ListaProfe = () => {
     {
       id: 2,
       nome: "João Carlos Oliveira",
-      email: "joao.carlos@escola.com",
-      telefone: "(11) 99876-5432",
       formacao: "Licenciatura em História",
       status: "ativo",
       disciplinas: ["História", "Geografia"],
@@ -44,65 +41,11 @@ const ListaProfe = () => {
         { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Geografia" },
       ],
     },
-    {
-      id: 3,
-      nome: "Ana Paula Ferreira",
-      email: "ana.paula@escola.com",
-      telefone: "(11) 97654-3210",
-      formacao: "Licenciatura em Português",
-      status: "ativo",
-      disciplinas: ["Português", "Literatura"],
-      turmas: [
-        { id: 1, nome: "1º ANO A", turno: "manha", materia: "Português" },
-        { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Literatura" },
-        { id: 4, nome: "3º ANO A", turno: "manha", materia: "Português" },
-      ],
-    },
-    {
-      id: 4,
-      nome: "Pedro Henrique Costa",
-      email: "pedro.henrique@escola.com",
-      telefone: "(11) 96543-2109",
-      formacao: "Licenciatura em Educação Física",
-      status: "inativo",
-      disciplinas: ["Educação Física"],
-      turmas: [
-        { id: 1, nome: "1º ANO A", turno: "manha", materia: "Educação Física" },
-        { id: 2, nome: "2º ANO A", turno: "manha", materia: "Educação Física" },
-      ],
-    },
-    {
-      id: 5,
-      nome: "Carla Regina Souza",
-      email: "carla.regina@escola.com",
-      telefone: "(11) 95432-1098",
-      formacao: "Licenciatura em Ciências Biológicas",
-      status: "ativo",
-      disciplinas: ["Ciências", "Biologia"],
-      turmas: [
-        { id: 2, nome: "2º ANO A", turno: "manha", materia: "Ciências" },
-        { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Biologia" },
-        { id: 4, nome: "3º ANO A", turno: "manha", materia: "Biologia" },
-      ],
-    },
-    {
-      id: 6,
-      nome: "Roberto Lima Nascimento",
-      email: "roberto.lima@escola.com",
-      telefone: "(11) 94321-0987",
-      formacao: "Licenciatura em Inglês",
-      status: "ativo",
-      disciplinas: ["Inglês"],
-      turmas: [
-        { id: 1, nome: "1º ANO A", turno: "manha", materia: "Inglês" },
-        { id: 4, nome: "3º ANO A", turno: "manha", materia: "Inglês" },
-      ],
-    },
+    // Adicione outros professores aqui...
   ];
 
   const professoresFiltrados = useMemo(() => {
     if (!filtro) return professores;
-
     return professores.filter((professor) => {
       const nomeMatch = professor.nome
         .toLowerCase()
@@ -113,33 +56,25 @@ const ListaProfe = () => {
       const disciplinasMatch = professor.disciplinas.some((disciplina) =>
         disciplina.toLowerCase().includes(filtro.toLowerCase())
       );
-      const emailMatch = professor.email
-        ?.toLowerCase()
-        .includes(filtro.toLowerCase());
-
-      return nomeMatch || formacaoMatch || disciplinasMatch || emailMatch;
+      return nomeMatch || formacaoMatch || disciplinasMatch;
     });
-  }, [filtro]);
+  }, [filtro, professores]);
 
   const toggleProfessor = (professorId) => {
     setProfessoresExpandidos((prev) => {
       const novaSet = new Set(prev);
-      if (novaSet.has(professorId)) {
-        novaSet.delete(professorId);
-      } else {
-        novaSet.add(professorId);
-      }
+      if (novaSet.has(professorId)) novaSet.delete(professorId);
+      else novaSet.add(professorId);
       return novaSet;
     });
   };
 
-  const handleEditarProfessor = (professorId) => {
+  const handleEditarProfessor = (professorId) =>
     console.log("Editar professor:", professorId);
-  };
-
-  const handleToggleStatusProfessor = (professorId, statusAtual) => {
+  const handleToggleStatusProfessor = (professorId, statusAtual) =>
     console.log("Toggle status professor:", professorId, statusAtual);
-  };
+  const handleImprimirProfessor = (professorId) =>
+    console.log("Imprimir professor:", professorId);
 
   return (
     <div className="cadastro-turma-form-container">
@@ -203,125 +138,86 @@ const ListaProfe = () => {
                   className={`professor-card ${professor.status}`}
                 >
                   <div className="professor-info">
-                    <div
-                      className="professor-header clickable"
-                      onClick={() => toggleProfessor(professor.id)}
-                    >
-                      {isExpandido ? (
-                        <ChevronDown size={20} />
-                      ) : (
-                        <ChevronRight size={20} />
-                      )}
-
-                      <div className="professor-avatar">
-                        <User size={24} />
-                      </div>
-
-                      <div className="professor-basic-info">
-                        <h3 className="professor-nome">{professor.nome}</h3>
-                        <p className="professor-formacao">
-                          {professor.formacao}
-                        </p>
-                      </div>
-
-                      <div className="professor-status-badges">
-                        <span className={`status-badge ${professor.status}`}>
-                          {professor.status === "ativo" ? "Ativo" : "Inativo"}
-                        </span>
-                        <span className="disciplinas-count">
-                          {professor.disciplinas.length} disciplina
-                          {professor.disciplinas.length !== 1 ? "s" : ""}
-                        </span>
-                        <span className="turmas-count">
-                          {professor.turmas.length} turma
-                          {professor.turmas.length !== 1 ? "s" : ""}
-                        </span>
-                      </div>
-
-                      <button
-                        className="print-professor-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          console.log(
-                            `Imprimir dados do professor ${professor.nome}`
-                          );
-                        }}
+                    {/* Header com botões */}
+                    {/* Header com avatar, informações e botões */}
+                    <div className="professor-header">
+                      {/* Lado esquerdo: avatar + info */}
+                      <div
+                        className="professor-basic-info-container clickable"
+                        onClick={() => toggleProfessor(professor.id)}
                       >
-                        Imprimir
-                      </button>
+                        {isExpandido ? (
+                          <ChevronDown size={20} />
+                        ) : (
+                          <ChevronRight size={20} />
+                        )}
+                        <div className="professor-avatar">
+                          <User size={24} />
+                        </div>
+                        <div className="professor-basic-info">
+                          <h3 className="professor-nome">{professor.nome}</h3>
+                          <p className="professor-formacao">
+                            {professor.formacao}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Lado direito: botões */}
+                      <div className="professor-header-actions">
+                        <button
+                          className="action-button-professor edit-button-profe"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditarProfessor(professor.id);
+                          }}
+                        >
+                          <Edit size={16} /> Editar
+                        </button>
+
+                        {professor.status === "ativo" ? (
+                          <button
+                            className="action-button-professor deactivate-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatusProfessor(
+                                professor.id,
+                                professor.status
+                              );
+                            }}
+                          >
+                            <UserX size={16} /> Inativar
+                          </button>
+                        ) : (
+                          <button
+                            className="action-button-professor activate-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleStatusProfessor(
+                                professor.id,
+                                professor.status
+                              );
+                            }}
+                          >
+                            <UserCheck size={16} /> Ativar
+                          </button>
+                        )}
+                                              <button
+                          className="action-button-professor print-button-profe"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleImprimirProfessor(professor.id);
+                          }}
+                        >
+                          <BookOpen size={16} /> Imprimir
+                        </button>
+
+                      </div>
                     </div>
 
-                    {/* Detalhes Expandidos do Professor */}
+                    {/* Detalhes expandidos */}
                     {isExpandido && (
                       <div className="professor-details-container">
-                        <div className="professor-lista-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px' }}>
-                          {/* Disciplinas */}
-                          <div className="professor-disciplinas">
-                            <div className="section-title">
-                              <BookOpen size={18} />
-                              Disciplinas que leciona
-                            </div>
-                            <div className="disciplinas-list">
-                              {professor.disciplinas.map((disciplina, index) => (
-                                <span key={index} className="disciplina-tag">
-                                  {disciplina}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Ações do Professor */}
-                          <div className="professor-lista-actions-container">
-
-                            <div className="professor-lista-actions">
-                              <button
-                                className="action-button-professor edit-button"
-                                onClick={() => handleEditarProfessor(professor.id)}
-                                title="Editar professor"
-                              >
-                                <Edit size={16} />
-                                Editar
-                              </button>
-
-                              {professor.status === "ativo" ? (
-                                <button
-                                  className="action-button-professor deactivate-button"
-                                  onClick={() =>
-                                    handleToggleStatusProfessor(
-                                      professor.id,
-                                      professor.status
-                                    )
-                                  }
-                                  title="Inativar professor"
-                                >
-                                  <UserX size={16} />
-                                  Inativar
-                                </button>
-                              ) : (
-                                <button
-                                  className="action-button-professor activate-button"
-                                  onClick={() =>
-                                    handleToggleStatusProfessor(
-                                      professor.id,
-                                      professor.status
-                                    )
-                                  }
-                                  title="Ativar professor"
-                                >
-                                  <UserCheck size={16} />
-                                  Ativar
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Turmas Vinculadas */}
                         <div className="professor-lista-section">
-                          <div className="section-title">
-                            <Users size={18} />
-                            Turmas vinculadas
-                          </div>
                           <div className="turmas-table-container">
                             <div className="turmas-table-header">
                               <span>Turma</span>
@@ -339,7 +235,6 @@ const ListaProfe = () => {
                             ))}
                           </div>
                         </div>
-
                       </div>
                     )}
                   </div>

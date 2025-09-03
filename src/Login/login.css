@@ -5,7 +5,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -47,6 +48,7 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -73,8 +75,8 @@ body {
   right: 0;
   bottom: 0;
   background: linear-gradient(45deg,
-    rgba(52, 152, 219, 0.1) 0%,
-    rgba(155, 89, 182, 0.1) 100%);
+      rgba(52, 152, 219, 0.1) 0%,
+      rgba(155, 89, 182, 0.1) 100%);
   pointer-events: none;
 }
 
@@ -148,8 +150,10 @@ body {
   gap: 15px;
   align-items: left;
   text-align: left;
-  max-width: 250px; /* limita a largura da lista */
-  margin: 0 auto; /* centraliza a lista */
+  max-width: 250px;
+  /* limita a largura da lista */
+  margin: 0 auto;
+  /* centraliza a lista */
 }
 
 
@@ -399,8 +403,13 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Rodapé */
@@ -418,28 +427,28 @@ body {
     max-width: 500px;
     min-height: auto;
   }
-  
+
   .login-left {
     padding: 40px 30px;
   }
-  
+
   .login-right {
     padding: 40px 30px;
   }
-  
+
   .logo-section h1 {
     font-size: 28px;
   }
-  
+
   .form-header h2 {
     font-size: 24px;
   }
-  
+
   .user-types {
     grid-template-columns: 1fr;
     gap: 15px;
   }
-  
+
   .user-type {
     padding: 20px 15px;
     min-height: 100px;
@@ -450,32 +459,40 @@ body {
   body {
     padding: 15px;
   }
-  
+
   .login-left,
   .login-right {
     padding: 30px 25px;
   }
-  
+
   .logo-icon {
     width: 60px;
     height: 60px;
   }
-  
+
   .logo-section h1 {
     font-size: 24px;
   }
-  
+
   .welcome-section h2 {
     font-size: 22px;
   }
-  
+
   .form-header h2 {
     font-size: 20px;
   }
-  
+
   .form-options {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
+}
+
+
+.error-message {
+  text-align: center;
+  color: #e74c3c;
+  font-size: 14px;
+  margin-bottom: 15px;
 }

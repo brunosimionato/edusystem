@@ -5,8 +5,11 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './sideBarProf.css';
+import { useAuth } from '../../../context/AuthContext';
 
 const SideBarProf = () => {
+  const { logout } = useAuth();
+
   const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,6 +90,11 @@ const SideBarProf = () => {
     navigate(`/professor/${parentId}/${submenuItem.id}`);
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <aside className="sidebar-prof" id="professor-sidebar">
       {/* Perfil do Usuário */}
@@ -143,9 +151,9 @@ const SideBarProf = () => {
 
       {/* Footer da Sidebar */}
       <div className="sidebar-footer-prof" id="prof-sidebar-footer">
-        <button 
-          className="logout-button-prof" 
-          onClick={() => navigate('/')}
+        <button
+          className="logout-button-prof"
+          onClick={handleLogout}
           id="prof-logout-btn"
         >
           <LogOut />
