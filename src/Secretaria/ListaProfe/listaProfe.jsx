@@ -41,7 +41,17 @@ const ListaProfe = () => {
         { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Geografia" },
       ],
     },
-    // Adicione outros professores aqui...
+        {
+      id: 3,
+      nome: "João Carlos Oliveira",
+      formacao: "Licenciatura em História",
+      status: "inativo",
+      disciplinas: ["História", "Geografia"],
+      turmas: [
+        { id: 2, nome: "2º ANO A", turno: "manha", materia: "História" },
+        { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Geografia" },
+      ],
+    },
   ];
 
   const professoresFiltrados = useMemo(() => {

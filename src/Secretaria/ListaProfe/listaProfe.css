@@ -174,7 +174,6 @@
 }
 
 .professor-header.clickable {
-  cursor: pointer;
   user-select: none;
 }
 
@@ -184,6 +183,7 @@
   align-items: center;
   gap: 16px;
   flex: 1;
+  cursor: pointer
 }
 
 /* Avatar do professor */
@@ -255,15 +255,14 @@
 
 /* Cores específicas */
 .edit-button-profe {
-  background: #fef3c7;
-  color: #d97706;
+  background: #3b82f6;
+  color: white;
 }
 
 .edit-button-profe:hover {
-  background: #d97706;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+  background: #2563eb;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .print-button-profe {
@@ -273,33 +272,30 @@
 
 .print-button-profe:hover {
   background: #0e9e73;
-  color: #fff;
   box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
   transform: translateY(-1px);
 }
 
 .deactivate-button {
-  background: #fef2f2;
-  color: #dc2626;
+  background: #ef4444;
+  color: white;
 }
 
 .deactivate-button:hover {
   background: #dc2626;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 .activate-button {
-  background: #dcfce7;
-  color: #15803d;
+  background: #f59e0b; /* Laranja âmbar */
+  color: #fff; /* Texto branco para contraste */
 }
 
 .activate-button:hover {
-  background: #15803d;
+  background: #d97706; /* Laranja mais escuro no hover */
   color: #fff;
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 /* Detalhes expandidos do professor */
@@ -389,7 +385,7 @@
 }
 
 .turma-row > :nth-child(2) {
-  justify-self: center;
+  justify-self: right;
   text-align: center;
 }
 

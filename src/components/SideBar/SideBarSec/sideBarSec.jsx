@@ -61,7 +61,6 @@ const SideBarSec = () => {
       submenu: [
         { id: 'teachers-add', label: 'Cadastrar Professor', path: '/secretaria/cadastrar-professor' },
         { id: 'teachers-list', label: 'Lista de Professores', path: '/secretaria/lista-profe' },
-        { id: 'teachers-schedule', label: 'Horários', path: '/secretaria/professores/horarios' },
       ]
     },
     {
@@ -70,16 +69,7 @@ const SideBarSec = () => {
       icon: School,
       submenu: [
         { id: 'classes-add', label: 'Cadastrar Turma', path: '/secretaria/criar-turma' },
-        { id: 'classes-schedule', label: 'Grade Horária', path: '/secretaria/turmas/grade' },
-      ]
-    },
-    {
-      id: 'subjects',
-      label: 'Disciplinas',
-      icon: BookOpen,
-      submenu: [
-        { id: 'subjects-list', label: 'Lista de Disciplinas', path: '/secretaria/disciplinas/lista' },
-        { id: 'subjects-add', label: 'Cadastrar Disciplina', path: '/secretaria/disciplinas/cadastro' },
+        { id: 'classes-schedule', label: 'Horários', path: '/secretaria/horarios' },
       ]
     },
     {
@@ -87,7 +77,6 @@ const SideBarSec = () => {
       label: 'Documentos',
       icon: FileText,
       submenu: [
-        { id: 'documents-declarations', label: 'Declarações', path: '/secretaria/documentos/declaracoes' },
         { id: 'documents-transcripts', label: 'Histórico Escolar', path: '/secretaria/documentos/historico' },
         { id: 'reports-grades', label: 'Boletins', path: '/secretaria/documentos/boletins' }
       ]
@@ -106,8 +95,7 @@ const SideBarSec = () => {
       label: 'Configurações',
       icon: Settings,
       submenu: [
-        { id: 'settings-users', label: 'Usuários', path: '/secretaria/configuracoes/usuarios' },
-        { id: 'settings-system', label: 'Sistema', path: '/secretaria/configuracoes/sistema' }
+        { id: 'settings-users', label: 'Usuários', path: '/secretaria/usuarios' },
       ]
     }
   ];

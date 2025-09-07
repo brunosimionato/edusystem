@@ -16,18 +16,17 @@ const LayoutSec = () => {
     '/secretaria/lista-aluno': 'Lista de Alunos',
     '/secretaria/cadastrar-professor': 'Cadastro de Professores',
     '/secretaria/lista-profe': 'Lista de Professores',
-    '/secretaria/lista-profe': 'Lista de Professores',
-    '/secretaria/horario-profe': 'Horários',
-    '/secretaria/lista-turma': 'Lista de Turmas',
+    '/secretaria/criar-turma': 'Cadastrar Turma',
+    '/secretaria/horario': 'Horários',
+
+    
     '/secretaria/disciplinas/lista': 'Lista de Disciplinas',
-    '/secretaria/disciplinas/cadastro': 'Cadastro de Disciplinas',
     '/secretaria/documentos/declaracoes': 'Declarações',
     '/secretaria/documentos/historico': 'Histórico Escolar',
     '/secretaria/documentos/boletins': 'Boletins',
     '/secretaria/avaliacoes/provas': 'Provas',
     '/secretaria/avaliacoes/notas': 'Notas',
-    '/secretaria/configuracoes/usuarios': 'Usuários',
-    '/secretaria/configuracoes/sistema': 'Configurações do Sistema',
+    '/secretaria/usuarios': 'Gestão de Usuários',
     // Adicione outras rotas conforme necessidade
   };
 

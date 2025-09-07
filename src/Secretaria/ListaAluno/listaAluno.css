@@ -250,7 +250,7 @@ textarea.input-error:hover {
 }
 
 /* Lista de turmas */
-.turmas-list {
+.turmas-list-alunos {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -486,15 +486,14 @@ textarea.input-error:hover {
 }
 
 .edit-button {
-  background: #f0f9ff;
-  color: #0284c7;
+  background: #3b82f6;
+  color: white;
 }
 
 .edit-button:hover {
-  background: #0284c7;
-  color: white;
+  background: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .deactivate-button {
@@ -522,15 +521,25 @@ textarea.input-error:hover {
 }
 
 .transfer-button {
-  background: #fefce8;
-  color: #ca8a04;
+  background: #958e86; /* verde mais claro */
+  color: #fff;
 }
 
 .transfer-button:hover {
-  background: #ca8a04;
-  color: white;
+  background: #6b655d;
+  box-shadow: 0 4px 10px rgba(149, 142, 134, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(202, 138, 4, 0.25);
+}
+
+.declaracao-button {
+  background: #6f708d; /* verde mais claro */
+  color: #fff;
+}
+
+.declaracao-button:hover {
+  background: #4d4f6a;
+  box-shadow: 0 4px 10px rgba(111, 112, 141, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Estado vazio */
@@ -650,7 +659,7 @@ textarea.input-error:hover {
     font-size: 24px;
   }
 
-  .turmas-list {
+  .turmas-list-alunos {
     padding: 20px;
   }
 
@@ -719,7 +728,7 @@ textarea.input-error:hover {
     font-size: 14px;
   }
 
-  .turmas-list {
+  .turmas-list-alunos {
     padding: 16px;
   }
 

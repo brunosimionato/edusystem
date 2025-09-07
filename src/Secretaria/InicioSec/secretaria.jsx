@@ -97,25 +97,6 @@ const Secretaria = () => {
           ))}
         </div>
       </div>
-
-      {/* Recent Activities */}
-      <div className="section-card">
-        <div className="section-header">
-          <h3 className="section-title">Atividades Recentes</h3>
-        </div>
-        <div className="activity-feed">
-          {recentActivities.map((activity, index) => (
-            <div key={index} className="activity-item">
-              <div className="activity-indicator"></div>
-              <div className="activity-content">
-                <div className="activity-title">{activity.action}</div>
-                <div className="activity-description">{activity.description}</div>
-              </div>
-              <div className="activity-time">{activity.time}</div>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 };
