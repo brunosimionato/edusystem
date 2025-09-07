@@ -11,11 +11,15 @@ import LayoutProf from './components/Layout/LayoutProf/layoutProf';
 
 // Secretaria
 import Secretaria from './Secretaria/InicioSec/secretaria';
-import CadastroAluno from './Secretaria/CadAluno/cadastroAluno';
+import CadastroAluno from './Secretaria/CriarAluno/cadastroAluno';
 import ListaAluno from './Secretaria/ListaAluno/listaAluno';
 import CriarProfe from './Secretaria/CriarProfe/criarProfe';
 import ListaProfe from './Secretaria/ListaProfe/listaProfe';
 import CriarTurma from './Secretaria/CriarTurma/criarTurma';
+import Horarios from './Secretaria/Horario/horario';
+
+
+import Usuarios from './Secretaria/Usuarios/usuarios';
 
 
 // Professor
@@ -37,6 +41,10 @@ function App() {
             <Route path="cadastrar-professor" element={<CriarProfe />} />
             <Route path="lista-profe" element={<ListaProfe />} />
             <Route path="criar-turma" element={<CriarTurma />} />
+            <Route path="horarios" element={<Horarios />} />
+
+
+            <Route path="usuarios" element={<Usuarios />} />
 
           </Route>
 
