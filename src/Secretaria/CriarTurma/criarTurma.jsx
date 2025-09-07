@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Users,
-  Plus,
-  XCircle,
-  Trash2,
-  Printer,
-} from "lucide-react";
+import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
 
 const CriarTurma = () => {
@@ -100,7 +94,9 @@ const CriarTurma = () => {
   // Ajuste para exibir confirmação ao limpar o formulário
   const handleClearForm = (confirmar = true) => {
     if (confirmar) {
-      const querLimpar = window.confirm("Tem certeza que deseja limpar o formulário?");
+      const querLimpar = window.confirm(
+        "Tem certeza que deseja limpar o formulário?"
+      );
       if (!querLimpar) return;
     }
 
@@ -124,7 +120,9 @@ const CriarTurma = () => {
       if (!confirmar) return;
     } else {
       // confirmação para remover turmas vazias também
-      const confirmar = window.confirm(`Deseja realmente remover a turma "${turma.nome}"?`);
+      const confirmar = window.confirm(
+        `Deseja realmente remover a turma "${turma.nome}"?`
+      );
       if (!confirmar) return;
     }
 
@@ -147,7 +145,9 @@ const CriarTurma = () => {
                 <input
                   type="text"
                   id="nomeTurma"
-                  className={`cadastro-turma-input ${erros.nomeTurma ? "input-error" : ""}`}
+                  className={`cadastro-turma-input ${
+                    erros.nomeTurma ? "input-error" : ""
+                  }`}
                   value={nomeTurma}
                   onChange={(e) => setNomeTurma(e.target.value)}
                 />
@@ -159,7 +159,9 @@ const CriarTurma = () => {
               <div className="cadastro-turma-input-wrapper">
                 <select
                   id="turno"
-                  className={`cadastro-turma-select ${erros.turno ? "input-error" : ""}`}
+                  className={`cadastro-turma-select ${
+                    erros.turno ? "input-error" : ""
+                  }`}
                   value={turno}
                   onChange={(e) => setTurno(e.target.value)}
                 >
@@ -176,7 +178,9 @@ const CriarTurma = () => {
                 <input
                   type="number"
                   id="quantidadeMaxima"
-                  className={`cadastro-turma-input ${erros.quantidadeMaxima ? "input-error" : ""}`}
+                  className={`cadastro-turma-input ${
+                    erros.quantidadeMaxima ? "input-error" : ""
+                  }`}
                   value={quantidadeMaxima}
                   onChange={(e) => setQuantidadeMaxima(e.target.value)}
                   min="1"
@@ -225,55 +229,53 @@ const CriarTurma = () => {
             <p>Cadastre a primeira turma usando o formulário acima.</p>
           </div>
         ) : (
-          <div className="turmas-list">
+          <div className="cadastro-turmas-list">
             {turmas.map((turma) => {
               const percentualOcupacao = (
                 (turma.alunosMatriculados / turma.quantidadeMaxima) *
                 100
               ).toFixed(0);
-              const isLotada = turma.alunosMatriculados >= turma.quantidadeMaxima;
-              const isQuaseLotada = percentualOcupacao >= 90;
 
               return (
-                <div
-                  key={turma.id}
-                  className={`turma-card ${
-                    isLotada ? "lotada" : isQuaseLotada ? "quase-lotada" : ""
-                  }`}
-                >
-                  <div className="turma-info">
-                    <div className="turma-header">
-                      <h4 className="turma-nome">{turma.nome}</h4>
-                      <span
-                        className={`turma-turno turno-${turma.turno.toLowerCase()}`}
-                      >
-                        {turma.turno}
-                      </span>
-                    </div>
-                    <div className="turma-details">
-                      <span className="alunos-count">
-                        <strong>{turma.alunosMatriculados}</strong> de{" "}
-                        <strong>{turma.quantidadeMaxima}</strong> alunos matriculados
-                      </span>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{ width: `${percentualOcupacao}%` }}
-                        ></div>
-                      </div>
-                      <span className="percentual-text">{percentualOcupacao}% ocupada</span>
-                    </div>
-                  </div>
-                  <div className="turma-actions">
-                    <button
-                      className="remove-turma-button"
-                      onClick={() => handleRemoveTurma(turma.id)}
-                      title="Remover turma"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
+<div key={turma.id} className="cadastro-turma-card">
+  <div className="turma-info">
+    <div className="turma-header">
+      <div className="turma-header-info">
+        <h4 className="turma-nome">{turma.nome}</h4>
+        <span
+          className={`turma-turno turno-${turma.turno.toLowerCase()}`}
+        >
+          {turma.turno}
+        </span>
+      </div>
+
+      <button
+        className="remove-turma-button"
+        onClick={() => handleRemoveTurma(turma.id)}
+        title="Remover turma"
+      >
+        <Trash2 size={18} />
+      </button>
+    </div>
+
+    <div className="turma-details">
+      <span className="alunos-count">
+        <strong>{turma.alunosMatriculados}</strong> de{" "}
+        <strong>{turma.quantidadeMaxima}</strong> alunos matriculados
+      </span>
+      <div className="progress-bar">
+        <div
+          className="progress-fill"
+          style={{ width: `${percentualOcupacao}%` }}
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+                
               );
             })}
           </div>

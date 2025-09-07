@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   Users,
+  Settings,
 } from "lucide-react";
 import "./listaAluno.css";
 
@@ -145,6 +146,11 @@ const ListaAlunos = () => {
     // Implementar lógica de remanejamento
   };
 
+  const handleDeclaracaoAluno = (alunoId) => {
+    console.log("Declaração aluno:", alunoId);
+    // Implementar lógica de declaração de matrícula
+  };
+
   return (
     <div className="cadastro-turma-form-container">
       {/* Seção de Filtros */}
@@ -194,7 +200,7 @@ const ListaAlunos = () => {
             </p>
           </div>
         ) : (
-          <div className="turmas-list">
+          <div className="turmas-list-alunos">
             {turmasFiltradas.map((turma) => {
               const alunosAtivos = turma.alunos.filter(
                 (a) => a.status === "ativo"
@@ -232,7 +238,6 @@ const ListaAlunos = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           console.log(`Imprimir alunos da turma ${turma.nome}`);
-                          
                         }}
                       >
                         Imprimir
@@ -322,6 +327,14 @@ const ListaAlunos = () => {
                                 title="Remanejar aluno"
                               >
                                 <ArrowRightLeft size={16} />
+                              </button>
+
+                              <button
+                                className="action-button-lista-aluno declaracao-button"
+                                onClick={() => handleDeclaracaoAluno(aluno.id)}
+                                title="Declaração de matrícula"
+                              >
+                                <Settings size={17} />
                               </button>
                             </div>
                           </div>

@@ -1,0 +1,789 @@
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container principal */
+.cadastro-horario-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideUp 0.8s ease-out;
+}
+
+/* Seções do formulário */
+.cadastro-horario-form-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  transition: box-shadow 0.2s ease;
+}
+
+.cadastro-horario-section-header-table {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 30px;
+  margin: 0;
+}
+
+.cadastro-horario-form-section:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Cabeçalho das seções */
+.cadastro-horario-section-header {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  margin: 0;
+}
+
+.cadastro-horario-section-header-with-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.cadastro-horario-section-header-turmas {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Container separado para os campos do formulário */
+.form-fields-container {
+  background: white;
+}
+
+.horarios-table-container {
+    padding: 40px 30px 40px 30px;
+    
+}
+
+/* Última linha da tabela com cantos arredondados */
+.table-wrapper table tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+
+.table-wrapper table tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+
+/* Grid do formulário */
+.cadastro-horario-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 24px 30px 0 30px;
+}
+
+/* Grupos */
+.cadastro-horario-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.cadastro-horario-form-group.full-width { 
+  grid-column: span 12; 
+}
+
+.cadastro-horario-form-group.half-width { 
+  grid-column: span 6; 
+}
+
+.cadastro-horario-form-group label {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  transition: all 0.15s ease;
+  pointer-events: none;
+}
+
+/* Wrapper do input com ícone */
+.cadastro-horario-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cadastro-horario-select {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  transition: all 0.18s ease;
+  color: #1e293b;
+  box-sizing: border-box;
+  height: 48px;
+  cursor: pointer;
+  background-image: none; 
+  appearance: none;
+}
+
+.cadastro-horario-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+  transform: translateY(-1px);
+}
+
+.cadastro-horario-select:hover {
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08) !important;
+}
+
+/* Botões de ação do formulário */
+.cadastro-horario-form-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 20px 30px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  margin-top: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.cadastro-horario-clear-button,
+.cadastro-horario-submit-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.red-button {
+  background: #ef4444;
+  color: white;
+}
+
+.red-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.blue-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.blue-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.green-button {
+  background: #10b981;
+  color: white;
+}
+
+.green-button:hover {
+  background: #0e9e73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Container geral da tabela */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+   overflow: hidden;
+   border-radius: 8px;
+}
+
+.table-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-wrapper table {
+  border-collapse: collapse;
+}
+
+/* Scroll suave em dispositivos móveis */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+  padding: 12px 16px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.table-wrapper th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.table-wrapper th:first-child {
+  background: #475569;
+  color: white;
+  min-width: 140px;
+}
+
+.table-wrapper td {
+  background: white;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Estilos para células específicas (ex.: horários e matérias) */
+.horario-cell {
+  min-width: 140px;
+  background: #f9fafb;
+  text-align: left;
+  padding: 10px 8px;
+  font-weight: 500;
+  border-right: 1px solid #d1d5db;
+}
+
+.materia-cell {
+  min-width: 120px;
+  padding: 6px 8px;
+  background: white;
+  text-align: center;
+}
+
+.input-materia {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+  background: white;
+  color: #374151;
+  transition: all 0.15s ease;
+  margin-bottom: 10px;
+}
+
+.input-professor {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+  background: white;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.input-materia:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+}
+
+.input-professor:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+}
+
+.input-materia::placeholder {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.input-professor::placeholder {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.horario-info {
+  display: flex;
+  flex-direction: column; /* Coloca elementos em coluna */
+  align-items: center;    /* Centraliza horizontalmente */
+  justify-content: center; /* Centraliza verticalmente */
+  gap: 4px;               /* Espaço entre período e horário */
+}
+
+.horario-info .periodo {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.horario-info .tempo {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Linha de intervalo */
+.break-row {
+  background: #cbd5e1 !important; /* fundo geral mais claro */
+}
+
+.break-row .horario-cell {
+  background: #475569 !important; /* cinza escuro para a célula de horário */
+  color: #ffffff !important;      /* texto branco */
+}
+
+.break-row .materia-cell {
+  background: #94a3b8 !important; /* cinza mais clarinho para célula de matéria */
+  color: #ffffff !important;      /* texto branco */
+}
+
+.break-row .horario-cell,
+.break-row .horario-cell .horario-info,
+.break-row .horario-cell .horario-info span {
+  color: #ffffff !important;      /* reforça o texto branco */
+}
+
+.break-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff !important;       /* texto branco */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+}
+
+/* GRADE HEADER - Layout em uma linha (AJUSTADO) */
+.grade-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.grade-header:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
+}
+
+.grade-header.expanded {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Lado esquerdo - Ícone + Informações da turma */
+.grade-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  cursor: pointer;
+}
+
+.expand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: #6c757d;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.grade-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.grade-nome {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.grade-turno {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+/* Lado direito - Botões de ação */
+.grade-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.action-button-horarios {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.edit-button-horarios {
+  background: #3b82f6;
+  color: white;
+}
+
+.edit-button-horarios:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.remove-button-horarios {
+  background: #ef4444;
+  color: white;
+}
+
+.remove-button-horarios:hover {
+  background: #dc2626;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+  transform: translateY(-1px);
+}
+
+
+.grade-content {
+  border: 1px solid #cbd5e1;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: white;
+  padding: 16px 20px;
+}
+
+.grade-content .table-wrapper {
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+    border-collapse: separate; /* permite border-radius nas células */
+  border-spacing: 0;         /* remove espaçamento extra */
+}
+
+.grade-content .table-wrapper table {
+  border-collapse: separate; /* necessário para border-radius nas células */
+  border-spacing: 0;         /* remove o espaçamento extra */
+}
+
+.grade-content .table-wrapper table tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.grade-content .table-wrapper table tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Lista de turmas */
+.turmas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 30px;
+}
+
+/* Estado vazio */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.empty-icon {
+  margin-bottom: 16px;
+  color: #cbd5e0;
+}
+
+.empty-state h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Ações de edição */
+.edicao-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 25px;
+  background: #ffffff;
+}
+
+/* Botões da edição - reaproveitando padrão do formulário */
+.edicao-actions .cancelar-edicao-button,
+.edicao-actions .salvar-edicao-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Botão cancelar = vermelho */
+.edicao-actions .cancelar-edicao-button {
+  background: #ef4444;
+  color: white;
+}
+
+.edicao-actions .cancelar-edicao-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Botão salvar = azul */
+.edicao-actions .salvar-edicao-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.edicao-actions .salvar-edicao-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.cancelar-edicao-button,
+.salvar-edicao-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelar-edicao-button {
+  background: #6b7280;
+  color: white;
+}
+
+.cancelar-edicao-button:hover {
+  background: #4b5563;
+  transform: translateY(-1px);
+}
+
+.salvar-edicao-button {
+  background: #10b981;
+  color: white;
+}
+
+.salvar-edicao-button:hover {
+  background: #0e9e73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* View de matéria e professor */
+.materia-professor-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.materia-nome {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.materia-professor-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .table-wrapper {
+    padding: 16px;
+  }
+
+  .table-wrapper table {
+    min-width: 500px;
+  }
+
+  .horario-cell {
+    min-width: 120px;
+  }
+
+  .materia-cell {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .grade-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .grade-info {
+    justify-content: flex-start;
+  }
+  
+  .grade-actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+  
+  .action-button-horarios {
+    flex: 1;
+    justify-content: center;
+  }
+
+
+  .table-wrapper table {
+    min-width: 400px;
+    font-size: 11px;
+    padding: 12px;
+  }
+
+  .horario-cell {
+    min-width: 100px;
+    padding: 8px 6px;
+  }
+
+  .materia-cell {
+    min-width: 80px;
+    padding: 6px 4px;
+  }
+
+  .input-materia {
+    padding: 4px 6px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-wrapper {
+    padding: 8px;
+  }
+
+  .table-wrapper table {
+    min-width: 350px;
+    font-size: 10px;
+  }
+
+  .horario-cell {
+    min-width: 80px;
+    padding: 6px 4px;
+  }
+
+  .materia-cell {
+    min-width: 70px;
+    padding: 4px 3px;
+  }
+
+  .input-materia {
+    padding: 3px 4px;
+    font-size: 9px;
+  }
+}

@@ -281,14 +281,14 @@ textarea.input-error:hover {
 }
 
 /* Lista de turmas */
-.turmas-list {
+.cadastro-turmas-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px 30px;
 }
 
-.turma-card {
+.cadastro-turma-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -301,20 +301,6 @@ textarea.input-error:hover {
   overflow: hidden;
 }
 
-.turma-card:hover {
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
-  transform: translateY(-2px);
-}
-
-.turma-card.quase-lotada {
-  border-color: #f59e0b;
-  background: #fffbeb;
-}
-
-.turma-card.lotada {
-  border-color: #ef4444;
-  background: #fef2f2;
-}
 
 .turma-info {
   flex: 1;
@@ -326,7 +312,14 @@ textarea.input-error:hover {
 .turma-header {
   display: flex;
   align-items: center;
+  justify-content: space-between; /* joga nome+turno para esquerda, botão lixo à direita */
   gap: 12px;
+}
+
+.turma-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* espaço entre nome e turno */
 }
 
 .turma-nome {
@@ -359,15 +352,6 @@ textarea.input-error:hover {
   color: #ea580c;
 }
 
-.turno-noite {
-  background: #ddd6fe;
-  color: #5b21b6;
-}
-
-.turno-integral {
-  background: #bbf7d0;
-  color: #15803d;
-}
 
 .turma-details {
   display: flex;
@@ -395,19 +379,6 @@ textarea.input-error:hover {
   transition: all 0.3s ease;
 }
 
-.turma-card.quase-lotada .progress-fill {
-  background: #f59e0b;
-}
-
-.turma-card.lotada .progress-fill {
-  background: #ef4444;
-}
-
-.percentual-text {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
 /* Botão remover turma */
 .turma-actions {
   display: flex;
@@ -426,7 +397,6 @@ textarea.input-error:hover {
   color: #ef4444;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  margin-bottom: 50px;
 }
 
 .remove-turma-button:hover {
@@ -547,11 +517,11 @@ textarea.input-error:hover {
     font-size: 24px;
   }
 
-  .turmas-list {
+  .cadastro-turmas-list {
     padding: 20px;
   }
 
-  .turma-card {
+  .cadastro-turma-card {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
