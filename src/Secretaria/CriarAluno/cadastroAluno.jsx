@@ -935,6 +935,3 @@ const removerAnoEscolar = (index) => {
 };
 
 export default CadastroAluno;
-
-
-

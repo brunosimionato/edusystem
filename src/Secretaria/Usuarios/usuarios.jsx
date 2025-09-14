@@ -10,13 +10,14 @@ import {
   Mail,
   UserCheck,
 } from "lucide-react";
+
 import "./usuarios.css";
 
 const Usuarios = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState("professor");
+  const [tipoUsuario, setTipoUsuario] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioExpandido, setUsuarioExpandido] = useState({});
   const [usuarioEditando, setUsuarioEditando] = useState(null);
@@ -203,88 +204,84 @@ const Usuarios = () => {
   };
 
   return (
-    <div className="cadastro-horario-form-container">
-      <div className="cadastro-horario-form-section">
-        <h3 className="cadastro-horario-section-header">Novo Usuário</h3>
-        <div className="form-fields-container">
-          <div className="cadastro-horario-form-grid">
-            <div className="cadastro-horario-form-group full-width">
-              <label htmlFor="nome">Nome Completo*</label>
-              <div className="cadastro-horario-input-wrapper">
-                <input
-                  id="nome"
-                  type="text"
-                  className={`cadastro-horario-select ${
-                    erros.nome ? "input-error" : ""
-                  }`}
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  placeholder="Digite o nome completo"
-                />
-              </div>
-            </div>
+    <div className="cadastro-usuario-form-container">
+      <div className="cadastro-usuario-form-section">
+        <h3 className="cadastro-usuario-section-header">Novo Usuário</h3>
+        <div className="usuario-form-fields-container">
+<div className="cadastro-usuario-form-grid">
+  {/* Primeira linha */}
+  <div className="cadastro-usuario-form-group half-width">
+    <label htmlFor="usuario-nome">Nome Completo*</label>
+    <div className="cadastro-usuario-input-wrapper">
+      <input
+        id="usuario-nome"
+        type="text"
+        className={`cadastro-usuario-input ${erros.nome ? "usuario-input-error" : ""}`}
+        value={nome}
+        onChange={(e) => setNome(e.target.value)}
+        placeholder="Digite o nome completo"
+      />
+    </div>
+  </div>
 
-            <div className="cadastro-horario-form-group half-width">
-              <label htmlFor="email">Email*</label>
-              <div className="cadastro-horario-input-wrapper">
-                <input
-                  id="email"
-                  type="email"
-                  className={`cadastro-horario-select ${
-                    erros.email ? "input-error" : ""
-                  }`}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="exemplo@escola.com"
-                />
-              </div>
-            </div>
+  <div className="cadastro-usuario-form-group half-width">
+    <label htmlFor="usuario-email">Email*</label>
+    <div className="cadastro-usuario-input-wrapper">
+      <input
+        id="usuario-email"
+        type="email"
+        className={`cadastro-usuario-input ${erros.email ? "usuario-input-error" : ""}`}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="exemplo@escola.com"
+      />
+    </div>
+  </div>
 
-            <div className="cadastro-horario-form-group half-width">
-              <label htmlFor="senha">Senha*</label>
-              <div className="cadastro-horario-input-wrapper">
-                <input
-                  id="senha"
-                  type="password"
-                  className={`cadastro-horario-select ${
-                    erros.senha ? "input-error" : ""
-                  }`}
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                />
-              </div>
-            </div>
+  {/* Segunda linha */}
+  <div className="cadastro-usuario-form-group half-width">
+    <label htmlFor="usuario-senha">Senha*</label>
+    <div className="cadastro-usuario-input-wrapper">
+      <input
+        id="usuario-senha"
+        type="password"
+        className={`cadastro-usuario-input ${erros.senha ? "usuario-input-error" : ""}`}
+        value={senha}
+        onChange={(e) => setSenha(e.target.value)}
+        placeholder="Mínimo 6 caracteres"
+      />
+    </div>
+  </div>
 
-            <div className="cadastro-horario-form-group full-width">
-              <label htmlFor="tipoUsuario">Tipo de Usuário*</label>
-              <div className="cadastro-horario-input-wrapper">
-                <select
-                  id="tipoUsuario"
-                  className={`cadastro-horario-select ${
-                    erros.tipoUsuario ? "input-error" : ""
-                  }`}
-                  value={tipoUsuario}
-                  onChange={(e) => setTipoUsuario(e.target.value)}
-                >
-                  <option value="professor">Professor</option>
-                  <option value="secretaria">Secretaria</option>
-                </select>
-              </div>
-            </div>
-          </div>
+  <div className="cadastro-usuario-form-group half-width">
+    <label htmlFor="usuario-tipo">Tipo de Usuário*</label>
+    <div className="cadastro-usuario-input-wrapper">
+      <select
+        id="usuario-tipo"
+        className={`cadastro-usuario-select ${erros.tipoUsuario ? "usuario-input-error" : ""}`}
+        value={tipoUsuario}
+        onChange={(e) => setTipoUsuario(e.target.value)}
+      >
+        <option>Selecione o tipo de Usuário</option>
+        <option value="professor">Professor</option>
+        <option value="secretaria">Secretaria</option>
+      </select>
+    </div>
+  </div>
+</div>
 
-          <div className="cadastro-horario-form-actions">
+
+          <div className="cadastro-usuario-form-actions">
             <button
               type="button"
-              className="cadastro-horario-clear-button red-button"
+              className="usuario-clear-button red-button"
               onClick={() => handleLimparForm(true)}
             >
               <XCircle size={17} /> Limpar
             </button>
             <button
               type="button"
-              className="cadastro-horario-submit-button blue-button"
+              className="usuario-submit-button blue-button"
               onClick={handleSubmit}
             >
               <Plus size={17} /> Cadastrar Usuário
@@ -293,162 +290,163 @@ const Usuarios = () => {
         </div>
       </div>
 
-      <div className="cadastro-horario-form-section">
-        <div className="cadastro-horario-section-header-with-button">
-          <h3 className="cadastro-horario-section-header-turmas">
+      <div className="cadastro-usuario-form-section">
+        <div className="cadastro-usuario-section-header-with-button">
+          <h3 className="cadastro-usuario-section-header-list">
             Usuários Cadastrados
           </h3>
         </div>
 
         {usuarios.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">
+          <div className="usuarios-empty-state">
+            <div className="usuarios-empty-icon">
               <User size={48} />
             </div>
             <h4>Nenhum usuário cadastrado</h4>
             <p>Cadastre o primeiro usuário usando o formulário acima.</p>
           </div>
         ) : (
-          <div className="turmas-list">
+          <div className="usuarios-list">
             {usuarios.map((usuario) => (
-              <div key={usuario.id} className="grade-card">
-                <div
-                  className={`grade-header clickable ${
-                    usuarioExpandido[usuario.id] ? "expanded" : ""
-                  }`}
-                  onClick={() => toggleUsuarioExpansao(usuario.id)}
-                >
-                  <div className="grade-info">
-                    <div className="expand-icon">
+              <div key={usuario.id} className="usuario-card">
+                <div className="usuario-info">
+                  <div className="usuario-header">
+                    <div
+                      className="usuario-basic-info-container clickable"
+                      onClick={() => toggleUsuarioExpansao(usuario.id)}
+                    >
                       {usuarioExpandido[usuario.id] ? (
-                        <ChevronDown size={18} />
+                        <ChevronDown size={20} />
                       ) : (
-                        <ChevronRight size={18} />
+                        <ChevronRight size={20} />
+                      )}
+                      <div className="usuario-avatar">
+                        <User size={24} />
+                      </div>
+                      <div className="usuario-basic-info">
+                        <h3 className="usuario-nome">{usuario.nome}</h3>
+                        <p className="usuario-tipo">
+                          {usuario.tipo === "professor" ? "Professor" : "Secretaria"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="usuario-header-actions">
+                      <button
+                        className="action-button-usuario edit-button-usuario"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          iniciarEdicao(usuario);
+                          setUsuarioExpandido((prev) => ({ ...prev, [usuario.id]: true }));
+                        }}
+                      >
+                        <Edit size={16} /> Editar
+                      </button>
+                      <button
+                        className="action-button-usuario remove-button-usuario"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoverUsuario(usuario.id);
+                        }}
+                      >
+                        <Trash2 size={17} /> Remover
+                      </button>
+                    </div>
+                  </div>
+
+                  {usuarioExpandido[usuario.id] && (
+                    <div className="usuario-details-container">
+                      {usuarioEditando === usuario.id ? (
+                        <div className="usuario-edicao-form">
+                          <div className="cadastro-usuario-form-grid">
+                            <div className="cadastro-usuario-form-group full-width">
+                              <label htmlFor={`edit-nome-${usuario.id}`}>Nome Completo*</label>
+                              <div className="cadastro-usuario-input-wrapper">
+                                <input
+                                  id={`edit-nome-${usuario.id}`}
+                                  type="text"
+                                  className="cadastro-usuario-input"
+                                  value={dadosEdicao.nome || ""}
+                                  onChange={(e) => setDadosEdicao(prev => ({ ...prev, nome: e.target.value }))}
+                                  placeholder="Digite o nome completo"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="cadastro-usuario-form-group half-width">
+                              <label htmlFor={`edit-email-${usuario.id}`}>Email*</label>
+                              <div className="cadastro-usuario-input-wrapper">
+                                <input
+                                  id={`edit-email-${usuario.id}`}
+                                  type="email"
+                                  className="cadastro-usuario-input"
+                                  value={dadosEdicao.email || ""}
+                                  onChange={(e) => setDadosEdicao(prev => ({ ...prev, email: e.target.value }))}
+                                  placeholder="exemplo@escola.com"
+                                />
+                              </div>
+                            </div>
+
+                            <div className="cadastro-usuario-form-group half-width">
+                              <label htmlFor={`edit-tipo-${usuario.id}`}>Tipo de Usuário*</label>
+                              <div className="cadastro-usuario-input-wrapper">
+                                <select
+                                  id={`edit-tipo-${usuario.id}`}
+                                  className="cadastro-usuario-select"
+                                  value={dadosEdicao.tipo || ""}
+                                  onChange={(e) => setDadosEdicao(prev => ({ ...prev, tipo: e.target.value }))}
+                                >
+                                  <option value="professor">Professor</option>
+                                  <option value="secretaria">Secretaria</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="usuario-edicao-actions">
+                            <button className="usuario-cancelar-button" onClick={cancelarEdicao}>
+                              <XCircle size={16} /> Cancelar
+                            </button>
+                            <button
+                              className="usuario-salvar-button"
+                              onClick={() => salvarEdicao(usuario.id)}
+                            >
+                              <Plus size={16} /> Salvar
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="usuario-detalhes">
+                          <div className="usuario-info-grid">
+                            <div className="usuario-info-item">
+                              <Mail size={16} className="usuario-info-icon" />
+                              <div>
+                                <span className="usuario-info-label">Email:</span>
+                                <span className="usuario-info-value">{usuario.email}</span>
+                              </div>
+                            </div>
+                            <div className="usuario-info-item">
+                              <UserCheck size={16} className="usuario-info-icon" />
+                              <div>
+                                <span className="usuario-info-label">Tipo:</span>
+                                <span className="usuario-info-value">
+                                  {usuario.tipo === "professor" ? "Professor" : "Secretaria"}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="usuario-info-item">
+                              <User size={16} className="usuario-info-icon" />
+                              <div>
+                                <span className="usuario-info-label">Cadastrado em:</span>
+                                <span className="usuario-info-value">{usuario.dataCadastro}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       )}
                     </div>
-                    <div className="grade-title">
-                      <h4 className="grade-nome">{usuario.nome}</h4>
-                      <span className={`grade-turno turno-${usuario.tipo}`}>
-                        {usuario.tipo === "professor" ? "Professor" : "Secretaria"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="grade-actions">
-                    <button
-                      className="action-button-horarios edit-button-horarios"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        iniciarEdicao(usuario);
-                        setUsuarioExpandido((prev) => ({ ...prev, [usuario.id]: true }));
-                      }}
-                    >
-                      <Edit size={16} /> Editar
-                    </button>
-                    <button
-                      className="action-button-horarios remove-button-horarios"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoverUsuario(usuario.id);
-                      }}
-                    >
-                      <Trash2 size={17} /> Remover
-                    </button>
-                  </div>
+                  )}
                 </div>
-
-                {usuarioExpandido[usuario.id] && (
-                  <div className="grade-content">
-                    {usuarioEditando === usuario.id ? (
-                      <div className="edicao-form">
-                        <div className="cadastro-horario-form-grid">
-                          <div className="cadastro-horario-form-group full-width">
-                            <label htmlFor={`edit-nome-${usuario.id}`}>Nome Completo*</label>
-                            <div className="cadastro-horario-input-wrapper">
-                              <input
-                                id={`edit-nome-${usuario.id}`}
-                                type="text"
-                                className="cadastro-horario-select"
-                                value={dadosEdicao.nome || ""}
-                                onChange={(e) => setDadosEdicao(prev => ({ ...prev, nome: e.target.value }))}
-                                placeholder="Digite o nome completo"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="cadastro-horario-form-group half-width">
-                            <label htmlFor={`edit-email-${usuario.id}`}>Email*</label>
-                            <div className="cadastro-horario-input-wrapper">
-                              <input
-                                id={`edit-email-${usuario.id}`}
-                                type="email"
-                                className="cadastro-horario-select"
-                                value={dadosEdicao.email || ""}
-                                onChange={(e) => setDadosEdicao(prev => ({ ...prev, email: e.target.value }))}
-                                placeholder="exemplo@escola.com"
-                              />
-                            </div>
-                          </div>
-
-                          <div className="cadastro-horario-form-group half-width">
-                            <label htmlFor={`edit-tipo-${usuario.id}`}>Tipo de Usuário*</label>
-                            <div className="cadastro-horario-input-wrapper">
-                              <select
-                                id={`edit-tipo-${usuario.id}`}
-                                className="cadastro-horario-select"
-                                value={dadosEdicao.tipo || ""}
-                                onChange={(e) => setDadosEdicao(prev => ({ ...prev, tipo: e.target.value }))}
-                              >
-                                <option value="professor">Professor</option>
-                                <option value="secretaria">Secretaria</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="edicao-actions">
-                          <button className="cancelar-edicao-button" onClick={cancelarEdicao}>
-                            <XCircle size={16} /> Cancelar
-                          </button>
-                          <button
-                            className="salvar-edicao-button"
-                            onClick={() => salvarEdicao(usuario.id)}
-                          >
-                            <Plus size={16} /> Salvar
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="usuario-detalhes">
-                        <div className="info-grid">
-                          <div className="info-item">
-                            <Mail size={16} className="info-icon" />
-                            <div>
-                              <span className="info-label">Email:</span>
-                              <span className="info-value">{usuario.email}</span>
-                            </div>
-                          </div>
-                          <div className="info-item">
-                            <UserCheck size={16} className="info-icon" />
-                            <div>
-                              <span className="info-label">Tipo:</span>
-                              <span className="info-value">
-                                {usuario.tipo === "professor" ? "Professor" : "Secretaria"}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="info-item">
-                            <User size={16} className="info-icon" />
-                            <div>
-                              <span className="info-label">Cadastrado em:</span>
-                              <span className="info-value">{usuario.dataCadastro}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             ))}
           </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Users, GraduationCap, BookOpen, Calendar, FileText, BarChart3,
+  Users, GraduationCap, FileText,
   Settings, Home, School, LogOut, ChevronDown, User, ClipboardList
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -83,11 +83,11 @@ const SideBarSec = () => {
     },
     {
       id: 'assessments',
-      label: 'Avaliações',
+      label: 'Notas e Faltas',
       icon: ClipboardList,
       submenu: [
-        { id: 'assessments-exams', label: 'Provas', path: '/secretaria/avaliacoes/provas' },
-        { id: 'assessments-grades', label: 'Notas', path: '/secretaria/avaliacoes/notas' },
+        { id: 'assessments-grades', label: 'Notas', path: '/secretaria/notas' },
+        { id: 'assessments-grades', label: 'Faltas', path: '/secretaria/faltas' },
       ]
     },
     {

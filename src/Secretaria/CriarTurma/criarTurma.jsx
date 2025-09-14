@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
+import { Users, Plus, XCircle, Trash2} from "lucide-react";
 import "./criarTurma.css";
 
 const CriarTurma = () => {
@@ -212,12 +212,6 @@ const CriarTurma = () => {
           <h3 className="cadastro-turma-section-header-turmas">
             Turmas Cadastradas
           </h3>
-          <button
-            className="print-turmas-button green-button"
-            onClick={handlePrintTurmas}
-          >
-            <Printer size={17} /> Imprimir
-          </button>
         </div>
 
         {turmas.length === 0 ? (

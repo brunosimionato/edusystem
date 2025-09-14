@@ -18,14 +18,14 @@ const LayoutSec = () => {
     '/secretaria/lista-profe': 'Lista de Professores',
     '/secretaria/criar-turma': 'Cadastrar Turma',
     '/secretaria/horario': 'Horários',
-
+    '/secretaria/notas': 'Notas e Boletins',
     
     '/secretaria/disciplinas/lista': 'Lista de Disciplinas',
     '/secretaria/documentos/declaracoes': 'Declarações',
     '/secretaria/documentos/historico': 'Histórico Escolar',
     '/secretaria/documentos/boletins': 'Boletins',
     '/secretaria/avaliacoes/provas': 'Provas',
-    '/secretaria/avaliacoes/notas': 'Notas',
+
     '/secretaria/usuarios': 'Gestão de Usuários',
     // Adicione outras rotas conforme necessidade
   };

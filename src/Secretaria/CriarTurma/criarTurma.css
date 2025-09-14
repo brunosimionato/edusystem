@@ -441,34 +441,6 @@ textarea.input-error:hover {
   margin: 0;
 }
 
-.print-turmas-button {
-  background: #10b981;
-  color: #fff;
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
-}
-
-.print-turmas-button:hover {
-  background-color: #0e9e73;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
-}
-
-.print-turmas-button:focus {
-  outline: none;
-  background-color: #0e9e73;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
-  transform: translateY(-2px);
-}
-
 /* Responsividade */
 @media (max-width: 1200px) {
   .stats-grid {

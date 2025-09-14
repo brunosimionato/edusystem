@@ -9,13 +9,15 @@ import {
   ChevronUp,
   ChevronRight,
   Trash2,
+  Clock,
+  Save,
 } from "lucide-react";
-import "./horario.css";
 
+import "./horario.css";
 const Horarios = () => {
   const [turmaSelecionada, setTurmaSelecionada] = useState("");
   const [turmas, setTurmas] = useState([]);
-  const [periodoSelecionado, setPeriodoSelecionado] = useState("manha");
+  const [periodoSelecionado, setPeriodoSelecionado] = useState("");
   const [horarios, setHorarios] = useState({});
   const [horariosGrades, setHorariosGrades] = useState([]);
   const [gradeExpandida, setGradeExpandida] = useState({});
@@ -26,18 +28,15 @@ const Horarios = () => {
     periodoSelecionado: false,
   });
 
-const horariosManha = [
-  { inicio: "07:30", fim: "08:15", periodo: "1º Período" },
-  { inicio: "08:15", fim: "09:00", periodo: "2º Período" },
-  { inicio: "09:00", fim: "09:45", periodo: "3º Período" },
-  { inicio: "09:15", fim: "09:30", periodo: "Lanche", isBreak: true },
-  { inicio: "09:45", fim: "10:00", periodo: "Recreio", isBreak: true },
-  { inicio: "10:00", fim: "10:45", periodo: "4º Período" },
-  { inicio: "10:45", fim: "11:30", periodo: "5º Período" },
-];
-
-
-
+  const horariosManha = [
+    { inicio: "07:30", fim: "08:15", periodo: "1º Período" },
+    { inicio: "08:15", fim: "09:00", periodo: "2º Período" },
+    { inicio: "09:00", fim: "09:45", periodo: "3º Período" },
+    { inicio: "09:15", fim: "09:30", periodo: "Lanche", isBreak: true },
+    { inicio: "09:45", fim: "10:00", periodo: "Recreio", isBreak: true },
+    { inicio: "10:00", fim: "10:45", periodo: "4º Período" },
+    { inicio: "10:45", fim: "11:30", periodo: "5º Período" },
+  ];
 
   const horariosTarde = [
     { inicio: "13:00", fim: "13:45", periodo: "1º Período" },
@@ -48,7 +47,6 @@ const horariosManha = [
     { inicio: "15:30", fim: "16:15", periodo: "4º Período" },
     { inicio: "16:15", fim: "17:00", periodo: "5º Período" },
   ];
-
 
   const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
 
@@ -141,10 +139,6 @@ const horariosManha = [
     setHorariosGrades((prev) => prev.filter((grade) => grade.id !== id));
   };
 
-  const handlePrintHorarios = () => {
-    window.print();
-  };
-
   const toggleGradeExpansao = (id) => {
     setGradeExpandida((prev) => ({
       ...prev,
@@ -155,11 +149,6 @@ const horariosManha = [
   const iniciarEdicao = (grade) => {
     setGradeEditando(grade.id);
     setHorariosEdicao({ ...grade.horarios });
-  };
-
-  const cancelarEdicao = () => {
-    setGradeEditando(null);
-    setHorariosEdicao({});
   };
 
   const salvarEdicao = (gradeId) => {
@@ -173,6 +162,20 @@ const horariosManha = [
     setGradeEditando(null);
     setHorariosEdicao({});
     alert("Grade de horários atualizada com sucesso!");
+  };
+
+  const handleEditarOuSalvar = (grade) => {
+    if (gradeEditando === grade.id) {
+      // Está editando, então salvar
+      salvarEdicao(grade.id);
+    } else {
+      // Não está editando, então iniciar edição
+      iniciarEdicao(grade);
+      setGradeExpandida((prev) => ({
+        ...prev,
+        [grade.id]: true,
+      }));
+    }
   };
 
   const handleMateriaEdicaoChange = (dia, index, valor, tipo) => {
@@ -223,11 +226,9 @@ const horariosManha = [
                       <span className="break-text">{horario.periodo}</span>
                     ) : isEdicao ? (
                       <div className="materia-professor-inputs">
-                        {/* Input Matéria */}
                         <input
                           type="text"
                           placeholder="Matéria"
-                          id={`materia_${dia}_${index}`}
                           className="input-materia"
                           value={
                             horariosEdicao[`${dia}_${index}_materia`] || ""
@@ -241,12 +242,9 @@ const horariosManha = [
                             )
                           }
                         />
-
-                        {/* Input Professor */}
                         <input
                           type="text"
                           placeholder="Professor"
-                          id={`professor_${dia}_${index}`}
                           className="input-materia"
                           value={
                             horariosEdicao[`${dia}_${index}_professor`] || ""
@@ -263,16 +261,10 @@ const horariosManha = [
                       </div>
                     ) : (
                       <div className="materia-professor-view">
-                        <span
-                          id={`materia_view_${dia}_${index}`}
-                          className="materia-nome"
-                        >
+                        <span className="materia-nome">
                           {horarios[`${dia}_${index}_materia`] || "-"}
                         </span>
-                        <span
-                          id={`professor_view_${dia}_${index}`}
-                          className="materia-nome"
-                        >
+                        <span className="materia-nome">
                           {horarios[`${dia}_${index}_professor`] || ""}
                         </span>
                       </div>
@@ -283,19 +275,6 @@ const horariosManha = [
             ))}
           </tbody>
         </table>
-        {isEdicao && (
-          <div className="edicao-actions">
-            <button className="cancelar-edicao-button" onClick={cancelarEdicao}>
-              <XCircle size={16} /> Cancelar
-            </button>
-            <button
-              className="salvar-edicao-button"
-              onClick={() => salvarEdicao(gradeId)}
-            >
-              <Plus size={16} /> Salvar
-            </button>
-          </div>
-        )}
       </div>
     );
   };
@@ -338,6 +317,7 @@ const horariosManha = [
                     value={periodoSelecionado}
                     onChange={(e) => setPeriodoSelecionado(e.target.value)}
                   >
+                    <option value="">Selecione um Período</option>
                     <option value="manha">Manhã (07:30 - 11:15)</option>
                     <option value="tarde">Tarde (13:00 - 17:00)</option>
                   </select>
@@ -460,73 +440,100 @@ const horariosManha = [
           </div>
         ) : (
           <div className="turmas-list">
-            {horariosGrades.map((grade) => (
-              <div key={grade.id} className="grade-card">
-                <div
-                  className={`grade-header clickable ${
-                    gradeExpandida[grade.id] ? "expanded" : ""
-                  }`}
-                  onClick={() => toggleGradeExpansao(grade.id)}
-                >
-                  {/* Header (sempre visível) */}
+            {horariosGrades.map((grade) => {
+              const isExpandido = gradeExpandida[grade.id];
+
+              return (
+                <div key={grade.id} className="grade-card">
                   <div className="grade-info">
-                    <div className="expand-icon">
-                      {gradeExpandida[grade.id] ? (
-                        <ChevronDown size={18} />
-                      ) : (
-                        <ChevronRight size={18} />
-                      )}
-                    </div>
-                    <div className="grade-title">
-                      <h4 className="grade-nome">{grade.turma}</h4>
-                      <span className={`grade-turno turno-${grade.periodo}`}>
-                        {grade.periodo === "manha" ? "Manhã" : "Tarde"}
-                      </span>
-                    </div>
-                  </div>
+                    {/* Header com informações e botões */}
+                    <div className="grade-header">
+                      {/* Lado esquerdo: ícone de expansão + avatar + info */}
+                      <div
+                        className="grade-basic-info-container clickable"
+                        onClick={() => toggleGradeExpansao(grade.id)}
+                      >
+                        {isExpandido ? (
+                          <ChevronDown size={20} />
+                        ) : (
+                          <ChevronRight size={20} />
+                        )}
+                        <div className="grade-avatar">
+                          <Clock size={24} />
+                        </div>
+                        <div className="grade-basic-info">
+                          <h3 className="grade-nome">{grade.turma}</h3>
+                          <p className="grade-periodo">
+                            {grade.periodo === "manha"
+                              ? "Manhã (07:30 - 11:15)"
+                              : "Tarde (13:00 - 17:00)"}
+                          </p>
+                        </div>
+                      </div>
 
-                  {/* Ações */}
-                  <div className="grade-actions">
-                    <button
-                      className="action-button-horarios edit-button-horarios"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        iniciarEdicao(grade);
-                        setGradeExpandida((prev) => ({
-                          ...prev,
-                          [grade.id]: true,
-                        }));
-                      }}
-                    >
-                      <Edit size={16} /> Editar
-                    </button>
-                    <button
-                      className="action-button-horarios remove-button-horarios"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoverGrade(grade.id);
-                      }}
-                    >
-                      <Trash2 size={17} /> Remover
-                    </button>
-                  </div>
-                </div>
+                      {/* Lado direito: botões */}
+                      <div className="grade-header-actions">
+                        <button
+                          className={`action-button-horarios ${
+                            gradeEditando === grade.id
+                              ? "save-button-horarios"
+                              : "edit-button-horarios"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditarOuSalvar(grade);
+                          }}
+                        >
+                          {gradeEditando === grade.id ? (
+                            <>
+                              <Save size={16} /> Salvar
+                            </>
+                          ) : (
+                            <>
+                              <Edit size={16} /> Editar
+                            </>
+                          )}
+                        </button>
+                        <button
+                          className="action-button-horarios remove-button-horarios"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoverGrade(grade.id);
+                          }}
+                        >
+                          <Trash2 size={17} /> Remover
+                        </button>
+                        <button
+                          className="action-button-horarios print-button-horarios"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.print();
+                          }}
+                        >
+                          <Printer size={16} /> Imprimir
+                        </button>
+                      </div>
+                    </div>
 
-                {/* Conteúdo expandido */}
-                {gradeExpandida[grade.id] && (
-                  <div className="grade-content">
-                    {renderTabelaHorarios(
-                      gradeEditando === grade.id
-                        ? horariosEdicao
-                        : grade.horarios,
-                      grade.periodo,
-                      gradeEditando === grade.id,
-                      grade.id
+                    {/* Detalhes expandidos */}
+                    {isExpandido && (
+                      <div className="grade-details-container">
+                        <div className="grade-content">
+                          {renderTabelaHorarios(
+                            gradeEditando === grade.id
+                              ? horariosEdicao
+                              : grade.horarios,
+                            grade.periodo,
+                            gradeEditando === grade.id,
+                            grade.id
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

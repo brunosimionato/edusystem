@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./criarProfe.css";
 import { XCircle, UserPlus } from "lucide-react";
+
+import { mascaraCPF, mascaraTelefone, mascaraCEP } from "../../utils/formatacao";
+
+import DisciplinaService from "../../Services/DisciplinaService";
+import ProfessorService from "../../Services/ProfessorService";
 
 const CriarProfe = () => {
   const [formData, setFormData] = useState({
@@ -17,25 +22,14 @@ const CriarProfe = () => {
     cidade: "",
     estado: "",
     formacao: "",
-    disciplinas: [],
-    turmas: [], // Novo campo para turmas
+    turmas: [],
   });
 
+  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
   const [camposInvalidos, setCamposInvalidos] = useState([]);
-
-  const disciplinasDisponiveis = [
-    "Português",
-    "Matemática",
-    "Ciências",
-    "História",
-    "Geografia",
-    "Inglês",
-    "Artes",
-    "Educação Física",
-    "Religião",
-    "Ensino Globalizado",
-    "Espanhol",
-  ];
+  const [disciplinasDisponiveis, setDisciplinasDisponiveis] = useState([]);
+  const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
+  const [errorDisciplinas, setErrorDisciplinas] = useState(null);
 
   // Lista de turmas disponíveis (exemplo)
   const turmasDisponiveis = [
@@ -56,22 +50,22 @@ const CriarProfe = () => {
     "9º Ano A - Fundamental",
   ];
 
-  // Máscaras
-  const mascaraCPF = (value) =>
-    value
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  useEffect(() => {
+    const fetchDisciplinas = async () => {
+      setIsLoadingDisciplinas(true);
+      try {
+        const data = await DisciplinaService.getAll();
+        setDisciplinasDisponiveis(data);
+      } catch (error) {
+        setErrorDisciplinas(error);
+        console.error("Erro ao carregar disciplinas:", error);
+      } finally {
+        setIsLoadingDisciplinas(false);
+      }
+    };
+    fetchDisciplinas();
+  }, []);
 
-  const mascaraTelefone = (value) =>
-    value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{4,5})(\d{4})$/, "$1-$2");
-
-  const mascaraCEP = (value) =>
-    value.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2");
 
   // Função para buscar o endereço pelo CEP
   const buscarEndereco = async (cep) => {
@@ -117,12 +111,11 @@ const CriarProfe = () => {
     }));
   };
 
-  const handleDisciplinaChange = (disciplina) => {
-    setFormData((prev) => {
-      const disciplinas = prev.disciplinas.includes(disciplina)
-        ? prev.disciplinas.filter((d) => d !== disciplina)
-        : [...prev.disciplinas, disciplina];
-      return { ...prev, disciplinas };
+  const handleDisciplinaChange = (disciplinaId) => {
+    setDisciplinasSelecionadas((prev) => {
+      return prev.includes(disciplinaId)
+        ? prev.filter((d) => d !== disciplinaId)
+        : [...prev, disciplinaId];
     });
   };
 
@@ -136,8 +129,8 @@ const CriarProfe = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // New validation function
+  const validateForm = () => {
     let invalidos = [];
     const camposObrigatorios = [
       "nome",
@@ -161,14 +154,21 @@ const CriarProfe = () => {
       }
     });
 
-    if (formData.disciplinas.length === 0) {
+    if (disciplinasSelecionadas.length === 0) {
       invalidos.push("disciplinas");
     }
 
-    // Validação para turmas
     if (formData.turmas.length === 0) {
       invalidos.push("turmas");
     }
+
+    return invalidos;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const invalidos = validateForm();
 
     if (invalidos.length > 0) {
       setCamposInvalidos(invalidos);
@@ -177,8 +177,34 @@ const CriarProfe = () => {
     }
 
     setCamposInvalidos([]);
-    console.log("Professor cadastrado:", formData);
-    handleLimpar(false);
+    try {
+      const novoProfessor = await ProfessorService.create({
+        usuario: {
+          nome: formData.nome,
+          email: formData.email,
+          senha: "password", // Senha padrão
+        },
+        idDisciplinaEspecialidade: disciplinasSelecionadas[0], // Considerando a primeira disciplina como especialidade
+        idDisciplinas: disciplinasSelecionadas, // Incluindo todas as disciplinas
+        telefone: formData.telefone,
+        genero: formData.genero,
+        cpf: formData.cpf,
+        nascimento: formData.dataNascimento,
+        logradouro: formData.rua,
+        numero: formData.numero,
+        bairro: formData.bairro,
+        cep: formData.cep,
+        cidade: formData.cidade,
+        estado: formData.estado,
+        formacaoAcademica: formData.formacao,
+        turmas: formData.turmas, // Incluindo as turmas selecionadas
+      });
+      alert("Professor criado com sucesso!");
+      handleLimpar(false);
+    } catch (error) {
+      console.error("Erro ao criar professor:", error);
+      alert("Erro ao criar professor. Tente novamente.");
+    }
   };
 
   const handleLimpar = (confirmar = true) => {
@@ -199,9 +225,9 @@ const CriarProfe = () => {
       cidade: "",
       estado: "",
       formacao: "",
-      disciplinas: [],
-      turmas: [], // Resetar turmas ao limpar
+      turmas: [],
     });
+    setDisciplinasSelecionadas([]);
     setCamposInvalidos([]);
   };
 
@@ -402,23 +428,32 @@ const CriarProfe = () => {
                   Disciplinas que leciona*
                 </label>
                 <div
-                  className={`disciplinas-container ${
-                    camposInvalidos.includes("disciplinas") ? "input-error" : ""
-                  }`}
+                  className={`disciplinas-container ${camposInvalidos.includes("disciplinas") ? "input-error" : ""
+                    }`}
                 >
-                  <div className="disciplinas-grid">
-                    {disciplinasDisponiveis.map((disciplina) => (
-                      <label key={disciplina} className="disciplina-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={formData.disciplinas.includes(disciplina)}
-                          onChange={() => handleDisciplinaChange(disciplina)}
-                          className="checkbox-input"
-                        />
-                        <span className="checkbox-text">{disciplina}</span>
-                      </label>
-                    ))}
-                  </div>
+                  {isLoadingDisciplinas ? (
+                    <div className="loading-disciplinas">
+                      Carregando disciplinas...
+                    </div>
+                  ) : errorDisciplinas ? (
+                    <div className="error-disciplinas">
+                      Erro ao carregar disciplinas. Tente novamente.
+                    </div>
+                  ) : (
+                    <div className="disciplinas-grid">
+                      {disciplinasDisponiveis.map((disciplina) => (
+                        <label key={disciplina.id} className="disciplina-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={disciplinasSelecionadas.includes(disciplina.id)}
+                            onChange={() => handleDisciplinaChange(disciplina.id)}
+                            className="checkbox-input"
+                          />
+                          <span className="checkbox-text">{disciplina.nome}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                   {camposInvalidos.includes("disciplinas") && (
                     <p className="input-error-text">
                       Selecione pelo menos uma disciplina.
@@ -440,9 +475,8 @@ const CriarProfe = () => {
                   Selecionar Turmas*
                 </label>
                 <div
-                  className={`disciplinas-container ${
-                    camposInvalidos.includes("turmas") ? "input-error" : ""
-                  }`}
+                  className={`disciplinas-container ${camposInvalidos.includes("turmas") ? "input-error" : ""
+                    }`}
                 >
                   <div className="disciplinas-grid">
                     {turmasDisponiveis.map((turma) => (

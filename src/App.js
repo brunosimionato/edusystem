@@ -18,7 +18,7 @@ import ListaProfe from './Secretaria/ListaProfe/listaProfe';
 import CriarTurma from './Secretaria/CriarTurma/criarTurma';
 import Horarios from './Secretaria/Horario/horario';
 
-
+import Notas from './Secretaria/Notas/notas';
 import Usuarios from './Secretaria/Usuarios/usuarios';
 
 
@@ -43,7 +43,7 @@ function App() {
             <Route path="criar-turma" element={<CriarTurma />} />
             <Route path="horarios" element={<Horarios />} />
 
-
+            <Route path="notas" element={<Notas />} />
             <Route path="usuarios" element={<Usuarios />} />
 
           </Route>
