@@ -30,19 +30,11 @@
   transition: box-shadow 0.2s ease;
 }
 
-.cadastro-horario-section-header-table {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e293b;
-  padding: 20px 30px;
-  margin: 0;
-}
-
 .cadastro-horario-form-section:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Cabeçalho das seções */
+/* Cabeçalhos das seções */
 .cadastro-horario-section-header {
   font-size: 15px;
   font-weight: 600;
@@ -69,35 +61,28 @@
   margin: 0;
 }
 
-/* Container separado para os campos do formulário */
+/* Container dos campos do formulário */
 .form-fields-container {
   background: white;
 }
 
 .horarios-table-container {
-    padding: 40px 30px 40px 30px;
-    
+  padding: 24px 30px;
 }
 
-/* Última linha da tabela com cantos arredondados */
-.table-wrapper table tr:last-child td:first-child {
-  border-bottom-left-radius: 8px;
+.horarios-table-div-container {
+  border-top: 1px solid #e2e8f0;
 }
-
-.table-wrapper table tr:last-child td:last-child {
-  border-bottom-right-radius: 8px;
-}
-
 
 /* Grid do formulário */
 .cadastro-horario-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 20px;
-  padding: 24px 30px 0 30px;
+  padding: 24px 30px;
 }
 
-/* Grupos */
+/* Grupos de formulário */
 .cadastro-horario-form-group {
   display: flex;
   flex-direction: column;
@@ -128,7 +113,7 @@
   pointer-events: none;
 }
 
-/* Wrapper do input com ícone */
+/* Wrapper do input */
 .cadastro-horario-input-wrapper {
   position: relative;
   display: flex;
@@ -139,7 +124,7 @@
   width: 100%;
   padding: 15px 18px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
   background: white;
@@ -148,7 +133,6 @@
   box-sizing: border-box;
   height: 48px;
   cursor: pointer;
-  background-image: none; 
   appearance: none;
 }
 
@@ -159,7 +143,7 @@
   transform: translateY(-1px);
 }
 
-.cadastro-horario-select:hover {
+.cadastro-horario-select:hover:not(:focus) {
   border-color: #cbd5e0;
   transform: translateY(-1px);
 }
@@ -177,8 +161,6 @@
   padding: 20px 30px;
   border-top: 1px solid #e2e8f0;
   background: #f8fafc;
-  margin-top: 20px;
-  border-bottom: 1px solid #e2e8f0;
 }
 
 .cadastro-horario-clear-button,
@@ -228,7 +210,7 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Container geral da tabela */
+/* Container da tabela */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -236,21 +218,9 @@
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  box-sizing: border-box;
-   overflow: hidden;
-   border-radius: 8px;
-}
-
-.table-wrapper {
-  border-radius: 12px;
   overflow: hidden;
 }
 
-.table-wrapper table {
-  border-collapse: collapse;
-}
-
-/* Scroll suave em dispositivos móveis */
 .table-wrapper::-webkit-scrollbar {
   height: 8px;
 }
@@ -259,7 +229,15 @@
   background: #f1f5f9;
 }
 
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
 
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Tabela */
 .table-wrapper table {
   width: 100%;
   border-collapse: collapse;
@@ -294,7 +272,7 @@
   color: #1e293b;
 }
 
-/* Estilos para células específicas (ex.: horários e matérias) */
+/* Célula de horário */
 .horario-cell {
   min-width: 140px;
   background: #f9fafb;
@@ -304,66 +282,12 @@
   border-right: 1px solid #d1d5db;
 }
 
-.materia-cell {
-  min-width: 120px;
-  padding: 6px 8px;
-  background: white;
-  text-align: center;
-}
-
-.input-materia {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 12px;
-  text-align: center;
-  background: white;
-  color: #374151;
-  transition: all 0.15s ease;
-  margin-bottom: 10px;
-}
-
-.input-professor {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 12px;
-  text-align: center;
-  background: white;
-  color: #374151;
-  transition: all 0.15s ease;
-}
-
-.input-materia:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
-}
-
-.input-professor:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
-}
-
-.input-materia::placeholder {
-  color: #9ca3af;
-  font-size: 11px;
-}
-
-.input-professor::placeholder {
-  color: #9ca3af;
-  font-size: 11px;
-}
-
 .horario-info {
   display: flex;
-  flex-direction: column; /* Coloca elementos em coluna */
-  align-items: center;    /* Centraliza horizontalmente */
-  justify-content: center; /* Centraliza verticalmente */
-  gap: 4px;               /* Espaço entre período e horário */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .horario-info .periodo {
@@ -377,31 +301,70 @@
   color: #64748b;
 }
 
-/* Linha de intervalo */
+/* Célula de matéria */
+.materia-cell {
+  min-width: 120px;
+  padding: 6px 8px;
+  background: white;
+  text-align: center;
+}
+
+/* Inputs de matéria e professor */
+.input-materia,
+.input-professor {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 12px;
+  text-align: center;
+  background: white;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.input-materia {
+  margin-bottom: 10px;
+}
+
+.input-materia:focus,
+.input-professor:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+}
+
+.input-materia::placeholder,
+.input-professor::placeholder {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* Linhas de intervalo */
 .break-row {
-  background: #cbd5e1 !important; /* fundo geral mais claro */
+  background: #cbd5e1 !important;
 }
 
 .break-row .horario-cell {
-  background: #475569 !important; /* cinza escuro para a célula de horário */
-  color: #ffffff !important;      /* texto branco */
+  background: #475569 !important;
+  color: #ffffff !important;
 }
 
 .break-row .materia-cell {
-  background: #94a3b8 !important; /* cinza mais clarinho para célula de matéria */
-  color: #ffffff !important;      /* texto branco */
+  background: #94a3b8 !important;
+  color: #ffffff !important;
 }
 
 .break-row .horario-cell,
 .break-row .horario-cell .horario-info,
 .break-row .horario-cell .horario-info span {
-  color: #ffffff !important;      /* reforça o texto branco */
+  color: #ffffff !important;
 }
 
 .break-text {
   font-size: 11px;
   font-weight: 600;
-  color: #ffffff !important;       /* texto branco */
+  color: #ffffff !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: flex;
@@ -410,98 +373,106 @@
   height: 32px;
 }
 
-/* GRADE HEADER - Layout em uma linha (AJUSTADO) */
+/* Cards de grades */
+.grade-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.grade-card:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Estrutura da grade - seguindo padrão professor */
+.grade-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Header da grade */
 .grade-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  gap: 16px;
   padding: 20px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s ease;
+}
+
+.grade-header.clickable {
   user-select: none;
 }
 
-.grade-header:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
-}
-
-.grade-header.expanded {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-/* Lado esquerdo - Ícone + Informações da turma */
-.grade-info {
+/* Container da info básica + avatar */
+.grade-basic-info-container {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex: 1;
   cursor: pointer;
 }
 
-.expand-icon {
+/* Avatar da grade */
+.grade-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  color: #6c757d;
-  transition: transform 0.2s ease;
+  width: 48px;
+  height: 48px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  color: #64748b;
   flex-shrink: 0;
 }
 
-.grade-title {
+/* Info básica da grade */
+.grade-basic-info {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .grade-nome {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1e293b;
   margin: 0;
 }
 
-.grade-turno {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  flex-shrink: 0;
+.grade-periodo {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
 }
 
-/* Lado direito - Botões de ação */
-.grade-actions {
+/* Container de ações do header */
+.grade-header-actions {
   display: flex;
-  align-items: center;
   gap: 12px;
   flex-shrink: 0;
 }
 
+/* Botões da grade */
 .action-button-horarios {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 10px 16px;
-  border: none;
   border-radius: 8px;
+  border: none;
+  cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  flex: 1;
   min-width: 100px;
+  transition: all 0.2s ease;
 }
 
 .edit-button-horarios {
@@ -515,6 +486,17 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
+.save-button-horarios {
+  background: #10b981;
+  color: white;
+}
+
+.save-button-horarios:hover {
+  background: #0e9e73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
 .remove-button-horarios {
   background: #ef4444;
   color: white;
@@ -522,33 +504,47 @@
 
 .remove-button-horarios:hover {
   background: #dc2626;
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
+.print-button-horarios {
+  background: #10b981;
+  color: white;
+}
 
+.print-button-horarios:hover {
+  background: #0e9e73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Detalhes expandidos */
+.grade-details-container {
+  padding: 20px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: -1px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Conteúdo da grade */
 .grade-content {
-  border: 1px solid #cbd5e1;
-  border-top: none;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
   background: white;
-  padding: 16px 20px;
 }
 
 .grade-content .table-wrapper {
   margin: 0;
   box-shadow: none;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-    border-collapse: separate; /* permite border-radius nas células */
-  border-spacing: 0;         /* remove espaçamento extra */
 }
 
 .grade-content .table-wrapper table {
-  border-collapse: separate; /* necessário para border-radius nas células */
-  border-spacing: 0;         /* remove o espaçamento extra */
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .grade-content .table-wrapper table tr:last-child td:first-child {
@@ -596,89 +592,6 @@
   color: #64748b;
 }
 
-/* Ações de edição */
-.edicao-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  margin-top: 25px;
-  background: #ffffff;
-}
-
-/* Botões da edição - reaproveitando padrão do formulário */
-.edicao-actions .cancelar-edicao-button,
-.edicao-actions .salvar-edicao-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/* Botão cancelar = vermelho */
-.edicao-actions .cancelar-edicao-button {
-  background: #ef4444;
-  color: white;
-}
-
-.edicao-actions .cancelar-edicao-button:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Botão salvar = azul */
-.edicao-actions .salvar-edicao-button {
-  background: #3b82f6;
-  color: white;
-}
-
-.edicao-actions .salvar-edicao-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.cancelar-edicao-button,
-.salvar-edicao-button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.cancelar-edicao-button {
-  background: #6b7280;
-  color: white;
-}
-
-.cancelar-edicao-button:hover {
-  background: #4b5563;
-  transform: translateY(-1px);
-}
-
-.salvar-edicao-button {
-  background: #10b981;
-  color: white;
-}
-
-.salvar-edicao-button:hover {
-  background: #0e9e73;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
 /* View de matéria e professor */
 .materia-professor-view {
   display: flex;
@@ -719,17 +632,31 @@
 }
 
 @media (max-width: 768px) {
+  .cadastro-horario-form-container {
+    gap: 20px;
+  }
+
+  .cadastro-horario-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .cadastro-horario-form-group.half-width {
+    grid-column: span 1;
+  }
+
   .grade-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: 16px;
   }
   
-  .grade-info {
+  .grade-basic-info-container {
     justify-content: flex-start;
   }
   
-  .grade-actions {
+  .grade-header-actions {
     justify-content: flex-end;
     width: 100%;
   }
@@ -738,7 +665,6 @@
     flex: 1;
     justify-content: center;
   }
-
 
   .table-wrapper table {
     min-width: 400px;
@@ -756,7 +682,8 @@
     padding: 6px 4px;
   }
 
-  .input-materia {
+  .input-materia,
+  .input-professor {
     padding: 4px 6px;
     font-size: 10px;
   }
@@ -782,7 +709,8 @@
     padding: 4px 3px;
   }
 
-  .input-materia {
+  .input-materia,
+  .input-professor {
     padding: 3px 4px;
     font-size: 9px;
   }
