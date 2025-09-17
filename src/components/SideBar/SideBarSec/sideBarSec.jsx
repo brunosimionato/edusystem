@@ -73,15 +73,6 @@ const SideBarSec = () => {
       ]
     },
     {
-      id: 'documents',
-      label: 'Documentos',
-      icon: FileText,
-      submenu: [
-        { id: 'documents-transcripts', label: 'Histórico Escolar', path: '/secretaria/documentos/historico' },
-        { id: 'reports-grades', label: 'Boletins', path: '/secretaria/documentos/boletins' }
-      ]
-    },
-    {
       id: 'assessments',
       label: 'Notas e Faltas',
       icon: ClipboardList,
