@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   User,
@@ -9,82 +9,48 @@ import {
   ChevronRight,
   GraduationCap,
   BookOpen,
-  Users,
 } from "lucide-react";
+
 import "./listaProfe.css";
+
+import ProfessorService from "../../Services/ProfessorService";
 
 const ListaProfe = () => {
   const [filtro, setFiltro] = useState("");
-  const [professoresExpandidos, setProfessoresExpandidos] = useState(new Set());
+  const [professores, setProfessores] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const professores = [
-    {
-      id: 1,
-      nome: "Maria Silva Santos",
-      formacao: "Licenciatura em Matemática",
-      status: "ativo",
-      disciplinas: ["Matemática", "Geometria"],
-      turmas: [
-        { id: 1, nome: "1º ANO A", turno: "manha", materia: "Matemática" },
-        { id: 2, nome: "2º ANO A", turno: "manha", materia: "Geometria" },
-        { id: 4, nome: "3º ANO A", turno: "manha", materia: "Matemática" },
-      ],
-    },
-    {
-      id: 2,
-      nome: "João Carlos Oliveira",
-      formacao: "Licenciatura em História",
-      status: "ativo",
-      disciplinas: ["História", "Geografia"],
-      turmas: [
-        { id: 2, nome: "2º ANO A", turno: "manha", materia: "História" },
-        { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Geografia" },
-      ],
-    },
-        {
-      id: 3,
-      nome: "João Carlos Oliveira",
-      formacao: "Licenciatura em História",
-      status: "inativo",
-      disciplinas: ["História", "Geografia"],
-      turmas: [
-        { id: 2, nome: "2º ANO A", turno: "manha", materia: "História" },
-        { id: 3, nome: "2º ANO B", turno: "tarde", materia: "Geografia" },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchProfessores = async () => {
+      setIsLoading(true);
+      try {
+        const data = await ProfessorService.getAll();
+        setProfessores(data);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfessores();
+  }, []);
 
   const professoresFiltrados = useMemo(() => {
     if (!filtro) return professores;
     return professores.filter((professor) => {
-      const nomeMatch = professor.nome
+      const nomeMatch = professor.usuario.nome
         .toLowerCase()
         .includes(filtro.toLowerCase());
-      const formacaoMatch = professor.formacao
+      const formacaoMatch = professor.formacaoAcademica
         .toLowerCase()
         .includes(filtro.toLowerCase());
-      const disciplinasMatch = professor.disciplinas.some((disciplina) =>
-        disciplina.toLowerCase().includes(filtro.toLowerCase())
-      );
-      return nomeMatch || formacaoMatch || disciplinasMatch;
+      const disciplinaMatch = professor.disciplina.nome
+        .toLowerCase()
+        .includes(filtro.toLowerCase());
+      return nomeMatch || formacaoMatch || disciplinaMatch;
     });
   }, [filtro, professores]);
-
-  const toggleProfessor = (professorId) => {
-    setProfessoresExpandidos((prev) => {
-      const novaSet = new Set(prev);
-      if (novaSet.has(professorId)) novaSet.delete(professorId);
-      else novaSet.add(professorId);
-      return novaSet;
-    });
-  };
-
-  const handleEditarProfessor = (professorId) =>
-    console.log("Editar professor:", professorId);
-  const handleToggleStatusProfessor = (professorId, statusAtual) =>
-    console.log("Toggle status professor:", professorId, statusAtual);
-  const handleImprimirProfessor = (professorId) =>
-    console.log("Imprimir professor:", professorId);
 
   return (
     <div className="cadastro-turma-form-container">
@@ -139,123 +105,139 @@ const ListaProfe = () => {
           </div>
         ) : (
           <div className="professores-list">
-            {professoresFiltrados.map((professor) => {
-              const isExpandido = professoresExpandidos.has(professor.id);
-
-              return (
-                <div
-                  key={professor.id}
-                  className={`professor-card ${professor.status}`}
-                >
-                  <div className="professor-info">
-                    {/* Header com botões */}
-                    {/* Header com avatar, informações e botões */}
-                    <div className="professor-header">
-                      {/* Lado esquerdo: avatar + info */}
-                      <div
-                        className="professor-basic-info-container clickable"
-                        onClick={() => toggleProfessor(professor.id)}
-                      >
-                        {isExpandido ? (
-                          <ChevronDown size={20} />
-                        ) : (
-                          <ChevronRight size={20} />
-                        )}
-                        <div className="professor-avatar">
-                          <User size={24} />
-                        </div>
-                        <div className="professor-basic-info">
-                          <h3 className="professor-nome">{professor.nome}</h3>
-                          <p className="professor-formacao">
-                            {professor.formacao}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Lado direito: botões */}
-                      <div className="professor-header-actions">
-                        <button
-                          className="action-button-professor edit-button-profe"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditarProfessor(professor.id);
-                          }}
-                        >
-                          <Edit size={16} /> Editar
-                        </button>
-
-                        {professor.status === "ativo" ? (
-                          <button
-                            className="action-button-professor deactivate-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleStatusProfessor(
-                                professor.id,
-                                professor.status
-                              );
-                            }}
-                          >
-                            <UserX size={16} /> Inativar
-                          </button>
-                        ) : (
-                          <button
-                            className="action-button-professor activate-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleStatusProfessor(
-                                professor.id,
-                                professor.status
-                              );
-                            }}
-                          >
-                            <UserCheck size={16} /> Ativar
-                          </button>
-                        )}
-                                              <button
-                          className="action-button-professor print-button-profe"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleImprimirProfessor(professor.id);
-                          }}
-                        >
-                          <BookOpen size={16} /> Imprimir
-                        </button>
-
-                      </div>
-                    </div>
-
-                    {/* Detalhes expandidos */}
-                    {isExpandido && (
-                      <div className="professor-details-container">
-                        <div className="professor-lista-section">
-                          <div className="turmas-table-container">
-                            <div className="turmas-table-header">
-                              <span>Turma</span>
-                              <span>Matéria</span>
-                            </div>
-                            {professor.turmas.map((turma) => (
-                              <div key={turma.id} className="turma-row">
-                                <span className="turma-nome-prof">
-                                  {turma.nome}
-                                </span>
-                                <span className="turma-materia-prof">
-                                  {turma.materia}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {professoresFiltrados.map((professor) => (
+              <ProfessorCard key={professor.id} professor={professor} />
+            ))}
           </div>
         )}
       </div>
     </div>
   );
 };
+
+/**
+ * Componente que representa um cartão de professor
+ * @param {Object} param0 - Props do componente
+ * @param {Professor} param0.professor - Dados do professor
+ * @returns {JSX.Element}
+ */
+const ProfessorCard = ({ professor }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleEditarProfessor = (professorId) =>
+    console.log("Editar professor:", professorId);
+  const handleToggleStatusProfessor = (professorId, statusAtual) =>
+    console.log("Toggle status professor:", professorId, statusAtual);
+  const handleImprimirProfessor = (professorId) =>
+    console.log("Imprimir professor:", professorId);
+
+
+  return (
+    <div className={`professor-card ${professor.status}`}>
+      <div className="professor-info">
+        {/* Header com botões */}
+        {/* Header com avatar, informações e botões */}
+        <div className="professor-header">
+          {/* Lado esquerdo: avatar + info */}
+          <div
+            className="professor-basic-info-container clickable"
+            onClick={() => setIsExpanded(p => !p)}
+          >
+            {isExpanded ? (
+              <ChevronDown size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
+            <div className="professor-avatar">
+              <User size={24} />
+            </div>
+            <div className="professor-basic-info">
+              <h3 className="professor-nome">{professor.usuario.nome}</h3>
+              <p className="professor-formacao">
+                {professor.formacaoAcademica}
+              </p>
+            </div>
+          </div>
+
+          {/* Lado direito: botões */}
+          <div className="professor-header-actions">
+            <button
+              className="action-button-professor edit-button-profe"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEditarProfessor(professor.id);
+              }}
+            >
+              <Edit size={16} /> Editar
+            </button>
+
+            {professor.status === "ativo" ? (
+              <button
+                className="action-button-professor deactivate-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleStatusProfessor(
+                    professor.id,
+                    professor.status
+                  );
+                }}
+              >
+                <UserX size={16} /> Inativar
+              </button>
+            ) : (
+              <button
+                className="action-button-professor activate-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleStatusProfessor(
+                    professor.id,
+                    professor.status
+                  );
+                }}
+              >
+                <UserCheck size={16} /> Ativar
+              </button>
+            )}
+            <button
+              className="action-button-professor print-button-profe"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleImprimirProfessor(professor.id);
+              }}
+            >
+              <BookOpen size={16} /> Imprimir
+            </button>
+
+          </div>
+        </div>
+
+        {/* Detalhes expandidos */}
+        {isExpanded && (
+          <div className="professor-details-container">
+            <div className="professor-lista-section">
+              <div className="turmas-table-container">
+                <div className="turmas-table-header">
+                  <span>Turma</span>
+                  <span>Matéria</span>
+                  {(professor.turmas || []).map((turma) => (
+                    <div key={turma.id} className="turma-row">
+                      <span className="turma-nome-prof">
+                        {turma.nome}
+                      </span>
+                      <span className="turma-materia-prof">
+                        {turma.materia}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 export default ListaProfe;

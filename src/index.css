@@ -1,0 +1,42 @@
+/* BARRA DE ROLAGEM (sem setinhas) */
+* {
+  scrollbar-width: thin;        /* Firefox */
+  scrollbar-color: #cbd5e1 #f8fafc; /* Firefox */
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+  border: 0 solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+

@@ -408,7 +408,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-align: center;
-  min-width: 100%;
+  min-width: 300px;
   background: #dbeafe;
   color: #1d4ed8;
 }
