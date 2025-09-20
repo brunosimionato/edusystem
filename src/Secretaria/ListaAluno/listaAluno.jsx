@@ -8,7 +8,8 @@ import {
   ChevronDown,
   ChevronRight,
   Users,
-  Settings,
+  ScrollText,
+  Printer,
 } from "lucide-react";
 import "./listaAluno.css";
 import CadastroAluno from "../../components/AlunoForm/alunoForm"; // ajuste o caminho se necessário
@@ -272,7 +273,7 @@ useEffect(() => {
                           console.log(`Imprimir alunos da turma ${turma.nome}`);
                         }}
                       >
-                        Imprimir
+                        <Printer size={17} /> Imprimir
                       </button>
                     </div>
 
@@ -321,7 +322,7 @@ useEffect(() => {
                               </button>
 
                               <button className="action-button-lista-aluno declaracao-button" onClick={() => handleDeclaracaoAluno(aluno.id)} title="Declaração de matrícula">
-                                <Settings size={17} />
+                                <ScrollText size={17} />
                               </button>
                             </div>
                           </div>

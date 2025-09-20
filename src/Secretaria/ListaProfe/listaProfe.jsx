@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronRight,
   GraduationCap,
-  BookOpen,
+  Printer,
 } from "lucide-react";
 
 import "./listaProfe.css";
@@ -205,7 +205,7 @@ const ProfessorCard = ({ professor }) => {
                 handleImprimirProfessor(professor.id);
               }}
             >
-              <BookOpen size={16} /> Imprimir
+              <Printer size={17} /> Imprimir
             </button>
 
           </div>

@@ -1,3 +1,4 @@
+
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -24,7 +25,7 @@
 }
 
 /* Container principal */
-.notas-container {
+.faltas-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -35,7 +36,7 @@
 }
 
 /* Seções do formulário */
-.notas-form-section {
+.faltas-form-section {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -45,12 +46,12 @@
   transition: all 0.2s ease;
 }
 
-.notas-form-section:hover {
+.faltas-form-section:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Cabeçalho das seções */
-.notas-section-header {
+.faltas-section-header {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
@@ -62,14 +63,14 @@
   align-items: center;
 }
 
-.notas-counter {
+.faltas-counter {
   font-size: 13px;
   color: #64748b;
   font-weight: 500;
 }
 
 /* Grid do formulário */
-.notas-form-grid {
+.faltas-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 20px;
@@ -77,18 +78,18 @@
 }
 
 /* Grupos de formulário */
-.notas-form-group {
+.faltas-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
 }
 
-.notas-form-group.notas-full-width { grid-column: span 12; }
-.notas-form-group.notas-half-width { grid-column: span 6; }
-.notas-form-group.notas-third-width { grid-column: span 4; }
+.faltas-form-group.faltas-full-width { grid-column: span 12; }
+.faltas-form-group.faltas-half-width { grid-column: span 6; }
+.faltas-form-group.faltas-third-width { grid-column: span 4; }
 
-.notas-form-group label {
+.faltas-form-group label {
   position: absolute;
   top: -10px;
   left: 12px;
@@ -104,14 +105,14 @@
 }
 
 /* Wrapper do input com ícone */
-.notas-input-wrapper {
+.faltas-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
 /* Ícone dentro do input */
-.notas-input-icon {
+.faltas-input-icon {
   position: absolute;
   left: 12px;
   color: #94a3b8;
@@ -121,8 +122,8 @@
 }
 
 /* Inputs e selects - Design consistente */
-.notas-input,
-.notas-select {
+.faltas-input,
+.faltas-select {
   width: 100%;
   padding: 12px 16px;
   border: 1.5px solid #e2e8f0;
@@ -136,29 +137,29 @@
   transition: all 0.2s ease;
 }
 
-.notas-search-input {
+.faltas-search-input {
   padding-left: 42px;
 }
 
-.notas-input::placeholder {
+.faltas-input::placeholder {
   color: #94a3b8;
   font-weight: 400;
 }
 
-.notas-input:focus,
-.notas-select:focus {
+.faltas-input:focus,
+.faltas-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.notas-input:hover:not(:focus),
-.notas-select:hover:not(:focus) {
+.faltas-input:hover:not(:focus),
+.faltas-select:hover:not(:focus) {
   border-color: #cbd5e1;
 }
 
 /* Select customizado */
-.notas-select {
+.faltas-select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -171,14 +172,14 @@
 }
 
 /* Lista de turmas */
-.notas-turmas-list {
+.faltas-turmas-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px;
 }
 
-.notas-turma-card {
+.faltas-turma-card {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -191,12 +192,12 @@
   overflow: hidden;
 }
 
-.notas-turma-card:hover {
+.faltas-turma-card:hover {
   border-color: #cbd5e1;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.notas-turma-info {
+.faltas-turma-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -205,7 +206,7 @@
 }
 
 /* Header da turma */
-.notas-turma-header {
+.faltas-turma-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -213,7 +214,7 @@
   gap: 16px;
 }
 
-.notas-turma-header-left {
+.faltas-turma-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -221,9 +222,10 @@
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
+  flex-wrap: wrap;
 }
 
-.notas-turma-nome {
+.faltas-turma-nome {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
@@ -231,19 +233,46 @@
   transition: color 0.2s ease;
 }
 
-/* Tags de tipo e turno */
-.notas-tipo-ensino {
-  padding: 6px 12px;
-  border-radius: 20px;
+/* Estatísticas de presença */
+.faltas-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.faltas-stat {
+  padding: 4px 8px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #e0f2fe;
-  color: #0369a1;
 }
 
-.notas-turno {
+.faltas-stat.faltas-presentes {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.faltas-stat.faltas-faltosos {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.faltas-stat.faltas-total-periodos {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.faltas-stat.faltas-percentual {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Tags de turno */
+.faltas-turno {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 11px;
@@ -254,28 +283,28 @@
   text-align: center;
 }
 
-.notas-turno-manha {
+.faltas-turno-manha {
   background: #dbeafe;
   color: #1d4ed8;
 }
 
-.notas-turno-tarde {
+.faltas-turno-tarde {
   background: #fed7aa;
   color: #ea580c;
 }
 
-.notas-turno-noite {
+.faltas-turno-noite {
   background: #e0e7ff;
   color: #5b21b6;
 }
 
-.notas-turno-integral {
+.faltas-turno-integral {
   background: #d1fae5;
   color: #059669;
 }
 
 /* Actions container */
-.notas-actions {
+.faltas-actions {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -283,9 +312,9 @@
 }
 
 /* Botões - Design consistente */
-.notas-editar-button,
-.notas-salvar-button,
-.notas-boletins-button {
+.faltas-editar-button,
+.faltas-salvar-button,
+.faltas-relatorio-button {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
@@ -297,53 +326,53 @@
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
-  min-width: 150px;
+  min-width: 130px;
   height: 40px;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.notas-editar-button {
+.faltas-editar-button {
   background: #f59e0b;
   color: #fff;
 }
 
-.notas-editar-button:hover {
-  background: #d97706; /* Laranja mais escuro no hover */
+.faltas-editar-button:hover {
+  background: #d97706;
   color: #fff;
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
-.notas-salvar-button {
+.faltas-salvar-button {
   background: #10b981;
   color: #ffffff;
 }
 
-.notas-salvar-button:hover {
+.faltas-salvar-button:hover {
   background: #059669;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-.notas-boletins-button {
-  background: #3b82f6;
+.faltas-relatorio-button {
+  background: #8b5cf6;
   color: #ffffff;
 }
 
-.notas-boletins-button:hover {
-  background: #2563eb;
+.faltas-relatorio-button:hover {
+  background: #7c3aed;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
 }
 
-.notas-editar-button:active,
-.notas-salvar-button:active,
-.notas-boletins-button:active {
+.faltas-editar-button:active,
+.faltas-salvar-button:active,
+.faltas-relatorio-button:active {
   transform: translateY(0);
 }
 
-/* Tabela de notas expandida */
-.notas-table-container {
+/* Tabela de faltas expandida */
+.faltas-table-container {
   margin-top: 16px;
   border: 1.5px solid #e2e8f0;
   border-radius: 8px;
@@ -352,10 +381,10 @@
   background: #ffffff;
 }
 
-/* Cabeçalho da tabela para turmas globalizadas */
-.notas-table-header.notas-globalizada {
+/* Cabeçalho da tabela para turmas globalizadas (Fundamental I) */
+.faltas-table-header.faltas-globalizada {
   display: grid;
-  grid-template-columns: 3fr 200px;
+  grid-template-columns: 3fr 120px 120px;
   gap: 16px;
   padding: 16px 20px;
   background: #f8fafc;
@@ -368,10 +397,10 @@
   align-items: center;
 }
 
-/* Cabeçalho da tabela para turmas por disciplinas */
-.notas-table-header.notas-disciplinas {
+/* Cabeçalho da tabela para turmas por períodos (Fundamental II) */
+.faltas-table-header.faltas-periodos {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2fr repeat(5, 1fr);
   gap: 12px;
   padding: 16px 20px;
   background: #f8fafc;
@@ -382,18 +411,18 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   align-items: center;
-  min-width: 900px;
+  min-width: 800px;
 }
 
-.notas-table-header > :not(:first-child) {
+.faltas-table-header > :not(:first-child) {
   justify-self: center;
   text-align: center;
 }
 
-/* Linhas dos alunos para turmas globalizadas */
-.notas-aluno-row.notas-globalizada {
+/* Linhas dos alunos para Fundamental I */
+.faltas-aluno-row.faltas-globalizada {
   display: grid;
-  grid-template-columns: 3fr 200px;
+  grid-template-columns: 3fr 120px 120px;
   gap: 16px;
   padding: 16px 20px;
   border-bottom: 1px solid #f1f5f9;
@@ -401,160 +430,194 @@
   font-size: 14px;
 }
 
-.notas-aluno-row.notas-globalizada:hover {
+.faltas-aluno-row.faltas-globalizada:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-globalizada:last-child {
+.faltas-aluno-row.faltas-globalizada:last-child {
   border-bottom: none;
 }
 
-/* Linhas dos alunos para turmas por disciplinas */
-.notas-aluno-row.notas-disciplinas {
+/* Linhas dos alunos para Fundamental II */
+.faltas-aluno-row.faltas-periodos {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2fr repeat(5, 1fr);
   gap: 12px;
   padding: 16px 20px;
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
   font-size: 14px;
   transition: background-color 0.15s ease;
-  min-width: 900px;
+  min-width: 800px;
 }
 
-.notas-aluno-row.notas-disciplinas:hover {
+.faltas-aluno-row.faltas-periodos:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-disciplinas:last-child {
+.faltas-aluno-row.faltas-periodos:last-child {
   border-bottom: none;
 }
 
-.notas-aluno-nome {
+.faltas-aluno-nome {
   font-weight: 600;
   color: #1e293b;
   padding-right: 12px;
 }
 
-/* Container dos inputs de nota */
-.notas-nota-input {
+/* Container dos checkboxes/radios */
+.faltas-checkbox-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Inputs de nota - Design consistente */
-.notas-input-nota {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-  background: #ffffff;
-  color: #1e293b;
+/* Container dos períodos */
+.faltas-periodo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.faltas-periodo-opcoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Wrapper do checkbox customizado */
+.faltas-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+/* Input radio oculto */
+.faltas-radio-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Radio customizado */
+.faltas-radio-custom {
+  height: 24px;
+  width: 24px;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
+  position: relative;
 }
 
-/* Remove as setas do input number */
-.notas-input-nota::-webkit-outer-spin-button,
-.notas-input-nota::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.notas-input-nota[type=number] {
-  -moz-appearance: textfield;
-}
-
-.notas-input-nota::placeholder {
-  color: #94a3b8;
-  text-align: center;
-}
-
-.notas-input-nota:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  transform: scale(1.02);
-}
-
-.notas-input-nota:hover:not(:focus):not(:disabled) {
-  border-color: #cbd5e1;
-}
-
-/* Classes para colorir os inputs baseado na nota */
-.notas-input-nota.nota-aprovado {
+/* Radio para "Presente" */
+.faltas-radio-custom.faltas-presente {
   border-color: #22c55e;
-  background-color: #f0fdf4;
-  color: #15803d;
 }
 
-.notas-input-nota.nota-aprovado:focus {
+.faltas-radio-input:checked ~ .faltas-radio-custom.faltas-presente {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+.faltas-radio-input:checked ~ .faltas-radio-custom.faltas-presente::after {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Radio para "Falta" */
+.faltas-radio-custom.faltas-falta {
+  border-color: #ef4444;
+}
+
+.faltas-radio-input:checked ~ .faltas-radio-custom.faltas-falta {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.faltas-radio-input:checked ~ .faltas-radio-custom.faltas-falta::after {
+  content: "✕";
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Checkboxes menores para períodos */
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-custom.faltas-mini {
+  height: 18px;
+  width: 18px;
+  border: 2px solid #e2e8f0;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-custom.faltas-presente.faltas-mini {
+  border-color: #22c55e;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-input:checked ~ .faltas-radio-custom.faltas-presente.faltas-mini {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-input:checked ~ .faltas-radio-custom.faltas-presente.faltas-mini::after {
+  content: "✓";
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-custom.faltas-falta.faltas-mini {
+  border-color: #ef4444;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-input:checked ~ .faltas-radio-custom.faltas-falta.faltas-mini {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.faltas-checkbox-wrapper.faltas-mini .faltas-radio-input:checked ~ .faltas-radio-custom.faltas-falta.faltas-mini::after {
+  content: "✕";
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Hover states */
+.faltas-checkbox-wrapper:hover .faltas-radio-custom.faltas-presente {
   border-color: #16a34a;
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
-.notas-input-nota.nota-reprovado {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-  color: #dc2626;
-}
-
-.notas-input-nota.nota-reprovado:focus {
+.faltas-checkbox-wrapper:hover .faltas-radio-custom.faltas-falta {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.notas-input-nota.nota-recuperacao {
-  border-color: #f59e0b;
-  background-color: #fffbeb;
-  color: #d97706;
-}
-
-.notas-input-nota.nota-recuperacao:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-}
-
-/* Inputs desabilitados */
-.notas-input-nota:disabled {
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
-  color: #64748b;
+/* Estados desabilitados */
+.faltas-radio-input:disabled ~ .faltas-radio-custom {
+  opacity: 0.6;
   cursor: not-allowed;
-  opacity: 0.8;
 }
 
-.notas-input-nota:disabled:hover {
-  border-color: #e2e8f0;
-  transform: none;
-}
-
-/* Inputs desabilitados com notas ainda mantêm as cores, mas mais suaves */
-.notas-input-nota:disabled.nota-aprovado {
-  background-color: #f0fdf4;
-  border-color: #22c55e;
-  color: #15803d;
-  opacity: 0.7;
-}
-
-.notas-input-nota:disabled.nota-reprovado {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
-  opacity: 0.7;
+.faltas-checkbox-wrapper:has(.faltas-radio-input:disabled) {
+  cursor: not-allowed;
 }
 
 /* Área de ações da tabela */
-.notas-table-actions {
+.faltas-table-actions {
   display: flex;
   justify-content: flex-end;
 }
 
 /* Estado vazio */
-.notas-empty-state {
+.faltas-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -564,7 +627,7 @@
   animation: fadeIn 0.4s ease-out;
 }
 
-.notas-empty-icon {
+.faltas-empty-icon {
   width: 80px;
   height: 80px;
   background: #f1f5f9;
@@ -577,14 +640,14 @@
   font-size: 32px;
 }
 
-.notas-empty-state h4 {
+.faltas-empty-state h4 {
   font-size: 18px;
   font-weight: 600;
   color: #1e293b;
   margin: 0 0 8px 0;
 }
 
-.notas-empty-state p {
+.faltas-empty-state p {
   font-size: 14px;
   color: #64748b;
   margin: 0;
@@ -593,7 +656,7 @@
 }
 
 /* Loading state */
-.notas-loading {
+.faltas-loading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -603,7 +666,7 @@
   gap: 8px;
 }
 
-.notas-loading-spinner {
+.faltas-loading-spinner {
   width: 20px;
   height: 20px;
   border: 2px solid #e2e8f0;
@@ -613,93 +676,58 @@
 }
 
 /* Scrollbar personalizada */
-.notas-table-container::-webkit-scrollbar {
+.faltas-table-container::-webkit-scrollbar {
   height: 8px;
 }
 
-.notas-table-container::-webkit-scrollbar-track {
+.faltas-table-container::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
 }
 
-.notas-table-container::-webkit-scrollbar-thumb {
+.faltas-table-container::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.notas-table-container::-webkit-scrollbar-thumb:hover {
+.faltas-table-container::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
 /* Estados adicionais */
-.notas-disabled {
+.faltas-disabled {
   opacity: 0.6;
   pointer-events: none;
 }
 
-.notas-saving {
+.faltas-saving {
   opacity: 0.8;
 }
 
-.notas-error {
+.faltas-error {
   border-color: #ef4444 !important;
   background-color: #fef2f2 !important;
 }
 
-.notas-success {
+.faltas-success {
   border-color: #10b981 !important;
   background-color: #f0fdf4 !important;
 }
 
+/* Classe clickable */
+.faltas-clickable {
+  cursor: pointer;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
-  .notas-container {
-    padding: 20px;
-  }
-  
-  .notas-table-header.notas-disciplinas,
-  .notas-aluno-row.notas-disciplinas {
-    grid-template-columns: 2fr repeat(4, 1fr);
-    gap: 8px;
-    min-width: 700px;
-  }
-  
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 900px) {
-  .notas-form-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .notas-form-group.notas-third-width:last-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 768px) {
-  .notas-container {
-    padding: 16px;
-    gap: 20px;
-  }
-
-  .notas-form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 20px;
-  }
-  
-  .notas-form-group.notas-full-width,
-  .notas-form-group.notas-half-width,
-  .notas-form-group.notas-third-width {
+  .faltas-form-group.faltas-full-width,
+  .faltas-form-group.faltas-half-width,
+  .faltas-form-group.faltas-third-width {
     grid-column: span 1;
   }
 
-  .notas-section-header {
+  .faltas-section-header {
     padding: 16px 20px;
     font-size: 15px;
     flex-direction: column;
@@ -707,46 +735,52 @@
     gap: 8px;
   }
 
-  .notas-turmas-list {
+  .faltas-turmas-list {
     padding: 20px;
   }
 
-  .notas-turma-card {
+  .faltas-turma-card {
     padding: 16px;
   }
 
-  .notas-turma-header {
+  .faltas-turma-header {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
 
-  .notas-turma-header-left {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+  .faltas-turma-header-left {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
-  .notas-actions {
+  .faltas-turma-header-left > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .faltas-actions {
     flex-direction: row;
     justify-content: stretch;
     margin-left: 0;
     gap: 8px;
   }
 
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
+  .faltas-editar-button,
+  .faltas-salvar-button,
+  .faltas-relatorio-button {
     flex: 1;
-    min-width: 140px;
+    min-width: 120px;
   }
 
-  /* Tabelas responsivas - Globalizada */
-  .notas-table-header.notas-globalizada {
+  /* Tabelas responsivas - Globalizada (Fundamental I) */
+  .faltas-table-header.faltas-globalizada {
     display: none;
   }
 
-  .notas-aluno-row.notas-globalizada {
+  .faltas-aluno-row.faltas-globalizada {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -755,36 +789,49 @@
     border-left: 3px solid #3b82f6;
   }
 
-  .notas-aluno-nome {
+  .faltas-aluno-row.faltas-globalizada .faltas-aluno-nome {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 8px;
     padding-right: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  .notas-nota-input {
+  .faltas-aluno-row.faltas-globalizada .faltas-checkbox-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    padding: 8px 0;
   }
 
-  .notas-nota-input::before {
-    content: "NOTA";
+  .faltas-aluno-row.faltas-globalizada .faltas-checkbox-container:nth-child(2)::before {
+    content: "PRESENTE";
     font-size: 11px;
     font-weight: 600;
-    color: #64748b;
+    color: #22c55e;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    min-width: 60px;
+    min-width: 80px;
   }
 
-  /* Tabelas responsivas - Por Disciplinas */
-  .notas-table-header.notas-disciplinas {
+  .faltas-aluno-row.faltas-globalizada .faltas-checkbox-container:nth-child(3)::before {
+    content: "FALTOU";
+    font-size: 11px;
+    font-weight: 600;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 80px;
+  }
+
+  /* Tabelas responsivas - Por Períodos (Fundamental II) */
+  .faltas-table-header.faltas-periodos {
     display: none;
   }
 
-  .notas-aluno-row.notas-disciplinas {
+  .faltas-aluno-row.faltas-periodos {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -794,7 +841,7 @@
     min-width: auto;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-aluno-nome {
+  .faltas-aluno-row.faltas-periodos .faltas-aluno-nome {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 12px;
@@ -802,14 +849,15 @@
     border-bottom: 1px solid #e2e8f0;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-nota-input {
+  .faltas-aluno-row.faltas-periodos .faltas-periodo-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    padding: 6px 0;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
+  .faltas-aluno-row.faltas-periodos .faltas-periodo-container::before {
     content: attr(data-label);
     font-size: 11px;
     font-weight: 600;
@@ -819,85 +867,25 @@
     min-width: 90px;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-input-nota {
-    width: 80px;
-    margin-left: 0;
+  .faltas-aluno-row.faltas-periodos .faltas-periodo-opcoes {
+    gap: 16px;
   }
 
-  .notas-table-actions {
+  .faltas-table-actions {
     padding: 12px 16px 0;
   }
 }
 
-@media (max-width: 480px) {
-  .notas-container {
-    padding: 12px;
-  }
-
-  .notas-form-grid {
-    padding: 16px;
-  }
-
-  .notas-section-header {
-    padding: 12px 16px;
-    font-size: 14px;
-  }
-
-  .notas-turmas-list {
-    padding: 16px;
-  }
-
-  .notas-turma-card {
-    padding: 12px;
-  }
-
-  .notas-turma-nome {
-    font-size: 14px;
-  }
-
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-
-  .notas-aluno-row.notas-globalizada,
-  .notas-aluno-row.notas-disciplinas {
-    padding: 12px;
-  }
-
-  .notas-aluno-nome {
-    font-size: 14px;
-  }
-
-  .notas-nota-input::before {
-    font-size: 10px;
-    min-width: 50px;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
-    min-width: 70px;
-  }
-
-  .notas-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .notas-empty-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .notas-empty-state {
-    padding: 40px 16px;
-  }
+/* Coluna de resumo de cada aluno */
+.faltas-resumo-aluno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  padding: 6px 8px;
+  border-left: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 6px;
 }

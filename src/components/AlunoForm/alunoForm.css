@@ -374,3 +374,8 @@ textarea.input-error:hover {
   cursor: pointer;
   margin-bottom: 8px;
 }
+
+.modal-content {
+  scrollbar-width: none; /* Firefox */
+}
+
