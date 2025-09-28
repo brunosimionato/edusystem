@@ -7,7 +7,7 @@ import { mascaraCPF, mascaraTelefone, mascaraCEP } from "../../utils/formatacao"
 import DisciplinaService from "../../Services/DisciplinaService";
 import ProfessorService from "../../Services/ProfessorService";
 
-const CriarProfe = () => {
+const ProfeForm = () => {
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
@@ -520,4 +520,4 @@ const CriarProfe = () => {
   );
 };
 
-export default CriarProfe;
+export default ProfeForm;

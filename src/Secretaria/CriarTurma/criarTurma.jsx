@@ -1,13 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
 
-import { useTurmas } from "./useTurma";
+import { useTurmas } from "../../hooks/useTurmas";
 import { useCreateTurma } from "./useCreateTurma";
 import { useDeleteTurma } from "./useDeleteTurma";
 
 const CriarTurma = () => {
-  const { turmas, hasError, isLoading, refetch } = useTurmas();
+  const { turmas, refetch } = useTurmas();
   const { remove, isDeleting } = useDeleteTurma();
 
   const handleRemoveTurma = async (id) => {
@@ -47,7 +47,7 @@ const CriarTurma = () => {
             Turmas Cadastradas
           </h3>
           <button
-            className="print-turmas-button green-button"
+            className="print-turmas-cadastradas-button"
             onClick={handlePrintTurmas}
           >
             <Printer size={17} /> Imprimir

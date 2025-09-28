@@ -3,6 +3,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -31,7 +32,7 @@
 }
 
 .cadastro-horario-form-section:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* Cabeçalhos das seções */
@@ -90,12 +91,12 @@
   position: relative;
 }
 
-.cadastro-horario-form-group.full-width { 
-  grid-column: span 12; 
+.cadastro-horario-form-group.full-width {
+  grid-column: span 12;
 }
 
-.cadastro-horario-form-group.half-width { 
-  grid-column: span 6; 
+.cadastro-horario-form-group.half-width {
+  grid-column: span 6;
 }
 
 .cadastro-horario-form-group label {
@@ -139,7 +140,7 @@
 .cadastro-horario-select:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
   transform: translateY(-1px);
 }
 
@@ -217,7 +218,7 @@
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
@@ -331,7 +332,7 @@
 .input-professor:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.3);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
 }
 
 .input-materia::placeholder,
@@ -509,14 +510,14 @@
 }
 
 .print-button-horarios {
-  background: #10b981;
-  color: white;
+  background: #6b7280;
+  color: #fff;
 }
 
 .print-button-horarios:hover {
-  background: #0e9e73;
+  background: #4b5563;
+  box-shadow: 0 4px 10px rgba(75, 85, 99, 0.3);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 /* Detalhes expandidos */
@@ -641,7 +642,7 @@
     gap: 20px;
     padding: 20px;
   }
-  
+
   .cadastro-horario-form-group.half-width {
     grid-column: span 1;
   }
@@ -651,16 +652,16 @@
     align-items: stretch;
     gap: 16px;
   }
-  
+
   .grade-basic-info-container {
     justify-content: flex-start;
   }
-  
+
   .grade-header-actions {
     justify-content: flex-end;
     width: 100%;
   }
-  
+
   .action-button-horarios {
     flex: 1;
     justify-content: center;

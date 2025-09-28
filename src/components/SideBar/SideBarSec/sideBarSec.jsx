@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Users, GraduationCap, FileText,
+  Users, GraduationCap,
   Settings, Home, School, LogOut, ChevronDown, User, ClipboardList
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
