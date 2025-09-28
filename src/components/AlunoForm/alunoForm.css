@@ -32,7 +32,7 @@
 }
 
 .form-section-aluno {
-  background: white; 
+  background: white;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   overflow: hidden;
@@ -68,20 +68,25 @@
 .form-group-aluno.flex-1 {
   flex: 1;
 }
+
 .form-group-aluno.flex-2 {
   flex: 2;
 }
+
 .form-group-aluno.flex-3 {
   flex: 3;
 }
+
 .form-group-aluno.small {
   min-width: 120px;
   max-width: 150px;
 }
+
 .form-group-aluno.medium {
   min-width: 180px;
   max-width: 220px;
 }
+
 .form-group-aluno.large {
   min-width: 300px;
 }
@@ -113,6 +118,7 @@
   color: #1e293b;
   box-sizing: border-box;
 }
+
 .form-group-aluno input:focus,
 .form-group-aluno select:focus {
   outline: none;
@@ -120,11 +126,13 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
 }
+
 .form-group-aluno input:hover,
 .form-group-aluno select:hover {
   border-color: #cbd5e0;
   transform: translateY(-1px);
 }
+
 .form-group-aluno input::placeholder {
   color: #94a3b8;
 }
@@ -133,6 +141,7 @@
   color: #64748b;
   font-weight: 600;
 }
+
 .form-group-aluno:focus-within {
   transform: translateY(-2px);
 }
@@ -152,6 +161,7 @@
   margin-top: -10px;
 
 }
+
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -172,10 +182,12 @@
   border-radius: 4px;
   transition: all 0.2s ease;
 }
-.checkbox-label input[type="checkbox"]:checked + .checkbox-text {
+
+.checkbox-label input[type="checkbox"]:checked+.checkbox-text {
   font-weight: 600;
   color: #1e293b;
 }
+
 .checkbox-text {
   line-height: 1.4;
 }
@@ -189,6 +201,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
+
 .form-actions-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
@@ -220,24 +233,29 @@
   min-width: 140px;
   justify-content: center;
 }
+
 .btn-primary {
   background: #3b82f6;
   color: white;
 }
+
 .btn-primary:hover {
   background: #2563eb;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
+
 .btn-secondary {
   background: #ef4444;
   color: white;
 }
+
 .btn-secondary:hover {
   background: #dc2626;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
+
 .btn:active {
   transform: translateY(0);
 }
@@ -256,10 +274,12 @@
   background-size: 20px;
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -274,8 +294,9 @@
   justify-content: left;
   margin-top: -30px;
 }
+
 .btn-add-aluno {
-  background-color: #10b981; 
+  background-color: #10b981;
   color: white;
   border: none;
   padding: 12px 20px;
@@ -287,9 +308,10 @@
 }
 
 .form-row-aluno-materias {
+  grid-column: 1 / -1;
   display: flex;
   gap: 24px;
-  padding: 24px 30px;
+  padding-top: 24px;
   align-items: flex-end;
 }
 
@@ -315,8 +337,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px; 
-  transition: background-color 0.2s ease; 
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
   border: nome;
 }
 
@@ -325,7 +347,7 @@
 }
 
 .btn-remove:hover svg {
-  color: #c82333; 
+  color: #c82333;
 }
 
 input.input-error,
@@ -342,7 +364,7 @@ textarea.input-error:hover {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 
@@ -350,12 +372,13 @@ textarea.input-error:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
+
 .modal-content {
   background: #fff;
   border-radius: 10px !important;
@@ -364,8 +387,9 @@ textarea.input-error:hover {
   max-height: 87%;
   overflow: auto;
   padding: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
+
 .modal-close {
   float: right;
   background: transparent;
@@ -375,7 +399,15 @@ textarea.input-error:hover {
   margin-bottom: 8px;
 }
 
-.modal-content {
-  scrollbar-width: none; /* Firefox */
+.historico-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr auto;
+  gap: 48px 24px;
+  padding: 24px 30px;
 }
 
+.historico-ano-container {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}

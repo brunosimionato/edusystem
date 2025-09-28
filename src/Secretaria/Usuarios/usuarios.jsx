@@ -189,12 +189,12 @@ const Usuarios = () => {
     setUsuarios((prev) =>
       prev.map((usuario) =>
         usuario.id === usuarioId
-          ? { 
-              ...usuario, 
-              nome: dadosEdicao.nome.trim(),
-              email: dadosEdicao.email.toLowerCase().trim(),
-              tipo: dadosEdicao.tipo
-            }
+          ? {
+            ...usuario,
+            nome: dadosEdicao.nome.trim(),
+            email: dadosEdicao.email.toLowerCase().trim(),
+            tipo: dadosEdicao.tipo
+          }
           : usuario
       )
     );
@@ -208,67 +208,67 @@ const Usuarios = () => {
       <div className="cadastro-usuario-form-section">
         <h3 className="cadastro-usuario-section-header">Novo Usuário</h3>
         <div className="usuario-form-fields-container">
-<div className="cadastro-usuario-form-grid">
-  {/* Primeira linha */}
-  <div className="cadastro-usuario-form-group half-width">
-    <label htmlFor="usuario-nome">Nome Completo*</label>
-    <div className="cadastro-usuario-input-wrapper">
-      <input
-        id="usuario-nome"
-        type="text"
-        className={`cadastro-usuario-input ${erros.nome ? "usuario-input-error" : ""}`}
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-        placeholder="Digite o nome completo"
-      />
-    </div>
-  </div>
+          <div className="cadastro-usuario-form-grid">
+            {/* Primeira linha */}
+            <div className="cadastro-usuario-form-group half-width">
+              <label htmlFor="usuario-nome">Nome Completo*</label>
+              <div className="cadastro-usuario-input-wrapper">
+                <input
+                  id="usuario-nome"
+                  type="text"
+                  className={`cadastro-usuario-input ${erros.nome ? "usuario-input-error" : ""}`}
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Digite o nome completo"
+                />
+              </div>
+            </div>
 
-  <div className="cadastro-usuario-form-group half-width">
-    <label htmlFor="usuario-email">Email*</label>
-    <div className="cadastro-usuario-input-wrapper">
-      <input
-        id="usuario-email"
-        type="email"
-        className={`cadastro-usuario-input ${erros.email ? "usuario-input-error" : ""}`}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="exemplo@escola.com"
-      />
-    </div>
-  </div>
+            <div className="cadastro-usuario-form-group half-width">
+              <label htmlFor="usuario-email">Email*</label>
+              <div className="cadastro-usuario-input-wrapper">
+                <input
+                  id="usuario-email"
+                  type="email"
+                  className={`cadastro-usuario-input ${erros.email ? "usuario-input-error" : ""}`}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="exemplo@escola.com"
+                />
+              </div>
+            </div>
 
-  {/* Segunda linha */}
-  <div className="cadastro-usuario-form-group half-width">
-    <label htmlFor="usuario-senha">Senha*</label>
-    <div className="cadastro-usuario-input-wrapper">
-      <input
-        id="usuario-senha"
-        type="password"
-        className={`cadastro-usuario-input ${erros.senha ? "usuario-input-error" : ""}`}
-        value={senha}
-        onChange={(e) => setSenha(e.target.value)}
-        placeholder="Mínimo 6 caracteres"
-      />
-    </div>
-  </div>
+            {/* Segunda linha */}
+            <div className="cadastro-usuario-form-group half-width">
+              <label htmlFor="usuario-senha">Senha*</label>
+              <div className="cadastro-usuario-input-wrapper">
+                <input
+                  id="usuario-senha"
+                  type="password"
+                  className={`cadastro-usuario-input ${erros.senha ? "usuario-input-error" : ""}`}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+            </div>
 
-  <div className="cadastro-usuario-form-group half-width">
-    <label htmlFor="usuario-tipo">Tipo de Usuário*</label>
-    <div className="cadastro-usuario-input-wrapper">
-      <select
-        id="usuario-tipo"
-        className={`cadastro-usuario-select ${erros.tipoUsuario ? "usuario-input-error" : ""}`}
-        value={tipoUsuario}
-        onChange={(e) => setTipoUsuario(e.target.value)}
-      >
-        <option>Selecione o tipo de Usuário</option>
-        <option value="professor">Professor</option>
-        <option value="secretaria">Secretaria</option>
-      </select>
-    </div>
-  </div>
-</div>
+            <div className="cadastro-usuario-form-group half-width">
+              <label htmlFor="usuario-tipo">Tipo de Usuário*</label>
+              <div className="cadastro-usuario-input-wrapper">
+                <select
+                  id="usuario-tipo"
+                  className={`cadastro-usuario-select ${erros.tipoUsuario ? "usuario-input-error" : ""}`}
+                  value={tipoUsuario}
+                  onChange={(e) => setTipoUsuario(e.target.value)}
+                >
+                  <option>Selecione o tipo de Usuário</option>
+                  <option value="professor">Professor</option>
+                  <option value="secretaria">Secretaria</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
 
           <div className="cadastro-usuario-form-actions">

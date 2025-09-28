@@ -1,7 +1,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -446,7 +446,7 @@ textarea.input-error:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
+  min-width: 400px;
   padding: 4px 0;
   border-radius: 20px;
   font-size: 12px;
@@ -457,7 +457,7 @@ textarea.input-error:hover {
 .status-badge.ativo {
   background-color: #dcfce7;
   color: #15803d;
-    padding: 4px 40px;
+  padding: 4px 40px;
 }
 
 .status-badge.inativo {
@@ -496,50 +496,39 @@ textarea.input-error:hover {
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.deactivate-button {
-  background: #fef2f2;
-  color: #dc2626;
+.deactivate-button-aluno {
+  background:#dc2626;
+  color: white;
 }
 
-.deactivate-button:hover {
-  background: #dc2626;
+.deactivate-button-aluno:hover {
+  background: #b91c1c;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
-.activate-button {
-  background: #dcfce7;
-  color: #15803d;
+.activate-button-aluno {
+  background: #10b981;
+  color: #ffffff;
 }
 
-.activate-button:hover {
-  background: #15803d;
-  color: white;
+.activate-button-aluno:hover {
+  background: #059669;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-.transfer-button {
-  background: #958e86; /* verde mais claro */
-  color: #fff;
-}
-
-.transfer-button:hover {
-  background: #6b655d;
-  box-shadow: 0 4px 10px rgba(149, 142, 134, 0.4);
-  transform: translateY(-1px);
-}
 
 .declaracao-button {
-  background: #6f708d; /* verde mais claro */
+  background: #f59e0b;
   color: #fff;
 }
 
 .declaracao-button:hover {
-  background: #4d4f6a;
-  box-shadow: 0 4px 10px rgba(111, 112, 141, 0.4);
-  transform: translateY(-1px);
+  background: #d97706;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 /* Estado vazio */
@@ -578,7 +567,7 @@ textarea.input-error:hover {
 }
 
 .print-alunos-turmas-button {
-  background: #10b981;
+  background: #6b7280;
   color: #fff;
   padding: 8px 14px;
   border: none;
@@ -594,16 +583,9 @@ textarea.input-error:hover {
 }
 
 .print-alunos-turmas-button:hover {
-  background-color: #0e9e73;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
-}
-
-.print-alunos-turmas-button:focus {
-  outline: none;
-  background-color: #0e9e73;
-  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
-  transform: translateY(-2px);
+  background: #4b5563;
+  box-shadow: 0 4px 10px rgba(75, 85, 99, 0.3);
+  transform: translateY(-1px);
 }
 
 
@@ -611,13 +593,44 @@ textarea.input-error:hover {
 
 
 
-/* Responsividade */
+/* Ajuste no grid para telas médias */
 @media (max-width: 1200px) {
+  .cadastro-turma-form-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .cadastro-turma-form-group.full-width { grid-column: span 6; }
+  .cadastro-turma-form-group.half-width { grid-column: span 3; }
+  .cadastro-turma-form-group.third-width { grid-column: span 2; }
+  .cadastro-turma-form-group.quarter-width { grid-column: span 1; }
+  .cadastro-turma-form-group.two-thirds-width { grid-column: span 4; }
+  .cadastro-turma-form-group.three-quarters-width { grid-column: span 5; }
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Ajuste em tablets (entre 768px e 1200px) */
+@media (max-width: 992px) {
+  .cadastro-turma-form-actions {
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .alunos-table-header,
+  .aluno-row-lista-aluno {
+    grid-template-columns: 2fr 1fr 1fr; /* mantém legível */
+  }
+
+  .status-badge {
+    min-width: auto;
+    padding: 4px 20px;
+    font-size: 11px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .cadastro-turma-form-container {
     padding: 16px;
@@ -629,7 +642,7 @@ textarea.input-error:hover {
     gap: 20px;
     padding: 20px;
   }
-  
+
   .cadastro-turma-form-group.full-width,
   .cadastro-turma-form-group.half-width,
   .cadastro-turma-form-group.third-width,
@@ -642,24 +655,12 @@ textarea.input-error:hover {
   .cadastro-turma-section-header,
   .cadastro-turma-section-header-with-button {
     padding: 16px 20px;
-    font-size: 16px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
+    font-size: 15px;
   }
 
   .cadastro-turma-form-actions {
     flex-direction: column;
     gap: 12px;
-    padding: 20px;
-  }
-
-  .cadastro-turma-form-title {
-    font-size: 24px;
-  }
-
-  .turmas-list-alunos {
     padding: 20px;
   }
 
@@ -669,17 +670,7 @@ textarea.input-error:hover {
     gap: 16px;
   }
 
-  .turma-actions {
-    justify-content: center;
-  }
-
   /* Tabela de alunos responsiva */
-  .alunos-table-header,
-  .aluno-row-lista-aluno {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
   .alunos-table-header {
     display: none;
   }
@@ -699,16 +690,13 @@ textarea.input-error:hover {
 
   .status-badge {
     align-self: flex-start;
+    min-width: auto;
+    padding: 4px 16px;
   }
 
   .aluno-actions {
     justify-content: center;
     gap: 12px;
-  }
-
-  .action-button {
-    width: 40px;
-    height: 40px;
   }
 }
 
@@ -744,4 +732,3 @@ textarea.input-error:hover {
     font-size: 15px;
   }
 }
-

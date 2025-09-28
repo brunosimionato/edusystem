@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, GraduationCap, BookOpen, School, UserPlus, Plus, BarChart3, Calendar } from 'lucide-react';
+import { Users, GraduationCap, BookOpen, School, UserPlus, Plus, ClipboardList, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './secretaria.css';
 
@@ -11,24 +11,6 @@ const Secretaria = () => {
     { label: 'Professores Ativos', value: '87', icon: GraduationCap, color: 'green' },
     { label: 'Turmas Ativas', value: '42', icon: School, color: 'purple' },
     { label: 'Disciplinas', value: '23', icon: BookOpen, color: 'orange' }
-  ];
-
-  const recentActivities = [
-    {
-      action: 'Novo aluno matriculado',
-      description: 'João Silva - 8º Ano A',
-      time: '2 horas atrás'
-    },
-    {
-      action: 'Professor cadastrado',
-      description: 'Profa. Maria Santos - Matemática',
-      time: '3 horas atrás'
-    },
-    {
-      action: 'Turma criada',
-      description: '9º Ano C - Ensino Fundamental',
-      time: '5 horas atrás'
-    },
   ];
 
   const quickActions = [
@@ -45,16 +27,16 @@ const Secretaria = () => {
       onClick: () => navigate('/secretaria/criar-turma')
     },
     {
-      icon: BarChart3,
-      text: 'Declarações',
+      icon: ClipboardList,
+      text: 'Notas',
       color: 'purple',
-      onClick: () => navigate('/secretaria/declaracoes')
+      onClick: () => navigate('/secretaria/notas')
     },
     {
       icon: Calendar,
       text: 'Horários',
       color: 'orange',
-      onClick: () => navigate('/secretaria/grade-horaria')
+      onClick: () => navigate('/secretaria/horarios')
     }
   ];
 

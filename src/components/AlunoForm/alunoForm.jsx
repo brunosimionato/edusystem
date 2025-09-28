@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "./alunoForm.css";
 import { XCircle, UserPlus, Trash2 } from "lucide-react";
 
-const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mode = "create" }) => {
+import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
+
+
+import "./alunoForm.css";
+
+const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = "create" }) => {
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
@@ -45,7 +49,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
     "9ano",
   ];
 
-  // Defina o mapeamento de disciplinas aqui (mantive seu objeto)
+  // mapeamento do nome interno, utilizado dentro dos objetos, para o nome exibido na interface e salvo no banco
   const disciplinasMap = {
     portugues: "Português",
     matematica: "Matemática",
@@ -58,23 +62,25 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
     religiao: "Religião",
   };
 
+
+
   const [historicoEscolar, setHistoricoEscolar] = useState([
-    {
-      escolaAnterior: "",
-      serieAnterior: "",
-      anoConclusao: "",
-      notaConclusao: "",
-      notas: {
-        portugues: "",
-        matemática: "",
-        ciencias: "",
-        historia: "",
-        geografia: "",
-        ingles: "",
-        artes: "",
-        edFisica: "",
-      },
-    },
+    // {
+    //   escolaAnterior: "",
+    //   serieAnterior: "", // Mudei para vazio para que o usuário selecione
+    //   anoConclusao: "",
+    //   notaConclusao: "",
+    //   notas: {
+    //     portugues: "",
+    //     matemática: "",
+    //     ciencias: "",
+    //     historia: "",
+    //     geografia: "",
+    //     ingles: "",
+    //     artes: "",
+    //     edFisica: "",
+    //   },
+    // },
   ]);
 
   // Se receber initialData (modo edição), popula os estados mantendo a estrutura do histórico
@@ -146,25 +152,6 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
     "turma",
   ];
 
-  // Máscaras
-  const mascaraCPF = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  };
-
-  const mascaraTelefone = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{4,5})(\d{4})$/, "$1-$2");
-  };
-
-  const mascaraCEP = (value) => {
-    return value.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2");
-  };
 
   // Handlers
   const handleInputChange = (e) => {
@@ -214,8 +201,11 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
     buscarCEP(formData.cep);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Dados do Formulário:", formData);
+    console.log("Histórico Escolar:", historicoEscolar);
+
     let invalidos = [];
 
     // 1. Validar campos principais do formData
@@ -261,16 +251,19 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
     setCamposInvalidos([]);
     const payload = { ...formData, historicoEscolar };
 
-    // Se veio onSave (modo integrado), chama o callback do pai
     if (onSave) {
-      onSave(payload);
-      // opcional: não forçar fechamento aqui; quem chamou decide
-      return;
+      try {
+        await onSave(payload);
+        handleLimpar(false);
+        alert("Aluno salvo com sucesso!");
+      } catch (error) {
+        alert("Erro ao salvar o aluno. Verifique os dados e tente novamente.");
+        console.error("Erro ao salvar:", error);
+      } finally {
+        return;
+      }
     }
 
-    // comportamento antigo (console + limpar)
-    console.log("Dados do Formulário:", formData);
-    console.log("Histórico Escolar:", historicoEscolar);
     handleLimpar(false);
   };
 
@@ -315,7 +308,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
         anoConclusao: "",
         notas: {
           portugues: "",
-          matemática: "",
+          matematica: "",
           ciencias: "",
           historia: "",
           geografia: "",
@@ -342,22 +335,12 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
       return;
     }
 
-    // calcula próxima série com base na última série preenchida
-    let proximaSerie = "";
-    if (historicoEscolar.length === 1) {
-      // se só existe um, por padrão podemos colocar 2ano (como no seu código original)
-      proximaSerie = "2ano";
-    } else {
-      const ultimoAno = historicoEscolar[historicoEscolar.length - 1];
-      const ultimaSerieIndex = series.indexOf(ultimoAno.serieAnterior);
-      if (ultimaSerieIndex === -1) {
-        // se não encontrado, coloca 1ano
-        proximaSerie = "1ano";
-      } else if (ultimaSerieIndex < series.length - 1) {
-        proximaSerie = series[ultimaSerieIndex + 1];
-      } else {
-        alert("Você já alcançou o último ano escolar.");
-        return;
+    let proximaSerie = "1ano"; // padrão
+    if (historicoEscolar.length > 0) {
+      const ultimaSerie = historicoEscolar[historicoEscolar.length - 1].serieAnterior;
+      const indiceUltimaSerie = series.indexOf(ultimaSerie);
+      if (indiceUltimaSerie !== -1 && indiceUltimaSerie < series.length - 1) {
+        proximaSerie = series[indiceUltimaSerie + 1];
       }
     }
 
@@ -369,14 +352,14 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
         anoConclusao: "",
         notaConclusao: "",
         notas: {
-          Português: "",
-          Matemática: "",
-          Ciências: "",
-          História: "",
-          Geografia: "",
-          Inglês: "",
-          Arte: "",
-          Religião: "",
+          portugues: "",
+          matematica: "",
+          ciencias: "",
+          historia: "",
+          geografia: "",
+          ingles: "",
+          artes: "",
+          edFisica: "",
         },
       },
     ]);
@@ -388,6 +371,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
       alert("Os anos escolares devem ser excluídos em ordem decrescente.");
       return;
     }
+
     // Impede remover se for o único
     if (historicoEscolar.length === 1) {
       alert(
@@ -395,6 +379,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
       );
       return;
     }
+
     // Remove normalmente se for o último
     setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
   };
@@ -761,11 +746,12 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
           {formData.alunoOutraEscola && (
             <div className="form-section-aluno">
               <div className="section-title-cad-aluno">Histórico Escolar</div>
-              {historicoEscolar.map((ano, index) => (
-                <div key={index} className="historico-ano-container">
-                  {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
-                  <div className="form-row-aluno">
-                    <div className="form-group-aluno flex-3">
+
+              <div className="historico-container">
+                {historicoEscolar.map((ano, index) => (
+                  <div key={index} className="historico-ano-container">
+                    {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
+                    <div className="form-group-aluno">
                       <label htmlFor={`escolaAnterior-${index}`}>Escola Anterior*</label>
                       <input
                         type="text"
@@ -780,7 +766,11 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
                         }
                       />
                     </div>
-                    <div className="form-group-aluno flex-1">
+                    <div className="form-group-aluno"
+                      style={{
+                        gridColumn: ['6ano', '7ano', '8ano', '9ano'].includes(ano.serieAnterior) ? 'span 2' : 'span 1'
+                      }}
+                    >
                       <label htmlFor={`serieAnterior-${index}`}>Série*</label>
                       <select
                         id={`serieAnterior-${index}`}
@@ -808,7 +798,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
 
                     {/* Renderiza nota de conclusão para 1º ao 5º ano */}
                     {!["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior) && (
-                      <div className="form-group-aluno flex-1">
+                      <div className="form-group-aluno">
                         <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
                         <input
                           type="number"
@@ -825,7 +815,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
                       </div>
                     )}
 
-                    <div className="form-group-aluno flex-1">
+                    <div className="form-group-aluno">
                       <label htmlFor={`anoConclusao-${index}`}>Ano de Conclusão*</label>
                       <input
                         type="text"
@@ -842,7 +832,7 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
                       />
                     </div>
 
-                    <div className="form-group-aluno flex-0">
+                    <div className="form-group-aluno">
                       <button
                         type="button"
                         onClick={() => removerAnoEscolar(index)}
@@ -852,37 +842,43 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
                         <Trash2 size={20} />
                       </button>
                     </div>
-                  </div>
 
-                  {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
-                  {["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior) && (
-                    <div className="form-row-aluno-materias">
-                      {Object.keys(ano.notas).map((materia) => (
-                        <div key={materia} className="form-group-aluno flex-1">
-                          <label>
-                            {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
-                          </label>
-                          <input
-                            type="number"
-                            name={`notas.${materia}`}
-                            value={ano.notas[materia]}
-                            onChange={(e) => {
-                              const novosHistoricos = [...historicoEscolar];
-                              novosHistoricos[index].notas[materia] = e.target.value;
-                              setHistoricoEscolar(novosHistoricos);
-                            }}
-                            className={
-                              camposInvalidos.includes(`notas.${materia}-${index}`)
-                                ? "input-error"
-                                : ""
-                            }
-                          />
+                    {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
+                    {["6ano", "7ano", "8ano", "9ano"].includes(
+                      ano.serieAnterior
+                    ) && (
+                        <div className="form-row-aluno-materias">
+                          {Object.keys(ano.notas).map((materia) => (
+                            <div key={materia} className="form-group-aluno flex-1">
+                              <label>
+                                {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
+                              </label>
+                              <input
+                                type="number"
+                                name={`notas.${materia}`}
+                                value={ano.notas[materia]}
+                                onChange={(e) => {
+                                  const novosHistoricos = [...historicoEscolar];
+                                  novosHistoricos[index].notas[materia] =
+                                    e.target.value;
+                                  setHistoricoEscolar(novosHistoricos);
+                                }}
+                                className={
+                                  camposInvalidos.includes(
+                                    `notas.${materia}-${index}`
+                                  )
+                                    ? "input-error"
+                                    : ""
+                                }
+                              />
+                            </div>
+                          ))}
+
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                      )}
+                  </div> /* Fim do historico-ano-container */
+                ))}
+              </div>
 
               <div className="form-row-aluno-add-ano-aescolar">
                 <button
@@ -919,4 +915,4 @@ const CadastroAluno = ({ initialData = null, onSave = null, onCancel = null, mod
   );
 };
 
-export default CadastroAluno;
+export default AlunoForm;

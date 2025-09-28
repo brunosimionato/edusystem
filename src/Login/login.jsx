@@ -235,9 +235,6 @@ const LoginForm = () => {
           />
           Lembrar de mim
         </label>
-        <button type="button" className="forgot-password-link">
-          Esqueceu a senha?
-        </button>
       </div>
 
       <div className="error-message">

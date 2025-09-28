@@ -4,31 +4,22 @@ import HeaderSec from '../../Header/HeaderSec/headerSec';
 import SideBarSec from '../../SideBar/SideBarSec/sideBarSec';
 import './layoutSec.css';
 
+// Objeto de rotas movido para fora do componente
+const titulosPorRota = {
+  '/secretaria/dashboard': 'Dashboard',
+  '/secretaria/cadastrar-aluno': 'Cadastro de Aluno',
+  '/secretaria/lista-aluno': 'Lista de Alunos',
+  '/secretaria/cadastrar-professor': 'Cadastro de Professores',
+  '/secretaria/lista-profe': 'Lista de Professores',
+  '/secretaria/criar-turma': 'Cadastrar Turma',
+  '/secretaria/horario': 'Horários',
+  '/secretaria/notas': 'Notas e Boletins',
+  '/secretaria/usuarios': 'Gestão de Usuários',
+};
+
 const LayoutSec = () => {
   const [pageTitle, setPageTitle] = useState('Dashboard');
-  const [pageDescription, setPageDescription] = useState(' ');
   const location = useLocation();
-
-  // Mapeie os títulos conforme as rotas reais que você usa
-  const titulosPorRota = {
-    '/secretaria/dashboard': 'Dashboard',
-    '/secretaria/cadastrar-aluno': 'Cadastro de Aluno',
-    '/secretaria/lista-aluno': 'Lista de Alunos',
-    '/secretaria/cadastrar-professor': 'Cadastro de Professores',
-    '/secretaria/lista-profe': 'Lista de Professores',
-    '/secretaria/criar-turma': 'Cadastrar Turma',
-    '/secretaria/horario': 'Horários',
-    '/secretaria/notas': 'Notas e Boletins',
-    
-    '/secretaria/disciplinas/lista': 'Lista de Disciplinas',
-    '/secretaria/documentos/declaracoes': 'Declarações',
-    '/secretaria/documentos/historico': 'Histórico Escolar',
-    '/secretaria/documentos/boletins': 'Boletins',
-    '/secretaria/avaliacoes/provas': 'Provas',
-
-    '/secretaria/usuarios': 'Gestão de Usuários',
-    // Adicione outras rotas conforme necessidade
-  };
 
   useEffect(() => {
     // Busca a primeira rota que casa com o início do pathname atual
@@ -41,7 +32,7 @@ const LayoutSec = () => {
 
   return (
     <div className="dashboard-container">
-      <HeaderSec pageTitle={pageTitle} pageDescription={pageDescription} />
+      <HeaderSec pageTitle={pageTitle} />
       <SideBarSec setPageTitle={setPageTitle} />
       <main className="main-content">
         <Outlet />
