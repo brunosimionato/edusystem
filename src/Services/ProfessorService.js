@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import { disciplinaSchema } from './DisciplinaService';
 
-const API_URL = 'http://localhost:3000' // TODO: Move to env variable
+import { API_URL } from '../utils/env.js'
 
 export const usuarioSchema = z.object({
     id: z.number(),

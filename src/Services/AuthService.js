@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
-const API_URL = 'http://localhost:3000' // TODO: Move to env variable
-
+import { API_URL } from '../utils/env.js'
 
 const roleSchema = z.enum(['professor', 'secretaria', 'aluno'])
 

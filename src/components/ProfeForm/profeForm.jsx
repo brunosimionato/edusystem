@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./profeForm.css";
-import { XCircle, UserPlus } from "lucide-react";
-
-import { mascaraCPF, mascaraTelefone, mascaraCEP } from "../../utils/formatacao";
-
+import { XCircle, UserPlus, Save } from "lucide-react";
+import {
+  mascaraCPF,
+  mascaraTelefone,
+  mascaraCEP,
+} from "../../utils/formatacao";
 import DisciplinaService from "../../Services/DisciplinaService";
 import ProfessorService from "../../Services/ProfessorService";
 
-const ProfeForm = () => {
+const ProfeForm = ({
+  professor = null,
+  isEditing = false,
+  onClose = () => {},
+  onSaved = () => {},
+}) => {
+  const editing = isEditing || Boolean(professor);
+
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
@@ -24,14 +33,12 @@ const ProfeForm = () => {
     formacao: "",
     turmas: [],
   });
-
   const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
   const [camposInvalidos, setCamposInvalidos] = useState([]);
   const [disciplinasDisponiveis, setDisciplinasDisponiveis] = useState([]);
   const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
   const [errorDisciplinas, setErrorDisciplinas] = useState(null);
 
-  // Lista de turmas disponíveis (exemplo)
   const turmasDisponiveis = [
     "1º Ano A - Fundamental",
     "1º Ano B - Fundamental",
@@ -66,6 +73,82 @@ const ProfeForm = () => {
     fetchDisciplinas();
   }, []);
 
+  // Popula o formulário quando for edição (ou quando professor mudar)
+  useEffect(() => {
+    if (!professor) {
+      // Se não houver professor, resetar o formulário (modo criação)
+      setFormData({
+        nome: "",
+        cpf: "",
+        dataNascimento: "",
+        genero: "",
+        telefone: "",
+        email: "",
+        rua: "",
+        numero: "",
+        bairro: "",
+        cep: "",
+        cidade: "",
+        estado: "",
+        formacao: "",
+        turmas: [],
+      });
+      setDisciplinasSelecionadas([]);
+      setCamposInvalidos([]);
+      return;
+    }
+
+    // Mapeamentos flexíveis conforme possíveis formatos
+    const nome = professor.usuario?.nome || professor.nome || "";
+    const email = professor.usuario?.email || professor.email || "";
+    const cpf = professor.cpf || "";
+    const nascimento = professor.nascimento || professor.dataNascimento || "";
+    const genero = professor.genero || "";
+    const telefone = professor.telefone || "";
+    const rua = professor.logradouro || professor.rua || "";
+    const numero = professor.numero || "";
+    const bairro = professor.bairro || "";
+    const cep = professor.cep || "";
+    const cidade = professor.cidade || "";
+    const estado = professor.estado || "";
+    const formacao = professor.formacaoAcademica || professor.formacao || "";
+
+    // Turmas podem estar como array de strings ou objetos; normalizar para strings (nomes)
+    const turmasRaw = professor.turmas || [];
+    const turmas = turmasRaw.map((t) => {
+      if (!t) return t;
+      if (typeof t === "string") return t;
+      if (typeof t === "object") return t.nome || t;
+      return t;
+    });
+
+    // Disciplinas: pode vir em idDisciplinas ou array de objetos disciplinas
+    let disciplinasIds = [];
+    if (Array.isArray(professor.idDisciplinas)) {
+      disciplinasIds = professor.idDisciplinas;
+    } else if (Array.isArray(professor.disciplinas)) {
+      disciplinasIds = professor.disciplinas.map((d) => d.id || d);
+    }
+
+    setFormData({
+      nome,
+      cpf,
+      dataNascimento: nascimento,
+      genero,
+      telefone,
+      email,
+      rua,
+      numero,
+      bairro,
+      cep,
+      cidade,
+      estado,
+      formacao,
+      turmas,
+    });
+    setDisciplinasSelecionadas(disciplinasIds);
+    setCamposInvalidos([]);
+  }, [professor]);
 
   // Função para buscar o endereço pelo CEP
   const buscarEndereco = async (cep) => {
@@ -92,7 +175,6 @@ const ProfeForm = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     let formattedValue = value;
-
     if (name === "cpf") {
       formattedValue = mascaraCPF(value);
     } else if (name === "telefone") {
@@ -104,7 +186,6 @@ const ProfeForm = () => {
         buscarEndereco(somenteNumeros);
       }
     }
-
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : formattedValue,
@@ -119,7 +200,6 @@ const ProfeForm = () => {
     });
   };
 
-  // Novo handler para a seleção de turmas
   const handleTurmaChange = (turma) => {
     setFormData((prev) => {
       const turmas = prev.turmas.includes(turma)
@@ -129,7 +209,6 @@ const ProfeForm = () => {
     });
   };
 
-  // New validation function
   const validateForm = () => {
     let invalidos = [];
     const camposObrigatorios = [
@@ -147,45 +226,38 @@ const ProfeForm = () => {
       "estado",
       "formacao",
     ];
-
     camposObrigatorios.forEach((campo) => {
       if (!formData[campo] || formData[campo].toString().trim() === "") {
         invalidos.push(campo);
       }
     });
-
     if (disciplinasSelecionadas.length === 0) {
       invalidos.push("disciplinas");
     }
-
     if (formData.turmas.length === 0) {
       invalidos.push("turmas");
     }
-
     return invalidos;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const invalidos = validateForm();
-
     if (invalidos.length > 0) {
       setCamposInvalidos(invalidos);
       alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-
     setCamposInvalidos([]);
     try {
-      const novoProfessor = await ProfessorService.create({
+      const payload = {
         usuario: {
           nome: formData.nome,
           email: formData.email,
-          senha: "password", // Senha padrão
+          // em edição não enviamos senha por padrão
         },
-        idDisciplinaEspecialidade: disciplinasSelecionadas[0], // Considerando a primeira disciplina como especialidade
-        idDisciplinas: disciplinasSelecionadas, // Incluindo todas as disciplinas
+        idDisciplinaEspecialidade: disciplinasSelecionadas[0] || null,
+        idDisciplinas: disciplinasSelecionadas,
         telefone: formData.telefone,
         genero: formData.genero,
         cpf: formData.cpf,
@@ -197,17 +269,55 @@ const ProfeForm = () => {
         cidade: formData.cidade,
         estado: formData.estado,
         formacaoAcademica: formData.formacao,
-        turmas: formData.turmas, // Incluindo as turmas selecionadas
-      });
-      alert("Professor criado com sucesso!");
-      handleLimpar(false);
+        turmas: formData.turmas,
+      };
+
+      if (editing && professor && professor.id) {
+        // Atualiza professor: ajuste se sua API usa assinatura diferente
+        await ProfessorService.update(professor.id, payload);
+        alert("Professor atualizado com sucesso!");
+        onSaved();
+        onClose();
+      } else {
+        // Criação
+        await ProfessorService.create({
+          ...payload,
+          usuario: { ...payload.usuario, senha: "password" }, // senha padrão
+        });
+        alert("Professor criado com sucesso!");
+        onSaved();
+        // resetar formulário
+        setFormData({
+          nome: "",
+          cpf: "",
+          dataNascimento: "",
+          genero: "",
+          telefone: "",
+          email: "",
+          rua: "",
+          numero: "",
+          bairro: "",
+          cep: "",
+          cidade: "",
+          estado: "",
+          formacao: "",
+          turmas: [],
+        });
+        setDisciplinasSelecionadas([]);
+        setCamposInvalidos([]);
+      }
     } catch (error) {
-      console.error("Erro ao criar professor:", error);
-      alert("Erro ao criar professor. Tente novamente.");
+      console.error("Erro ao salvar professor:", error);
+      alert("Erro ao salvar professor. Tente novamente.");
     }
   };
 
   const handleLimpar = (confirmar = true) => {
+    if (editing) {
+      // cancelar em edição fecha modal (ou você poderia resetar para initialData)
+      onClose();
+      return;
+    }
     if (confirmar && !window.confirm("Deseja limpar todos os campos?")) {
       return;
     }
@@ -428,8 +538,9 @@ const ProfeForm = () => {
                   Disciplinas que leciona*
                 </label>
                 <div
-                  className={`disciplinas-container ${camposInvalidos.includes("disciplinas") ? "input-error" : ""
-                    }`}
+                  className={`disciplinas-container ${
+                    camposInvalidos.includes("disciplinas") ? "input-error" : ""
+                  }`}
                 >
                   {isLoadingDisciplinas ? (
                     <div className="loading-disciplinas">
@@ -442,14 +553,23 @@ const ProfeForm = () => {
                   ) : (
                     <div className="disciplinas-grid">
                       {disciplinasDisponiveis.map((disciplina) => (
-                        <label key={disciplina.id} className="disciplina-checkbox">
+                        <label
+                          key={disciplina.id}
+                          className="disciplina-checkbox"
+                        >
                           <input
                             type="checkbox"
-                            checked={disciplinasSelecionadas.includes(disciplina.id)}
-                            onChange={() => handleDisciplinaChange(disciplina.id)}
+                            checked={disciplinasSelecionadas.includes(
+                              disciplina.id
+                            )}
+                            onChange={() =>
+                              handleDisciplinaChange(disciplina.id)
+                            }
                             className="checkbox-input"
                           />
-                          <span className="checkbox-text">{disciplina.nome}</span>
+                          <span className="checkbox-text">
+                            {disciplina.nome}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -475,8 +595,9 @@ const ProfeForm = () => {
                   Selecionar Turmas*
                 </label>
                 <div
-                  className={`disciplinas-container ${camposInvalidos.includes("turmas") ? "input-error" : ""
-                    }`}
+                  className={`disciplinas-container ${
+                    camposInvalidos.includes("turmas") ? "input-error" : ""
+                  }`}
                 >
                   <div className="disciplinas-grid">
                     {turmasDisponiveis.map((turma) => (
@@ -508,10 +629,21 @@ const ProfeForm = () => {
               className="btn btn-secondary"
               onClick={() => handleLimpar()}
             >
-              <XCircle size={17} /> Limpar
+              <XCircle size={17} /> {editing ? "Cancelar" : "Limpar"}
             </button>
-            <button type="submit" className="btn btn-primary-prof">
-              <UserPlus size={17} /> Cadastrar Professor
+            <button
+              type="submit"
+              className={`btn btn-primary-prof ${editing ? "btn-save" : ""}`}
+            >
+              {editing ? (
+                <>
+                  <Save size={17} /> Salvar
+                </>
+              ) : (
+                <>
+                  <UserPlus size={17} /> Cadastrar Professor
+                </>
+              )}
             </button>
           </div>
         </form>

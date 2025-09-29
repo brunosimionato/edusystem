@@ -130,7 +130,7 @@ const CadastroNotas = () => {
             aluno.nome.toLowerCase().includes(filtro.toLowerCase())
         ),
       }));
-  }, [filtro]);
+}, [filtro, turmas]);
 
   const toggleTurma = (turmaId) => {
     setTurmasExpandidas((prev) => {
