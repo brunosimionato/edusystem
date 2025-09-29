@@ -7,6 +7,7 @@ import {
     ChevronDown,
     ChevronRight,
     Settings,
+    Printer
 } from "lucide-react";
 
 const TurmaCard = ({ turma }) => {
@@ -83,7 +84,7 @@ const TurmaCard = ({ turma }) => {
                             console.log(`Imprimir alunos da turma ${turma.nome}`);
                         }}
                     >
-                        Imprimir
+                        <Printer size={17} /> Imprimir
                     </button>
                 </div>
 

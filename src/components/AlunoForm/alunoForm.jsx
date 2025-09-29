@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { XCircle, UserPlus, Trash2 } from "lucide-react";
+import { XCircle, UserPlus, Trash2, Save } from "lucide-react";
 
 import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
 
@@ -905,8 +905,20 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
             >
               <XCircle size={17} /> {mode === "edit" ? "Cancelar" : "Limpar"}
             </button>
-            <button type="submit" className="btn btn-primary">
-              <UserPlus size={17} /> {mode === "edit" ? "Salvar Alterações" : "Cadastrar Aluno"}
+
+            <button
+              type="submit"
+              className={`btn ${mode === "edit" ? "btn-save" : "btn-primary"}`}
+            >
+              {mode === "edit" ? (
+                <>
+                  <Save size={17} /> Salvar
+                </>
+              ) : (
+                <>
+                  <UserPlus size={17} /> Cadastrar Aluno
+                </>
+              )}
             </button>
           </div>
         </form>

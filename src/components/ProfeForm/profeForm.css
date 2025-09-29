@@ -253,21 +253,27 @@
 }
 
 .btn {
-  display: flex;
+  display: inline-flex;        
   align-items: center;
-  gap: 8px;
-  padding: 12px 32px;
+  justify-content: center;     
+  gap: 10px;          
+  padding: 12px 28px;
   border: none;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 140px;
-  justify-content: center;
+  min-width: 180px;           
+  text-align: center;
 }
+
+.btn svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
 
 .btn-primary-prof {
   background: #3b82f6;
@@ -290,6 +296,25 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
+
+/* Botão de salvar (modo edição) */
+.btn-save {
+  background: #10b981;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover / focus */
+.btn-save:hover,
+.btn-save:focus {
+  background: #0e9e73;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  outline: none;
+}
+
 
 /* ===== ANIMAÇÕES ===== */
 @keyframes slideUp {

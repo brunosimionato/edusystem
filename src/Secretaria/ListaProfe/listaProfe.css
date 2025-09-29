@@ -3,7 +3,6 @@
     opacity: 0;
     transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -186,7 +185,7 @@
   align-items: center;
   gap: 16px;
   flex: 1;
-  cursor: pointer
+  cursor: pointer;
 }
 
 /* Avatar do professor */
@@ -256,7 +255,7 @@
   transition: all 0.2s ease;
 }
 
-/* Cores específicas */
+/* Editar */
 .edit-button-profe {
   background: #3b82f6;
   color: white;
@@ -268,6 +267,7 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
+/* Imprimir */
 .print-button-profe {
   background: #6b7280;
   color: #fff;
@@ -279,26 +279,30 @@
   transform: translateY(-1px);
 }
 
-.deactive-button {
-  background:#dc2626;
-  color: white;
-}
-
-.deactive-button:hover {
-  background: #b91c1c;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-}
-
-.active-button {
+/* Botão de ativar (verde) */
+.activate-button {
   background: #10b981;
-  color: #ffffff;
+  color: white;
+  transition: all 0.2s ease;
 }
 
-.active-button:hover {
-  background: #059669;
+.activate-button:hover {
+  background: #0e9e73;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Botão de inativar (vermelho) */
+.deactivate-button {
+  background: #ef4444;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.deactivate-button:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Detalhes expandidos do professor */
@@ -387,7 +391,7 @@
   font-size: 14px;
 }
 
-.turma-row> :nth-child(2) {
+.turma-row > :nth-child(2) {
   justify-self: right;
   text-align: center;
 }
@@ -450,6 +454,33 @@
   color: #64748b;
   margin: 0;
 }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal em si */
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  width: 90%;
+  max-width: 80%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+
 
 /* Responsividade */
 @media (max-width: 1024px) {

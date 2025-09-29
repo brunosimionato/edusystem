@@ -411,3 +411,27 @@ textarea.input-error:hover {
   display: grid;
   grid-template-columns: subgrid;
 }
+
+/* botão salvar (modo edição) */
+.form-buttons-aluno .btn-save {
+  background: #10b981; /* verde */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover / focus */
+.form-buttons-aluno .btn-save:hover,
+.form-buttons-aluno .btn-save:focus {
+  background: #0e9e73; /* verde escuro */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  outline: none;
+}
+
+/* active (pressionado) */
+.form-buttons-aluno .btn-save:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.18);
+}

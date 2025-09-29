@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Users, GraduationCap, BookOpen, Calendar, FileText, BarChart3,
-  Settings, Home, School, LogOut, ChevronDown, User, ClipboardList, CheckCircle
+  Users, GraduationCap, BookOpen, Settings, Home, LogOut, ChevronDown, ClipboardList, CheckCircle
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './sideBarProf.css';

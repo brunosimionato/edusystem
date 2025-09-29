@@ -443,15 +443,17 @@ textarea.input-error:hover {
 .print-turmas-cadastradas-button {
   background: #6b7280;
   color: #fff;
-  padding: 8px 14px;
+  padding: 10px 16px;
+  min-width: 100px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 13px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 

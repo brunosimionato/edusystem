@@ -569,16 +569,17 @@ textarea.input-error:hover {
 .print-alunos-turmas-button {
   background: #6b7280;
   color: #fff;
-  padding: 8px 14px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  min-width: 100px;
   border: none;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 13px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto; /* isso empurra o botão para a direita */
+  margin-left: auto;
   transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
@@ -587,6 +588,7 @@ textarea.input-error:hover {
   box-shadow: 0 4px 10px rgba(75, 85, 99, 0.3);
   transform: translateY(-1px);
 }
+
 
 
 

@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+import { API_URL } from '../utils/env.js'
+
+import { alunoSchema } from './AlunoService.js';
+
 const novaTurmaSchema = z.object({
     nome: z.string(),
     anoEscolar: z.number().int(),
@@ -19,11 +23,20 @@ const turmaSchema = z.object({
     updatedAt: z.union([z.string(), z.date()]).optional()
 });
 
+const turmaWithAlunosSchema = turmaSchema.extend({
+    alunos: z.array(alunoSchema)
+});
+
 class TurmaService {
-    async list() {
+    async list({ withAlunos }) {
         const jwt = localStorage.getItem('token');
 
-        const res = await fetch(`${API_URL}/turmas`, {
+        const params = new URLSearchParams();
+        if (withAlunos) params.append('with', 'alunos');
+
+        const url = `${API_URL}/turmas?${params.toString()}`;
+
+        const res = await fetch(url, {
             headers: { 'Authorization': `Bearer ${jwt}` }
         });
 
@@ -31,7 +44,9 @@ class TurmaService {
 
         const data = await res.json();
 
-        return turmaSchema.array().parse(data).map(t => ({ ...t, alunosMatriculados: 0 }));
+        const schema = withAlunos ? turmaWithAlunosSchema : turmaSchema;
+
+        return schema.array().parse(data).map(t => ({ ...t, alunosMatriculados: 0 }));
     }
 
     async create(novaTurma) {
@@ -74,7 +89,5 @@ class TurmaService {
         }
     }
 }
-
-const API_URL = 'http://localhost:3000' // TODO: Move to env variable
 
 export default new TurmaService();
