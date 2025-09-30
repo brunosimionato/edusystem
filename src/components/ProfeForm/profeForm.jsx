@@ -8,6 +8,7 @@ import {
 } from "../../utils/formatacao";
 import DisciplinaService from "../../Services/DisciplinaService";
 import ProfessorService from "../../Services/ProfessorService";
+import TurmaService from "../../Services/TurmaService";
 
 const ProfeForm = ({
   professor = null,
@@ -39,23 +40,9 @@ const ProfeForm = ({
   const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
   const [errorDisciplinas, setErrorDisciplinas] = useState(null);
 
-  const turmasDisponiveis = [
-    "1º Ano A - Fundamental",
-    "1º Ano B - Fundamental",
-    "2º Ano A - Fundamental",
-    "2º Ano B - Fundamental",
-    "3º Ano A - Fundamental",
-    "3º Ano B - Fundamental",
-    "4º Ano A - Fundamental",
-    "4º Ano B - Fundamental",
-    "4º Ano C - Fundamental",
-    "5º Ano A - Fundamental",
-    "5º Ano B - Fundamental",
-    "6º Ano A - Fundamental",
-    "7º Ano A - Fundamental",
-    "8º Ano A - Fundamental",
-    "9º Ano A - Fundamental",
-  ];
+  const [turmasDisponiveis, setTurmasDisponiveis] = useState([]);
+  const [isLoadingTurmas, setIsLoadingTurmas] = useState(false);
+  const [errorTurmas, setErrorTurmas] = useState(null);
 
   useEffect(() => {
     const fetchDisciplinas = async () => {
@@ -71,6 +58,22 @@ const ProfeForm = ({
       }
     };
     fetchDisciplinas();
+  }, []);
+
+  useEffect(() => {
+    const fetchTurmas = async () => {
+      setIsLoadingTurmas(true);
+      try {
+        const data = await TurmaService.list({ withAlunos: false });
+        setTurmasDisponiveis(data); // cada item tem id e nome
+      } catch (error) {
+        setErrorTurmas(error);
+        console.error("Erro ao carregar turmas:", error);
+      } finally {
+        setIsLoadingTurmas(false);
+      }
+    };
+    fetchTurmas();
   }, []);
 
   // Popula o formulário quando for edição (ou quando professor mudar)
@@ -200,11 +203,11 @@ const ProfeForm = ({
     });
   };
 
-  const handleTurmaChange = (turma) => {
+  const handleTurmaChange = (turmaId) => {
     setFormData((prev) => {
-      const turmas = prev.turmas.includes(turma)
-        ? prev.turmas.filter((t) => t !== turma)
-        : [...prev.turmas, turma];
+      const turmas = prev.turmas.includes(turmaId)
+        ? prev.turmas.filter((t) => t !== turmaId)
+        : [...prev.turmas, turmaId];
       return { ...prev, turmas };
     });
   };
@@ -377,15 +380,18 @@ const ProfeForm = ({
               <div className="form-group-professor medium">
                 <label>Data de Nascimento*</label>
                 <input
-                  type="date"
-                  name="dataNascimento"
-                  value={formData.dataNascimento}
-                  onChange={handleInputChange}
                   className={
                     camposInvalidos.includes("dataNascimento")
                       ? "input-error"
                       : ""
                   }
+                  type="date"
+                  id="dataNascimento"
+                  name="dataNascimento"
+                  value={formData.dataNascimento}
+                  onChange={handleInputChange}
+                  min="1900-01-01"
+                  max="2100-12-31"
                 />
               </div>
             </div>
@@ -400,7 +406,7 @@ const ProfeForm = ({
                     camposInvalidos.includes("genero") ? "input-error" : ""
                   }
                 >
-                  <option value=""> </option>
+                  <option value=""> Selecione</option>
                   <option value="masculino">Masculino</option>
                   <option value="feminino">Feminino</option>
                 </select>
@@ -502,13 +508,25 @@ const ProfeForm = ({
               <div className="form-group-professor small">
                 <label>Estado*</label>
                 <input
-                  type="text"
-                  name="estado"
-                  value={formData.estado}
-                  onChange={handleInputChange}
                   className={
                     camposInvalidos.includes("estado") ? "input-error" : ""
                   }
+                  type="text"
+                  id="estado"
+                  name="estado"
+                  value={formData.estado}
+                  onChange={(e) =>
+                    handleInputChange({
+                      target: {
+                        name: "estado",
+                        value: e.target.value.toUpperCase(), // transforma em maiúsculo
+                      },
+                    })
+                  }
+                  maxLength={2} // impede mais de 2 caracteres
+                  pattern="[A-Z]{2}" // só permite 2 letras maiúsculas
+                  title="Digite a sigla do estado (ex: SP, RJ)"
+                  style={{ textTransform: "uppercase" }} // exibe sempre em maiúsculo
                 />
               </div>
             </div>
@@ -600,18 +618,25 @@ const ProfeForm = ({
                   }`}
                 >
                   <div className="disciplinas-grid">
-                    {turmasDisponiveis.map((turma) => (
-                      <label key={turma} className="disciplina-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={formData.turmas.includes(turma)}
-                          onChange={() => handleTurmaChange(turma)}
-                          className="checkbox-input"
-                        />
-                        <span className="checkbox-text">{turma}</span>
-                      </label>
-                    ))}
+                    {isLoadingTurmas ? (
+                      <div>Carregando turmas...</div>
+                    ) : errorTurmas ? (
+                      <div>Erro ao carregar turmas. Tente novamente.</div>
+                    ) : (
+                      turmasDisponiveis.map((turma) => (
+                        <label key={turma.id} className="disciplina-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={formData.turmas.includes(turma.id)}
+                            onChange={() => handleTurmaChange(turma.id)}
+                            className="checkbox-input"
+                          />
+                          <span className="checkbox-text">{turma.nome}</span>
+                        </label>
+                      ))
+                    )}
                   </div>
+
                   {camposInvalidos.includes("turmas") && (
                     <p className="input-error-text">
                       Selecione pelo menos uma turma.

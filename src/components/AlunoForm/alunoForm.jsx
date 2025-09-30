@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { XCircle, UserPlus, Trash2, Save } from "lucide-react";
+import { useTurmas } from "../../hooks/useTurmas";
 
-import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
-
+import {
+  mascaraCEP,
+  mascaraCPF,
+  mascaraTelefone,
+} from "../../utils/formatacao";
 
 import "./alunoForm.css";
 
-const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = "create" }) => {
+const AlunoForm = ({
+  initialData = null,
+  onSave = null,
+  onCancel = null,
+  mode = "create",
+}) => {
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
@@ -62,7 +71,11 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
     religiao: "Religião",
   };
 
-
+  const {
+    turmas,
+    isLoading: turmasLoading,
+    hasError: turmasError,
+  } = useTurmas();
 
   const [historicoEscolar, setHistoricoEscolar] = useState([
     // {
@@ -119,7 +132,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
       if (initialData.historicoEscolar) {
         // copia profunda para evitar mutação externa
         try {
-          const copia = JSON.parse(JSON.stringify(initialData.historicoEscolar));
+          const copia = JSON.parse(
+            JSON.stringify(initialData.historicoEscolar)
+          );
           setHistoricoEscolar(copia);
         } catch {
           setHistoricoEscolar(initialData.historicoEscolar);
@@ -152,7 +167,6 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
     "turma",
   ];
 
-
   // Handlers
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -180,7 +194,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
     const cepLimpo = cep.replace(/\D/g, "");
     if (cepLimpo.length === 8) {
       try {
-        const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+        const response = await fetch(
+          `https://viacep.com.br/ws/${cepLimpo}/json/`
+        );
         const data = await response.json();
         if (!data.erro) {
           setFormData((prev) => ({
@@ -227,14 +243,24 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
         if (!ano.anoConclusao || ano.anoConclusao.trim() === "") {
           invalidos.push(`anoConclusao-${index}`);
         }
-        if (["1ano", "2ano", "3ano", "4ano", "5ano"].includes(ano.serieAnterior)) {
-          if (!ano.notaConclusao || ano.notaConclusao.toString().trim() === "") {
+        if (
+          ["1ano", "2ano", "3ano", "4ano", "5ano"].includes(ano.serieAnterior)
+        ) {
+          if (
+            !ano.notaConclusao ||
+            ano.notaConclusao.toString().trim() === ""
+          ) {
             invalidos.push(`notaConclusao-${index}`);
           }
-        } else if (["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior)) {
+        } else if (
+          ["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior)
+        ) {
           // Para 6º, 7º, 8º e 9º ano, todas as notas de disciplina são obrigatórias
           Object.keys(ano.notas).forEach((materia) => {
-            if (!ano.notas[materia] || ano.notas[materia].toString().trim() === "") {
+            if (
+              !ano.notas[materia] ||
+              ano.notas[materia].toString().trim() === ""
+            ) {
               invalidos.push(`notas.${materia}-${index}`);
             }
           });
@@ -337,7 +363,8 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
 
     let proximaSerie = "1ano"; // padrão
     if (historicoEscolar.length > 0) {
-      const ultimaSerie = historicoEscolar[historicoEscolar.length - 1].serieAnterior;
+      const ultimaSerie =
+        historicoEscolar[historicoEscolar.length - 1].serieAnterior;
       const indiceUltimaSerie = series.indexOf(ultimaSerie);
       if (indiceUltimaSerie !== -1 && indiceUltimaSerie < series.length - 1) {
         proximaSerie = series[indiceUltimaSerie + 1];
@@ -395,7 +422,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-3">
                 <label htmlFor="nome">Nome*</label>
                 <input
-                  className={camposInvalidos.includes("nome") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("nome") ? "input-error" : ""
+                  }
                   type="text"
                   id="nome"
                   name="nome"
@@ -406,7 +435,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno medium">
                 <label htmlFor="cpf">CPF*</label>
                 <input
-                  className={camposInvalidos.includes("cpf") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("cpf") ? "input-error" : ""
+                  }
                   type="text"
                   id="cpf"
                   name="cpf"
@@ -418,7 +449,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno medium">
                 <label htmlFor="cns">CNS*</label>
                 <input
-                  className={camposInvalidos.includes("cns") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("cns") ? "input-error" : ""
+                  }
                   type="number"
                   id="cns"
                   name="cns"
@@ -433,13 +466,17 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                 <label htmlFor="dataNascimento">Nascimento*</label>
                 <input
                   className={
-                    camposInvalidos.includes("dataNascimento") ? "input-error" : ""
+                    camposInvalidos.includes("dataNascimento")
+                      ? "input-error"
+                      : ""
                   }
                   type="date"
                   id="dataNascimento"
                   name="dataNascimento"
                   value={formData.dataNascimento}
                   onChange={handleInputChange}
+                  min="1900-01-01"
+                  max="2100-12-31"
                 />
               </div>
               <div className="form-group-aluno flex-1">
@@ -453,7 +490,7 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                   value={formData.genero}
                   onChange={handleInputChange}
                 >
-                  <option value=""> </option>
+                  <option value=""> Selecione</option>
                   <option value="masculino">Masculino</option>
                   <option value="feminino">Feminino</option>
                 </select>
@@ -492,7 +529,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-3">
                 <label htmlFor="rua">Logradouro*</label>
                 <input
-                  className={camposInvalidos.includes("rua") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("rua") ? "input-error" : ""
+                  }
                   type="text"
                   id="rua"
                   name="rua"
@@ -503,7 +542,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno small">
                 <label htmlFor="numero">Número*</label>
                 <input
-                  className={camposInvalidos.includes("numero") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("numero") ? "input-error" : ""
+                  }
                   type="number"
                   id="numero"
                   name="numero"
@@ -514,7 +555,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-1">
                 <label htmlFor="bairro">Bairro*</label>
                 <input
-                  className={camposInvalidos.includes("bairro") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("bairro") ? "input-error" : ""
+                  }
                   type="text"
                   id="bairro"
                   name="bairro"
@@ -527,7 +570,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno medium">
                 <label htmlFor="cep">CEP*</label>
                 <input
-                  className={camposInvalidos.includes("cep") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("cep") ? "input-error" : ""
+                  }
                   type="text"
                   id="cep"
                   name="cep"
@@ -540,7 +585,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-2">
                 <label htmlFor="cidade">Cidade*</label>
                 <input
-                  className={camposInvalidos.includes("cidade") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("cidade") ? "input-error" : ""
+                  }
                   type="text"
                   id="cidade"
                   name="cidade"
@@ -551,12 +598,25 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno small">
                 <label htmlFor="estado">Estado*</label>
                 <input
-                  className={camposInvalidos.includes("estado") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("estado") ? "input-error" : ""
+                  }
                   type="text"
                   id="estado"
                   name="estado"
                   value={formData.estado}
-                  onChange={handleInputChange}
+                  onChange={(e) =>
+                    handleInputChange({
+                      target: {
+                        name: "estado",
+                        value: e.target.value.toUpperCase(), // transforma em maiúsculo
+                      },
+                    })
+                  }
+                  maxLength={2} // impede mais de 2 caracteres
+                  pattern="[A-Z]{2}" // só permite 2 letras maiúsculas
+                  title="Digite a sigla do estado (ex: SP, RJ)"
+                  style={{ textTransform: "uppercase" }} // exibe sempre em maiúsculo
                 />
               </div>
             </div>
@@ -582,7 +642,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno medium">
                 <label htmlFor="cpfR1">CPF*</label>
                 <input
-                  className={camposInvalidos.includes("cpfR1") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("cpfR1") ? "input-error" : ""
+                  }
                   type="text"
                   id="cpfR1"
                   name="cpfR1"
@@ -679,7 +741,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-2">
                 <label htmlFor="anoLetivo">Ano Letivo*</label>
                 <input
-                  className={camposInvalidos.includes("anoLetivo") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("anoLetivo") ? "input-error" : ""
+                  }
                   id="anoLetivo"
                   name="anoLetivo"
                   value={formData.anoLetivo}
@@ -689,7 +753,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-1">
                 <label htmlFor="serie">Ano Escolar*</label>
                 <select
-                  className={camposInvalidos.includes("serie") ? "input-error" : ""}
+                  className={
+                    camposInvalidos.includes("serie") ? "input-error" : ""
+                  }
                   id="serie"
                   name="serie"
                   value={formData.serie}
@@ -710,20 +776,38 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
               <div className="form-group-aluno flex-1">
                 <label htmlFor="turma">Turma*</label>
                 <select
-                  className={camposInvalidos.includes("turma") ? "input-error" : ""}
                   id="turma"
                   name="turma"
                   value={formData.turma}
                   onChange={handleInputChange}
+                  className={
+                    camposInvalidos.includes("turma") ? "input-error" : ""
+                  }
                 >
-                  <option value="">Selecione</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
+                  {turmasLoading && (
+                    <option value="" disabled>
+                      Carregando turmas...
+                    </option>
+                  )}
+                  {turmasError && (
+                    <option value="" disabled>
+                      Erro ao carregar turmas
+                    </option>
+                  )}
+                  {!turmasLoading && !turmasError && (
+                    <>
+                      <option value="">Selecione</option>
+                      {turmas.map((turma) => (
+                        <option key={turma.id} value={turma.id}>
+                          {turma.nome}
+                        </option>
+                      ))}
+                    </>
+                  )}
                 </select>
               </div>
             </div>
+
             <div className="form-row-aluno">
               <div className="checkbox-group-aluno">
                 <label className="checkbox-label">
@@ -752,7 +836,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                   <div key={index} className="historico-ano-container">
                     {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
                     <div className="form-group-aluno">
-                      <label htmlFor={`escolaAnterior-${index}`}>Escola Anterior*</label>
+                      <label htmlFor={`escolaAnterior-${index}`}>
+                        Escola Anterior*
+                      </label>
                       <input
                         type="text"
                         id={`escolaAnterior-${index}`}
@@ -766,9 +852,14 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                         }
                       />
                     </div>
-                    <div className="form-group-aluno"
+                    <div
+                      className="form-group-aluno"
                       style={{
-                        gridColumn: ['6ano', '7ano', '8ano', '9ano'].includes(ano.serieAnterior) ? 'span 2' : 'span 1'
+                        gridColumn: ["6ano", "7ano", "8ano", "9ano"].includes(
+                          ano.serieAnterior
+                        )
+                          ? "span 2"
+                          : "span 1",
                       }}
                     >
                       <label htmlFor={`serieAnterior-${index}`}>Série*</label>
@@ -797,7 +888,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                     </div>
 
                     {/* Renderiza nota de conclusão para 1º ao 5º ano */}
-                    {!["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior) && (
+                    {!["6ano", "7ano", "8ano", "9ano"].includes(
+                      ano.serieAnterior
+                    ) && (
                       <div className="form-group-aluno">
                         <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
                         <input
@@ -816,7 +909,9 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                     )}
 
                     <div className="form-group-aluno">
-                      <label htmlFor={`anoConclusao-${index}`}>Ano de Conclusão*</label>
+                      <label htmlFor={`anoConclusao-${index}`}>
+                        Ano de Conclusão*
+                      </label>
                       <input
                         type="text"
                         id={`anoConclusao-${index}`}
@@ -847,35 +942,40 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                     {["6ano", "7ano", "8ano", "9ano"].includes(
                       ano.serieAnterior
                     ) && (
-                        <div className="form-row-aluno-materias">
-                          {Object.keys(ano.notas).map((materia) => (
-                            <div key={materia} className="form-group-aluno flex-1">
-                              <label>
-                                {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
-                              </label>
-                              <input
-                                type="number"
-                                name={`notas.${materia}`}
-                                value={ano.notas[materia]}
-                                onChange={(e) => {
-                                  const novosHistoricos = [...historicoEscolar];
-                                  novosHistoricos[index].notas[materia] =
-                                    e.target.value;
-                                  setHistoricoEscolar(novosHistoricos);
-                                }}
-                                className={
-                                  camposInvalidos.includes(
-                                    `notas.${materia}-${index}`
-                                  )
-                                    ? "input-error"
-                                    : ""
-                                }
-                              />
-                            </div>
-                          ))}
-
-                        </div>
-                      )}
+                      <div className="form-row-aluno-materias">
+                        {Object.keys(ano.notas).map((materia) => (
+                          <div
+                            key={materia}
+                            className="form-group-aluno flex-1"
+                          >
+                            <label>
+                              {disciplinasMap[materia] ||
+                                materia.charAt(0).toUpperCase() +
+                                  materia.slice(1)}
+                              *
+                            </label>
+                            <input
+                              type="number"
+                              name={`notas.${materia}`}
+                              value={ano.notas[materia]}
+                              onChange={(e) => {
+                                const novosHistoricos = [...historicoEscolar];
+                                novosHistoricos[index].notas[materia] =
+                                  e.target.value;
+                                setHistoricoEscolar(novosHistoricos);
+                              }}
+                              className={
+                                camposInvalidos.includes(
+                                  `notas.${materia}-${index}`
+                                )
+                                  ? "input-error"
+                                  : ""
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div> /* Fim do historico-ano-container */
                 ))}
               </div>
