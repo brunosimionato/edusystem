@@ -6,7 +6,6 @@ import {
   Printer,
   Edit,
   ChevronDown,
-  ChevronUp,
   ChevronRight,
   Trash2,
   Clock,
@@ -67,6 +66,7 @@ const Horarios = () => {
     setHorarios({});
   };
 
+  
   const handleAdicionarHorario = (event) => {
     event.preventDefault();
     let temErro = false;

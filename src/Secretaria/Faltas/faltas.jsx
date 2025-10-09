@@ -424,24 +424,7 @@ const Faltas = () => {
                         <span className={`faltas-turno ${getTurnoClass(turma.turno)}`}>
                           {turma.turno}
                         </span>
-                        {isExpandida && (
-                          <div className="faltas-stats">
-                            <span className="faltas-stat faltas-presentes">
-                              {stats.presentes} presentes
-                            </span>
-                            <span className="faltas-stat faltas-faltosos">
-                              {stats.tipo === "periodo" ? `${stats.faltosos} c/ faltas` : `${stats.faltosos} faltas`}
-                            </span>
-                            {stats.tipo === "periodo" && stats.totalFaltasPeriodo > 0 && (
-                              <span className="faltas-stat faltas-total-periodos">
-                                {stats.totalFaltasPeriodo} faltas/período
-                              </span>
-                            )}
-                            <span className="faltas-stat faltas-percentual">
-                              {stats.percentual}% presença
-                            </span>
-                          </div>
-                        )}
+
                       </div>
 
                       {/* Botão para gerar relatório apenas desta turma */}

@@ -1,0 +1,475 @@
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container principal */
+.visualizacao-horario-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideUp 0.8s ease-out;
+}
+
+/* Seção de visualização */
+.visualizacao-horario-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  transition: box-shadow 0.2s ease;
+}
+
+.visualizacao-horario-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Cabeçalho da seção */
+.visualizacao-horario-section-header-with-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.visualizacao-horario-section-header-turmas {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* Container da tabela */
+.table-wrapper-visualizacao {
+  width: 100%;
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.table-wrapper-visualizacao::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper-visualizacao::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.table-wrapper-visualizacao::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+.table-wrapper-visualizacao::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Tabela */
+.table-wrapper-visualizacao table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table-wrapper-visualizacao th,
+.table-wrapper-visualizacao td {
+  padding: 12px 16px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.table-wrapper-visualizacao th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.table-wrapper-visualizacao th:first-child {
+  background: #475569;
+  color: white;
+  min-width: 140px;
+}
+
+.table-wrapper-visualizacao td {
+  background: white;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Célula de horário */
+.horario-cell-visualizacao {
+  min-width: 140px;
+  background: #f9fafb;
+  text-align: left;
+  padding: 10px 8px;
+  font-weight: 500;
+  border-right: 1px solid #d1d5db;
+}
+
+.horario-info-visualizacao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.horario-info-visualizacao .periodo-visualizacao {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.horario-info-visualizacao .tempo-visualizacao {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Célula de matéria */
+.materia-cell-visualizacao {
+  min-width: 120px;
+  padding: 12px 8px;
+  background: white;
+  text-align: center;
+}
+
+/* View de matéria e professor */
+.materia-professor-view-visualizacao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.materia-nome-visualizacao {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.professor-nome-visualizacao {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Linhas de intervalo */
+.break-row-visualizacao {
+  background: #cbd5e1 !important;
+}
+
+.break-row-visualizacao .horario-cell-visualizacao {
+  background: #475569 !important;
+  color: #ffffff !important;
+}
+
+.break-row-visualizacao .materia-cell-visualizacao {
+  background: #94a3b8 !important;
+  color: #ffffff !important;
+}
+
+.break-row-visualizacao .horario-cell-visualizacao,
+.break-row-visualizacao .horario-cell-visualizacao .horario-info-visualizacao,
+.break-row-visualizacao .horario-cell-visualizacao .horario-info-visualizacao span {
+  color: #ffffff !important;
+}
+
+.break-text-visualizacao {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+}
+
+/* Cards de grades */
+.grade-card-visualizacao {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.grade-card-visualizacao:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Estrutura da grade */
+.grade-info-visualizacao {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Header da grade */
+.grade-header-visualizacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px;
+}
+
+.clickable-visualizacao {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Container da info básica + avatar */
+.grade-basic-info-container-visualizacao {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+/* Avatar da grade */
+.grade-avatar-visualizacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #f1f5f9;
+  border-radius: 50%;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* Info básica da grade */
+.grade-basic-info-visualizacao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grade-nome-visualizacao {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.grade-periodo-visualizacao {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Container de ações do header */
+.grade-header-actions-visualizacao {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Botões da grade */
+.action-button-visualizacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 100px;
+  transition: all 0.2s ease;
+}
+
+.print-button-visualizacao {
+  background: #6b7280;
+  color: #fff;
+}
+
+.print-button-visualizacao:hover {
+  background: #4b5563;
+  box-shadow: 0 4px 10px rgba(75, 85, 99, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Detalhes expandidos */
+.grade-details-container-visualizacao {
+  padding: 20px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: -1px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Conteúdo da grade */
+.grade-content-visualizacao {
+  background: white;
+}
+
+.grade-content-visualizacao .table-wrapper-visualizacao {
+  margin: 0;
+  box-shadow: none;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.grade-content-visualizacao .table-wrapper-visualizacao table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.grade-content-visualizacao .table-wrapper-visualizacao table tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.grade-content-visualizacao .table-wrapper-visualizacao table tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* Lista de turmas */
+.turmas-list-visualizacao {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 24px 30px;
+}
+
+/* Estado vazio */
+.empty-state-visualizacao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.empty-icon-visualizacao {
+  margin-bottom: 16px;
+  color: #cbd5e0;
+}
+
+.empty-state-visualizacao h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.empty-state-visualizacao p {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .table-wrapper-visualizacao {
+    padding: 16px;
+  }
+
+  .table-wrapper-visualizacao table {
+    min-width: 500px;
+  }
+
+  .horario-cell-visualizacao {
+    min-width: 120px;
+  }
+
+  .materia-cell-visualizacao {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .visualizacao-horario-container {
+    gap: 20px;
+  }
+
+  .grade-header-visualizacao {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .grade-basic-info-container-visualizacao {
+    justify-content: flex-start;
+  }
+
+  .grade-header-actions-visualizacao {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .action-button-visualizacao {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .table-wrapper-visualizacao table {
+    min-width: 400px;
+    font-size: 11px;
+  }
+
+  .horario-cell-visualizacao {
+    min-width: 100px;
+    padding: 8px 6px;
+  }
+
+  .materia-cell-visualizacao {
+    min-width: 80px;
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-wrapper-visualizacao table {
+    min-width: 350px;
+    font-size: 10px;
+  }
+
+  .horario-cell-visualizacao {
+    min-width: 80px;
+    padding: 6px 4px;
+  }
+
+  .materia-cell-visualizacao {
+    min-width: 70px;
+    padding: 6px 3px;
+  }
+
+  .materia-nome-visualizacao {
+    font-size: 11px;
+  }
+
+  .professor-nome-visualizacao {
+    font-size: 10px;
+  }
+}

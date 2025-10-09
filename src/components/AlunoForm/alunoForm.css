@@ -127,12 +127,6 @@
   transform: translateY(-1px);
 }
 
-.form-group-aluno input:hover,
-.form-group-aluno select:hover {
-  border-color: #cbd5e0;
-  transform: translateY(-1px);
-}
-
 .form-group-aluno input::placeholder {
   color: #94a3b8;
 }

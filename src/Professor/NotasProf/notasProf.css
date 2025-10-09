@@ -1,0 +1,903 @@
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Container principal */
+.notas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: slideUp 0.8s ease-out;
+}
+
+/* Seções do formulário */
+.notas-form-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.notas-form-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Cabeçalho das seções */
+.notas-section-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notas-counter {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Grid do formulário */
+.notas-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 24px;
+}
+
+/* Grupos de formulário */
+.notas-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.notas-form-group.notas-full-width { grid-column: span 12; }
+.notas-form-group.notas-half-width { grid-column: span 6; }
+.notas-form-group.notas-third-width { grid-column: span 4; }
+
+.notas-form-group label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  background: #ffffff;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+/* Wrapper do input com ícone */
+.notas-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Ícone dentro do input */
+.notas-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+  font-size: 18px;
+}
+
+/* Inputs e selects - Design consistente */
+.notas-input,
+.notas-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+  height: 48px;
+  transition: all 0.2s ease;
+}
+
+.notas-search-input {
+  padding-left: 42px;
+}
+
+.notas-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.notas-input:focus,
+.notas-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.notas-input:hover:not(:focus),
+.notas-select:hover:not(:focus) {
+  border-color: #cbd5e1;
+}
+
+/* Select customizado */
+.notas-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* Lista de turmas */
+.notas-turmas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+.notas-turma-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.notas-turma-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.notas-turma-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Header da turma */
+.notas-turma-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.notas-turma-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.notas-turma-nome {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+/* Tags de tipo e turno */
+.notas-tipo-ensino {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.notas-turno {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 80px;
+  text-align: center;
+}
+
+.notas-turno-manha {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.notas-turno-tarde {
+  background: #fed7aa;
+  color: #ea580c;
+}
+
+.notas-turno-noite {
+  background: #e0e7ff;
+  color: #5b21b6;
+}
+
+.notas-turno-integral {
+  background: #d1fae5;
+  color: #059669;
+}
+
+/* Actions container */
+.notas-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* Botões - Design consistente */
+.notas-editar-button,
+.notas-salvar-button,
+.notas-boletins-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  min-width: 150px;
+  height: 40px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.notas-editar-button {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.notas-editar-button:hover {
+  background: #d97706; /* Laranja mais escuro no hover */
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+}
+
+.notas-salvar-button {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.notas-salvar-button:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.notas-boletins-button {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.notas-boletins-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.notas-editar-button:active,
+.notas-salvar-button:active,
+.notas-boletins-button:active {
+  transform: translateY(0);
+}
+
+/* Tabela de notas expandida */
+.notas-table-container {
+  margin-top: 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  overflow-x: auto;
+  background: #ffffff;
+}
+
+/* Cabeçalho da tabela para turmas globalizadas */
+.notas-table-header.notas-globalizada {
+  display: grid;
+  grid-template-columns: 3fr 200px;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-items: center;
+}
+
+/* Cabeçalho da tabela para turmas por disciplinas */
+.notas-table-header.notas-disciplinas {
+  display: grid;
+  grid-template-columns: 2fr repeat(9, 1fr);
+  gap: 12px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-items: center;
+  min-width: 900px;
+}
+
+.notas-table-header > :not(:first-child) {
+  justify-self: center;
+  text-align: center;
+}
+
+/* Linhas dos alunos para turmas globalizadas */
+.notas-aluno-row.notas-globalizada {
+  display: grid;
+  grid-template-columns: 3fr 200px;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 14px;
+}
+
+.notas-aluno-row.notas-globalizada:hover {
+  background-color: #f8fafc;
+}
+
+.notas-aluno-row.notas-globalizada:last-child {
+  border-bottom: none;
+}
+
+/* Linhas dos alunos para turmas por disciplinas */
+.notas-aluno-row.notas-disciplinas {
+  display: grid;
+  grid-template-columns: 2fr repeat(9, 1fr);
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+  min-width: 900px;
+}
+
+.notas-aluno-row.notas-disciplinas:hover {
+  background-color: #f8fafc;
+}
+
+.notas-aluno-row.notas-disciplinas:last-child {
+  border-bottom: none;
+}
+
+.notas-aluno-nome {
+  font-weight: 600;
+  color: #1e293b;
+  padding-right: 12px;
+}
+
+/* Container dos inputs de nota */
+.notas-nota-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Inputs de nota - Design consistente */
+.notas-input-nota {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  background: #ffffff;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+/* Remove as setas do input number */
+.notas-input-nota::-webkit-outer-spin-button,
+.notas-input-nota::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.notas-input-nota[type=number] {
+  -moz-appearance: textfield;
+}
+
+.notas-input-nota::placeholder {
+  color: #94a3b8;
+  text-align: center;
+}
+
+.notas-input-nota:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: scale(1.02);
+}
+
+.notas-input-nota:hover:not(:focus):not(:disabled) {
+  border-color: #cbd5e1;
+}
+
+/* Classes para colorir os inputs baseado na nota */
+.notas-input-nota.nota-aprovado {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.notas-input-nota.nota-aprovado:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+.notas-input-nota.nota-reprovado {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.notas-input-nota.nota-reprovado:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.notas-input-nota.nota-recuperacao {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  color: #d97706;
+}
+
+.notas-input-nota.nota-recuperacao:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Inputs desabilitados */
+.notas-input-nota:disabled {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.notas-input-nota:disabled:hover {
+  border-color: #e2e8f0;
+  transform: none;
+}
+
+/* Inputs desabilitados com notas ainda mantêm as cores, mas mais suaves */
+.notas-input-nota:disabled.nota-aprovado {
+  background-color: #f0fdf4;
+  border-color: #22c55e;
+  color: #15803d;
+  opacity: 0.7;
+}
+
+.notas-input-nota:disabled.nota-reprovado {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #dc2626;
+  opacity: 0.7;
+}
+
+/* Área de ações da tabela */
+.notas-table-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Estado vazio */
+.notas-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 24px;
+  text-align: center;
+  color: #64748b;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.notas-empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: #94a3b8;
+  font-size: 32px;
+}
+
+.notas-empty-state h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.notas-empty-state p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+/* Loading state */
+.notas-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.notas-loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e2e8f0;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Scrollbar personalizada */
+.notas-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.notas-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.notas-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.notas-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Estados adicionais */
+.notas-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.notas-saving {
+  opacity: 0.8;
+}
+
+.notas-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.notas-success {
+  border-color: #10b981 !important;
+  background-color: #f0fdf4 !important;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 1200px) {
+  .notas-container {
+    padding: 20px;
+  }
+  
+  .notas-table-header.notas-disciplinas,
+  .notas-aluno-row.notas-disciplinas {
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: 8px;
+    min-width: 700px;
+  }
+  
+  .notas-input-nota {
+    width: 70px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .notas-form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .notas-form-group.notas-third-width:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .notas-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .notas-form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+  
+  .notas-form-group.notas-full-width,
+  .notas-form-group.notas-half-width,
+  .notas-form-group.notas-third-width {
+    grid-column: span 1;
+  }
+
+  .notas-section-header {
+    padding: 16px 20px;
+    font-size: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .notas-turmas-list {
+    padding: 20px;
+  }
+
+  .notas-turma-card {
+    padding: 16px;
+  }
+
+  .notas-turma-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .notas-turma-header-left {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .notas-actions {
+    flex-direction: row;
+    justify-content: stretch;
+    margin-left: 0;
+    gap: 8px;
+  }
+
+  .notas-editar-button,
+  .notas-salvar-button,
+  .notas-boletins-button {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  /* Tabelas responsivas - Globalizada */
+  .notas-table-header.notas-globalizada {
+    display: none;
+  }
+
+  .notas-aluno-row.notas-globalizada {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+    border-left: 3px solid #3b82f6;
+  }
+
+  .notas-aluno-nome {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-right: 0;
+  }
+
+  .notas-nota-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notas-nota-input::before {
+    content: "NOTA";
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 60px;
+  }
+
+  /* Tabelas responsivas - Por Disciplinas */
+  .notas-table-header.notas-disciplinas {
+    display: none;
+  }
+
+  .notas-aluno-row.notas-disciplinas {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 10px;
+    border-left: 3px solid #8b5cf6;
+    min-width: auto;
+  }
+
+  .notas-aluno-row.notas-disciplinas .notas-aluno-nome {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .notas-aluno-row.notas-disciplinas .notas-nota-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 90px;
+  }
+
+  .notas-aluno-row.notas-disciplinas .notas-input-nota {
+    width: 80px;
+    margin-left: 0;
+  }
+
+  .notas-table-actions {
+    padding: 12px 16px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .notas-container {
+    padding: 12px;
+  }
+
+  .notas-form-grid {
+    padding: 16px;
+  }
+
+  .notas-section-header {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .notas-turmas-list {
+    padding: 16px;
+  }
+
+  .notas-turma-card {
+    padding: 12px;
+  }
+
+  .notas-turma-nome {
+    font-size: 14px;
+  }
+
+  .notas-input-nota {
+    width: 70px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .notas-aluno-row.notas-globalizada,
+  .notas-aluno-row.notas-disciplinas {
+    padding: 12px;
+  }
+
+  .notas-aluno-nome {
+    font-size: 14px;
+  }
+
+  .notas-nota-input::before {
+    font-size: 10px;
+    min-width: 50px;
+  }
+
+  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
+    min-width: 70px;
+  }
+
+  .notas-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .notas-editar-button,
+  .notas-salvar-button,
+  .notas-boletins-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .notas-empty-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .notas-empty-state {
+    padding: 40px 16px;
+  }
+}

@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import {
-  Users, GraduationCap, BookOpen, Settings, Home, LogOut, ChevronDown, ClipboardList, CheckCircle
+  Users,
+  GraduationCap,
+  Settings,
+  Home,
+  LogOut,
+  ChevronDown,
+  ClipboardList,
+  CheckCircle,
+  BookOpen,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './sideBarProf.css';
@@ -14,10 +22,23 @@ const SideBarProf = () => {
   const location = useLocation();
 
   const toggleMenu = (menuKey) => {
-    setExpandedMenus(prev => ({
+    setExpandedMenus((prev) => ({
       ...prev,
-      [menuKey]: !prev[menuKey]
+      [menuKey]: !prev[menuKey],
     }));
+  };
+
+  // Helper: retorna o caminho completo de um item de menu
+  const getPathForMenuItem = (item, parentId = null) => {
+    if (item.path) return item.path;
+    if (parentId) return `/professor/${parentId}/${item.id}`;
+    return `/professor/${item.id}`;
+  };
+
+  // Verifica se o item de menu está ativo
+  const isItemActive = (item, parentId = null) => {
+    const targetPath = getPathForMenuItem(item, parentId);
+    return location.pathname.startsWith(targetPath);
   };
 
   const menuItems = [
@@ -25,68 +46,62 @@ const SideBarProf = () => {
       id: 'dashboard',
       label: 'Dashboard',
       icon: Home,
-      path: 'dashboard'
+      path: '/professor/dashboard',
     },
     {
       id: 'classes',
       label: 'Minhas Turmas',
       icon: Users,
       submenu: [
-        { id: 'classes-list', label: 'Lista de Turmas' },
-        { id: 'classes-students', label: 'Alunos' },
-        { id: 'classes-schedule', label: 'Horários' },
-        { id: 'classes-attendance', label: 'Chamada' }
-      ]
-    },
-    {
-      id: 'lessons',
-      label: 'Aulas',
-      icon: BookOpen,
-      submenu: [
-        { id: 'lessons-plan', label: 'Plano de Aula' },
-        { id: 'lessons-content', label: 'Conteúdo Programático' },
-      ]
+        { id: 'classes-list', label: 'Lista de Turmas', path: '/professor/lista-turma' },
+        { id: 'classes-schedule', label: 'Horários', path: '/professor/horario-profe' },
+      ],
     },
     {
       id: 'assessments',
-      label: 'Avaliações',
+      label: 'Notas',
       icon: ClipboardList,
       submenu: [
-        { id: 'assessments-create', label: 'Criar Avaliação' },
-        { id: 'assessments-grades', label: 'Lançar Notas' },
-      ]
+        { id: 'assessments-create', label: 'Notas', path: '/professor/notas-profe' },
+      ],
     },
     {
       id: 'attendance',
       label: 'Frequência',
       icon: CheckCircle,
       submenu: [
-        { id: 'attendance-daily', label: 'Chamada' },
-      ]
+        { id: 'attendance-daily', label: 'Chamada', path: '/professor/frequencia' },
+      ],
+    },
+    {
+      id: 'materials',
+      label: 'Materiais',
+      icon: BookOpen,
+      submenu: [
+        { id: 'materials-post', label: 'Postar Conteúdo', path: '/professor/postar-material' },
+      ],
     },
     {
       id: 'profile',
       label: 'Meu Perfil',
       icon: Settings,
       submenu: [
-        { id: 'profile-info', label: 'Informações Pessoais' },
-        { id: 'profile-schedule', label: 'Horário de Trabalho' },
-      ]
-    }
+        { id: 'profile-info', label: 'Informações Pessoais', path: '/professor/meu-perfil' },
+      ],
+    },
   ];
-
-  const isActive = (path) => location.pathname.includes(path);
 
   const handleMenuClick = (item) => {
     if (item.submenu) {
       toggleMenu(item.id);
     } else if (item.path) {
-      navigate(`/professor/${item.path}`);
+      navigate(item.path);
     }
   };
 
   const handleSubmenuClick = (parentId, submenuItem) => {
-    navigate(`/professor/${parentId}/${submenuItem.id}`);
+    const targetPath = getPathForMenuItem(submenuItem, parentId);
+    navigate(targetPath);
   };
 
   const handleLogout = () => {
@@ -113,7 +128,9 @@ const SideBarProf = () => {
           {menuItems.map((item) => (
             <li key={item.id} className="nav-item-prof">
               <button
-                className={`nav-button-prof ${isActive(item.path || item.id) ? 'active-prof' : ''}`}
+                className={`nav-button-prof ${
+                  isItemActive(item) ? 'active-prof' : ''
+                }`}
                 onClick={() => handleMenuClick(item)}
                 id={`prof-nav-${item.id}`}
               >
@@ -123,17 +140,26 @@ const SideBarProf = () => {
                 </div>
                 {item.submenu && (
                   <ChevronDown
-                    className={`nav-chevron-prof ${expandedMenus[item.id] ? 'expanded-prof' : ''}`}
+                    className={`nav-chevron-prof ${
+                      expandedMenus[item.id] ? 'expanded-prof' : ''
+                    }`}
                   />
                 )}
               </button>
 
               {item.submenu && (
-                <ul className={`submenu-prof ${expandedMenus[item.id] ? 'expanded-prof' : ''}`} id={`prof-submenu-${item.id}`}>
+                <ul
+                  className={`submenu-prof ${
+                    expandedMenus[item.id] ? 'expanded-prof' : ''
+                  }`}
+                  id={`prof-submenu-${item.id}`}
+                >
                   {item.submenu.map((subItem) => (
                     <li key={subItem.id} className="submenu-item-prof">
                       <button
-                        className={`submenu-button-prof ${isActive(subItem.id) ? 'active-prof' : ''}`}
+                        className={`submenu-button-prof ${
+                          isItemActive(subItem, item.id) ? 'active-prof' : ''
+                        }`}
                         onClick={() => handleSubmenuClick(item.id, subItem)}
                         id={`prof-submenu-${subItem.id}`}
                       >
