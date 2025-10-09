@@ -72,15 +72,30 @@
 }
 
 /* Tamanhos */
-.form-group-professor.flex-1 { flex: 1; }
-.form-group-professor.flex-2 { flex: 2; }
-.form-group-professor.flex-3 { flex: 3; }
-.form-group-professor.small { min-width: 120px; max-width: 150px; }
-.form-group-professor.medium { min-width: 180px; max-width: 220px; }
-.form-group-professor.large { min-width: 300px; }
+.form-group-professor.flex-1 {
+  flex: 1;
+}
+.form-group-professor.flex-2 {
+  flex: 2;
+}
+.form-group-professor.flex-3 {
+  flex: 3;
+}
+.form-group-professor.small {
+  min-width: 120px;
+  max-width: 150px;
+}
+.form-group-professor.medium {
+  min-width: 180px;
+  max-width: 220px;
+}
+.form-group-professor.large {
+  min-width: 300px;
+}
 
 /* Labels para inputs/selects flutuantes */
-.form-group-professor label:not(.disciplinas-main-label):not(.disciplina-checkbox) {
+.form-group-professor
+  label:not(.disciplinas-main-label):not(.disciplina-checkbox) {
   position: absolute;
   top: -10px;
   left: 15px;
@@ -222,12 +237,10 @@
 /* ===== ESTILOS DE ERRO ===== */
 .input-error {
   border-color: #ef4444 !important;
-
 }
 
 .disciplinas-container.input-error {
   border-color: #ef4444 !important;
-
 }
 
 .input-error-text {
@@ -253,10 +266,10 @@
 }
 
 .btn {
-  display: inline-flex;        
+  display: inline-flex;
   align-items: center;
-  justify-content: center;     
-  gap: 10px;          
+  justify-content: center;
+  gap: 10px;
   padding: 12px 28px;
   border: none;
   border-radius: 8px;
@@ -264,7 +277,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 180px;           
+  min-width: 180px;
   text-align: center;
 }
 
@@ -273,7 +286,6 @@
   width: 20px;
   height: 20px;
 }
-
 
 .btn-primary-prof {
   background: #3b82f6;
@@ -315,7 +327,6 @@
   outline: none;
 }
 
-
 /* ===== ANIMAÇÕES ===== */
 @keyframes slideUp {
   from {
@@ -333,7 +344,7 @@
   .form-row-professor {
     flex-wrap: wrap;
   }
-  
+
   .form-group-professor.small,
   .form-group-professor.medium {
     min-width: 200px;
@@ -344,23 +355,23 @@
   .cadastro-container-professor {
     gap: 24px;
   }
-  
+
   .form-row-professor {
     flex-direction: column;
     gap: 16px;
     padding: 20px;
   }
-  
+
   .section-title-cad-professor {
     padding: 15px 20px 12px 20px;
     font-size: 16px;
   }
-  
+
   .form-buttons-professor {
     padding: 20px;
     flex-direction: column;
   }
-  
+
   .btn {
     min-width: auto;
     width: 100%;
@@ -371,11 +382,11 @@
   .form-row-professor {
     padding: 16px;
   }
-  
+
   .section-title-cad-professor {
     padding: 12px 16px 10px 16px;
   }
-  
+
   .form-buttons-professor {
     padding: 16px;
   }

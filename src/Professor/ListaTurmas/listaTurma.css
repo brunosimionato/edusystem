@@ -57,7 +57,7 @@
 }
 
 /* Grupos (IMPORTANTE: position: relative para labels absolutos) */
-.cadastro-turma-form-group {
+.cadastro-turma-form-group-prof {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -65,14 +65,14 @@
 }
 
 /* Colunas */
-.cadastro-turma-form-group.full-width { grid-column: span 12; }
-.cadastro-turma-form-group.half-width { grid-column: span 6; }
-.cadastro-turma-form-group.third-width { grid-column: span 4; }
-.cadastro-turma-form-group.quarter-width { grid-column: span 3; }
-.cadastro-turma-form-group.two-thirds-width { grid-column: span 8; }
-.cadastro-turma-form-group.three-quarters-width { grid-column: span 9; }
+.cadastro-turma-form-group-prof.full-width { grid-column: span 12; }
+.cadastro-turma-form-group-prof.half-width { grid-column: span 6; }
+.cadastro-turma-form-group-prof.third-width { grid-column: span 4; }
+.cadastro-turma-form-group-prof.quarter-width { grid-column: span 3; }
+.cadastro-turma-form-group-prof.two-thirds-width { grid-column: span 8; }
+.cadastro-turma-form-group-prof.three-quarters-width { grid-column: span 9; }
 
-.cadastro-turma-form-group label {
+.cadastro-turma-form-group-prof label {
   position: absolute;
   top: -10px;
   left: 15px;
@@ -125,10 +125,16 @@
 }
 
 
-.search-input-lista-aluno {
+.search-turma-input {
   text-indent: 20px; /* desloca o início do texto */
 }
 
+.search-turma-input:focus {
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+  
 /* Placeholder */
 .cadastro-turma-input::placeholder,
 .cadastro-turma-select::placeholder,
@@ -140,21 +146,15 @@
 .cadastro-turma-input:focus,
 .cadastro-turma-select:focus,
 .cadastro-turma-textarea:focus,
-.cadastro-turma-form-group input:focus,
-.cadastro-turma-form-group select:focus,
-.cadastro-turma-form-group textarea:focus {
+.cadastro-turma-form-group-prof input:focus,
+.cadastro-turma-form-group-prof select:focus,
+.cadastro-turma-form-group-prof textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: #10b981;;
   box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
   transform: translateY(-1px);
 }
 
-.cadastro-turma-input:hover,
-.cadastro-turma-select:hover,
-.cadastro-turma-textarea:hover {
-  border-color: #cbd5e0;
-  transform: translateY(-1px);
-}
 
 .cadastro-turma-form-group:focus-within label {
   color: #64748b;
@@ -172,9 +172,9 @@
   cursor: pointer;
 }
 
-.cadastro-turma-form-group input:disabled,
-.cadastro-turma-form-group select:disabled,
-.cadastro-turma-form-group textarea:disabled {
+.cadastro-turma-form-group-prof input:disabled,
+.cadastro-turma-form-group-prof select:disabled,
+.cadastro-turma-form-group-prof textarea:disabled {
   background: #f8fafc;
   color: #94a3b8;
   cursor: not-allowed;

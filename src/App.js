@@ -24,7 +24,9 @@ import Usuarios from './Secretaria/Usuarios/usuarios';
 
 // Professor
 import Professor from './Professor/InicioProf/prof';
-
+import ListaTurma from './Professor/ListaTurmas/listaTurma';
+import HorariosProf from './Professor/HorarioProf/horarioProf';
+import NotasProf from './Professor/NotasProf/notasProf';
 
 function App() {
   return (
@@ -45,13 +47,14 @@ function App() {
             <Route path="faltas" element={<Faltas />} />
             <Route path="notas" element={<Notas />} />
             <Route path="usuarios" element={<Usuarios />} />
-
           </Route>
 
           {/* Rotas do Professor */}
           <Route path="/professor" element={<LayoutProf />}>
             <Route path="dashboard" element={<Professor />} />
-            {/* Adicione mais rotas do professor aqui */}
+            <Route path="lista-turma" element={<ListaTurma />} />
+            <Route path="horario-profe" element={<HorariosProf />} />
+            <Route path="notas-profe" element={<NotasProf />} />
           </Route>
         </Routes>
       </BrowserRouter>

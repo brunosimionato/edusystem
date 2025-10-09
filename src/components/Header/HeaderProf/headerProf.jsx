@@ -4,7 +4,6 @@ import './headerProf.css';
 
 const HeaderProf = ({
   pageTitle = 'Dashboard',
-  pageDescription = 'Área do professor - Gestão de turmas e atividades.',
   showNotifications = true,
   onSearch,
   searchPlaceholder = 'Buscar aluno, turma, atividade...'
@@ -32,9 +31,6 @@ const HeaderProf = ({
       <div className="header-right-prof">
         <div className="header-title-prof">
           <h2>{pageTitle}</h2>
-          <p className="multiline-text-prof">
-            {pageDescription}
-          </p>
         </div>
 
         <div className="header-actions-prof">
