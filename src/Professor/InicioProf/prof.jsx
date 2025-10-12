@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
-  Users, GraduationCap, Clock, ClipboardList,
-  CheckCircle, Plus, BookOpenCheck, Upload
+  Users, Backpack, Clock, ClipboardList,
+  CheckCircle, AlarmClock, Calendar
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './prof.css';
@@ -10,10 +10,10 @@ const Professor = () => {
   const navigate = useNavigate();
 
   const dashboardStats = [
-    { label: 'Turmas Ativas', value: '6', icon: Users, color: 'blue' },
-    { label: 'Total de Alunos', value: '184', icon: GraduationCap, color: 'green' },
-    { label: 'Periodos Hoje', value: '4', icon: Clock, color: 'purple' },
-    { label: 'Avaliações Pendentes', value: '12', icon: ClipboardList, color: 'orange' }
+    { label: 'Total de Alunos', value: '184', icon: Users, color: 'blue' },
+    { label: 'Turmas Ativas', value: '6', icon: Backpack, color: 'green' },
+    { label: 'Periodos Hoje', value: '4', icon: Clock, color: 'orange' },
+    { label: 'Dias Letivos', value: '195', icon: Calendar, color: 'purple' },
   ];
 
   const quickActions = [
@@ -21,26 +21,20 @@ const Professor = () => {
       icon: CheckCircle,
       text: 'Fazer Chamada',
       color: 'blue',
-      onClick: () => navigate('/professor/chamada')
+      onClick: () => navigate('/professor/faltas-prof')
     },
     {
-      icon: Plus,
-      text: 'Lançar Notas',
+      icon: ClipboardList,
+      text: 'Notas',
       color: 'green',
-      onClick: () => navigate('/professor/notas')
+      onClick: () => navigate('/professor/notas-profe')
     },
     {
-      icon: BookOpenCheck,
-      text: 'Plano de Aula',
-      color: 'purple',
-      onClick: () => navigate('/professor/planos')
-    },
-    {
-      icon: Upload,
-      text: 'Lançar Notas',
+      icon: AlarmClock,
+      text: 'Horários',
       color: 'orange',
-      onClick: () => navigate('/professor/materiais')
-    }
+      onClick: () => navigate('/professor/horario-profe')
+    },
   ];
 
   return (

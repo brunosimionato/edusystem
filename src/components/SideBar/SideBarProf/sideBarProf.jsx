@@ -70,23 +70,7 @@ const SideBarProf = () => {
       label: 'Frequência',
       icon: CheckCircle,
       submenu: [
-        { id: 'attendance-daily', label: 'Chamada', path: '/professor/frequencia' },
-      ],
-    },
-    {
-      id: 'materials',
-      label: 'Materiais',
-      icon: BookOpen,
-      submenu: [
-        { id: 'materials-post', label: 'Postar Conteúdo', path: '/professor/postar-material' },
-      ],
-    },
-    {
-      id: 'profile',
-      label: 'Meu Perfil',
-      icon: Settings,
-      submenu: [
-        { id: 'profile-info', label: 'Informações Pessoais', path: '/professor/meu-perfil' },
+        { id: 'attendance-daily', label: 'Faltas', path: '/professor/faltas-prof' },
       ],
     },
   ];

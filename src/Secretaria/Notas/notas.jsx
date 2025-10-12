@@ -37,7 +37,7 @@ const CadastroNotas = () => {
     {
       id: 1,
       nome: "1º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental1", // ensino globalizado
       alunos: [
         { id: 1, nome: "Ana Silva" },
@@ -62,7 +62,7 @@ const CadastroNotas = () => {
     {
       id: 3,
       nome: "5º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental1",
       alunos: [
         { id: 10, nome: "Julia Alves" },
@@ -74,7 +74,7 @@ const CadastroNotas = () => {
     {
       id: 4,
       nome: "6º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental2", // por disciplinas
       alunos: [
         { id: 13, nome: "Nicolas Pereira" },
@@ -97,7 +97,7 @@ const CadastroNotas = () => {
     {
       id: 6,
       nome: "9º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental2",
       alunos: [
         { id: 20, nome: "Ursula Santos" },
@@ -178,10 +178,8 @@ const CadastroNotas = () => {
 
   const getTurnoClass = (turno) => {
     const classes = {
-      manha: "notas-turno-manha",
+      manhã: "notas-turno-manhã",
       tarde: "notas-turno-tarde",
-      noite: "notas-turno-noite",
-      integral: "notas-turno-integral",
     };
     return classes[turno] || "";
   };

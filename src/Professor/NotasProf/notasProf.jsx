@@ -38,7 +38,7 @@ const NotasProfe = () => {
     {
       id: 1,
       nome: "1º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental1", // ensino globalizado
       alunos: [
         { id: 1, nome: "Ana Silva" },
@@ -63,7 +63,7 @@ const NotasProfe = () => {
     {
       id: 3,
       nome: "5º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental1",
       alunos: [
         { id: 10, nome: "Julia Alves" },
@@ -75,7 +75,7 @@ const NotasProfe = () => {
     {
       id: 4,
       nome: "6º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental2", // por disciplinas
       alunos: [
         { id: 13, nome: "Nicolas Pereira" },
@@ -98,7 +98,7 @@ const NotasProfe = () => {
     {
       id: 6,
       nome: "9º ANO A",
-      turno: "manha",
+      turno: "manhã",
       tipo: "fundamental2",
       alunos: [
         { id: 20, nome: "Ursula Santos" },
@@ -179,10 +179,8 @@ const NotasProfe = () => {
 
   const getTurnoClass = (turno) => {
     const classes = {
-      manha: "notas-turno-manha",
+      manhã: "notas-turno-manha",
       tarde: "notas-turno-tarde",
-      noite: "notas-turno-noite",
-      integral: "notas-turno-integral",
     };
     return classes[turno] || "";
   };

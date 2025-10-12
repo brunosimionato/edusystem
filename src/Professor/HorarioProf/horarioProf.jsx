@@ -13,7 +13,7 @@ const HorariosProfe = () => {
   const [horariosGrades, setHorariosGrades] = useState([]);
   const [gradeExpandida, setGradeExpandida] = useState({});
 
-  const horariosManha = [
+  const horariosManhã = [
     { inicio: "07:30", fim: "08:15", periodo: "1º Período" },
     { inicio: "08:15", fim: "09:00", periodo: "2º Período" },
     { inicio: "09:00", fim: "09:45", periodo: "3º Período" },
@@ -42,7 +42,7 @@ const HorariosProfe = () => {
         id: 1,
         turmaId: 1,
         turma: "1º ANO A",
-        periodo: "manha",
+        periodo: "manhã",
         horarios: {
           "Segunda_0_materia": "Matemática",
           "Segunda_0_professor": "Prof. João Silva",
@@ -97,7 +97,7 @@ const HorariosProfe = () => {
 
   const renderTabelaHorarios = (horarios, periodo) => {
     const horariosParaUsar =
-      periodo === "manha" ? horariosManha : horariosTarde;
+      periodo === "manhã" ? horariosManhã : horariosTarde;
 
     return (
       <div className="table-wrapper-visualizacao">
@@ -198,7 +198,7 @@ const HorariosProfe = () => {
                             {grade.turma}
                           </h3>
                           <p className="grade-periodo-visualizacao">
-                            {grade.periodo === "manha"
+                            {grade.periodo === "manhã"
                               ? "Manhã (07:30 - 11:15)"
                               : "Tarde (13:00 - 17:00)"}
                           </p>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, GraduationCap, BookOpen, School, UserPlus, Plus, ClipboardList, Calendar } from 'lucide-react';
+import { Users, GraduationCap, BookOpen, Backpack, UserPlus, Plus, ClipboardList, AlarmClock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './secretaria.css';
 
@@ -9,7 +9,7 @@ const Secretaria = () => {
   const dashboardStats = [
     { label: 'Total de Alunos', value: '1.247', icon: Users, color: 'blue' },
     { label: 'Professores Ativos', value: '87', icon: GraduationCap, color: 'green' },
-    { label: 'Turmas Ativas', value: '42', icon: School, color: 'purple' },
+    { label: 'Turmas Ativas', value: '42', icon: Backpack, color: 'purple' },
     { label: 'Disciplinas', value: '23', icon: BookOpen, color: 'orange' }
   ];
 
@@ -33,7 +33,7 @@ const Secretaria = () => {
       onClick: () => navigate('/secretaria/notas')
     },
     {
-      icon: Calendar,
+      icon: AlarmClock,
       text: 'Horários',
       color: 'orange',
       onClick: () => navigate('/secretaria/horarios')

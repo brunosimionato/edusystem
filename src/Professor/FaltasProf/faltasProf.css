@@ -24,7 +24,7 @@
 }
 
 /* Container principal */
-.notas-container {
+.fp-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -35,7 +35,7 @@
 }
 
 /* Seções do formulário */
-.notas-form-section {
+.fp-form-section {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -45,12 +45,12 @@
   transition: all 0.2s ease;
 }
 
-.notas-form-section:hover {
+.fp-form-section:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Cabeçalho das seções */
-.notas-section-header {
+.fp-section-header {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
@@ -62,14 +62,14 @@
   align-items: center;
 }
 
-.notas-counter {
+.fp-counter {
   font-size: 13px;
   color: #64748b;
   font-weight: 500;
 }
 
 /* Grid do formulário */
-.notas-form-grid {
+.fp-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 20px;
@@ -77,18 +77,18 @@
 }
 
 /* Grupos de formulário */
-.notas-form-group {
+.fp-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
 }
 
-.notas-form-group.notas-full-width { grid-column: span 12; }
-.notas-form-group.notas-half-width { grid-column: span 6; }
-.notas-form-group.notas-third-width { grid-column: span 4; }
+.fp-form-group.fp-full-width { grid-column: span 12; }
+.fp-form-group.fp-half-width { grid-column: span 6; }
+.fp-form-group.fp-third-width { grid-column: span 4; }
 
-.notas-form-group label {
+.fp-form-group label {
   position: absolute;
   top: -10px;
   left: 12px;
@@ -104,14 +104,14 @@
 }
 
 /* Wrapper do input com ícone */
-.notas-input-wrapper {
+.fp-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
 /* Ícone dentro do input */
-.notas-input-icon {
+.fp-input-icon {
   position: absolute;
   left: 12px;
   color: #94a3b8;
@@ -121,8 +121,8 @@
 }
 
 /* Inputs e selects - Design consistente */
-.notas-input,
-.notas-select {
+.fp-input,
+.fp-select {
   width: 100%;
   padding: 12px 16px;
   border: 1.5px solid #e2e8f0;
@@ -136,29 +136,29 @@
   transition: all 0.2s ease;
 }
 
-.notas-search-input {
+.fp-search-input {
   padding-left: 42px;
 }
 
-.notas-input::placeholder {
+.fp-input::placeholder {
   color: #94a3b8;
   font-weight: 400;
 }
 
-.notas-input:focus,
-.notas-select:focus {
+.fp-input:focus,
+.fp-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.notas-input:hover:not(:focus),
-.notas-select:hover:not(:focus) {
+.fp-input:hover:not(:focus),
+.fp-select:hover:not(:focus) {
   border-color: #cbd5e1;
 }
 
 /* Select customizado */
-.notas-select {
+.fp-select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -171,14 +171,14 @@
 }
 
 /* Lista de turmas */
-.notas-turmas-list {
+.fp-turmas-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px;
 }
 
-.notas-turma-card {
+.fp-turma-card {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -191,12 +191,12 @@
   overflow: hidden;
 }
 
-.notas-turma-card:hover {
+.fp-turma-card:hover {
   border-color: #cbd5e1;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.notas-turma-info {
+.fp-turma-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -205,7 +205,7 @@
 }
 
 /* Header da turma */
-.notas-turma-header {
+.fp-turma-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -213,7 +213,7 @@
   gap: 16px;
 }
 
-.notas-turma-header-left {
+.fp-turma-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -221,9 +221,10 @@
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
+  flex-wrap: wrap;
 }
 
-.notas-turma-nome {
+.fp-turma-nome {
   font-size: 16px;
   font-weight: 600;
   color: #1e293b;
@@ -231,19 +232,46 @@
   transition: color 0.2s ease;
 }
 
-/* Tags de tipo e turno */
-.notas-tipo-ensino {
-  padding: 6px 12px;
-  border-radius: 20px;
+/* Estatísticas de presença */
+.fp-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.fp-stat {
+  padding: 4px 8px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #e0f2fe;
-  color: #0369a1;
 }
 
-.notas-turno {
+.fp-stat.fp-presentes {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.fp-stat.fp-faltosos {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.fp-stat.fp-total-periodos {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.fp-stat.fp-percentual {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Tags de turno */
+.fp-turno {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 11px;
@@ -254,19 +282,28 @@
   text-align: center;
 }
 
-.notas-turno-manhã {
+.fp-turno-manhã {
   background: #dbeafe;
   color: #1d4ed8;
 }
 
-.notas-turno-tarde {
+.fp-turno-tarde {
   background: #fed7aa;
   color: #ea580c;
 }
 
+.fp-turno-noite {
+  background: #e0e7ff;
+  color: #5b21b6;
+}
+
+.fp-turno-integral {
+  background: #d1fae5;
+  color: #059669;
+}
 
 /* Actions container */
-.notas-actions {
+.fp-actions {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -274,9 +311,8 @@
 }
 
 /* Botões - Design consistente */
-.notas-editar-button,
-.notas-salvar-button,
-.notas-boletins-button {
+.fp-editar-button,
+.fp-salvar-button {
   padding: 10px 16px;
   border: none;
   border-radius: 8px;
@@ -288,53 +324,41 @@
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
-  min-width: 150px;
+  min-width: 130px;
   height: 40px;
   text-decoration: none;
   white-space: nowrap;
 }
 
-.notas-editar-button {
+.fp-editar-button {
   background: #f59e0b;
   color: #fff;
 }
 
-.notas-editar-button:hover {
-  background: #d97706; /* Laranja mais escuro no hover */
+.fp-editar-button:hover {
+  background: #d97706;
   color: #fff;
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
-.notas-salvar-button {
+.fp-salvar-button {
   background: #10b981;
   color: #ffffff;
 }
 
-.notas-salvar-button:hover {
+.fp-salvar-button:hover {
   background: #059669;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-.notas-boletins-button {
-  background: #3b82f6;
-  color: #ffffff;
-}
-
-.notas-boletins-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
-
-.notas-editar-button:active,
-.notas-salvar-button:active,
-.notas-boletins-button:active {
+.fp-editar-button:active,
+.fp-salvar-button:active {
   transform: translateY(0);
 }
 
-/* Tabela de notas expandida */
-.notas-table-container {
+/* Tabela de faltas expandida */
+.fp-table-container {
   margin-top: 16px;
   border: 1.5px solid #e2e8f0;
   border-radius: 8px;
@@ -343,10 +367,10 @@
   background: #ffffff;
 }
 
-/* Cabeçalho da tabela para turmas globalizadas */
-.notas-table-header.notas-globalizada {
+/* Cabeçalho da tabela para turmas globalizadas (Fundamental I) */
+.fp-table-header.fp-globalizada {
   display: grid;
-  grid-template-columns: 3fr 200px;
+  grid-template-columns: 3fr 120px 120px;
   gap: 16px;
   padding: 16px 20px;
   background: #f8fafc;
@@ -359,10 +383,10 @@
   align-items: center;
 }
 
-/* Cabeçalho da tabela para turmas por disciplinas */
-.notas-table-header.notas-disciplinas {
+/* Cabeçalho da tabela para turmas por períodos (Fundamental II) */
+.fp-table-header.fp-periodos {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2fr repeat(5, 1fr);
   gap: 12px;
   padding: 16px 20px;
   background: #f8fafc;
@@ -373,18 +397,18 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   align-items: center;
-  min-width: 900px;
+  min-width: 800px;
 }
 
-.notas-table-header > :not(:first-child) {
+.fp-table-header > :not(:first-child) {
   justify-self: center;
   text-align: center;
 }
 
-/* Linhas dos alunos para turmas globalizadas */
-.notas-aluno-row.notas-globalizada {
+/* Linhas dos alunos para Fundamental I */
+.fp-aluno-row.fp-globalizada {
   display: grid;
-  grid-template-columns: 3fr 200px;
+  grid-template-columns: 3fr 120px 120px;
   gap: 16px;
   padding: 16px 20px;
   border-bottom: 1px solid #f1f5f9;
@@ -392,160 +416,194 @@
   font-size: 14px;
 }
 
-.notas-aluno-row.notas-globalizada:hover {
+.fp-aluno-row.fp-globalizada:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-globalizada:last-child {
+.fp-aluno-row.fp-globalizada:last-child {
   border-bottom: none;
 }
 
-/* Linhas dos alunos para turmas por disciplinas */
-.notas-aluno-row.notas-disciplinas {
+/* Linhas dos alunos para Fundamental II */
+.fp-aluno-row.fp-periodos {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2fr repeat(5, 1fr);
   gap: 12px;
   padding: 16px 20px;
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
   font-size: 14px;
   transition: background-color 0.15s ease;
-  min-width: 900px;
+  min-width: 800px;
 }
 
-.notas-aluno-row.notas-disciplinas:hover {
+.fp-aluno-row.fp-periodos:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-disciplinas:last-child {
+.fp-aluno-row.fp-periodos:last-child {
   border-bottom: none;
 }
 
-.notas-aluno-nome {
+.fp-aluno-nome {
   font-weight: 600;
   color: #1e293b;
   padding-right: 12px;
 }
 
-/* Container dos inputs de nota */
-.notas-nota-input {
+/* Container dos checkboxes/radios */
+.fp-checkbox-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Inputs de nota - Design consistente */
-.notas-input-nota {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-  background: #ffffff;
-  color: #1e293b;
+/* Container dos períodos */
+.fp-periodo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fp-periodo-opcoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Wrapper do checkbox customizado */
+.fp-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+/* Input radio oculto */
+.fp-radio-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Radio customizado */
+.fp-radio-custom {
+  height: 24px;
+  width: 24px;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s ease;
+  position: relative;
 }
 
-/* Remove as setas do input number */
-.notas-input-nota::-webkit-outer-spin-button,
-.notas-input-nota::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.notas-input-nota[type=number] {
-  -moz-appearance: textfield;
-}
-
-.notas-input-nota::placeholder {
-  color: #94a3b8;
-  text-align: center;
-}
-
-.notas-input-nota:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  transform: scale(1.02);
-}
-
-.notas-input-nota:hover:not(:focus):not(:disabled) {
-  border-color: #cbd5e1;
-}
-
-/* Classes para colorir os inputs baseado na nota */
-.notas-input-nota.nota-aprovado {
+/* Radio para "Presente" */
+.fp-radio-custom.fp-presente {
   border-color: #22c55e;
-  background-color: #f0fdf4;
-  color: #15803d;
 }
 
-.notas-input-nota.nota-aprovado:focus {
+.fp-radio-input:checked ~ .fp-radio-custom.fp-presente {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+.fp-radio-input:checked ~ .fp-radio-custom.fp-presente::after {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Radio para "Falta" */
+.fp-radio-custom.fp-falta {
+  border-color: #ef4444;
+}
+
+.fp-radio-input:checked ~ .fp-radio-custom.fp-falta {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.fp-radio-input:checked ~ .fp-radio-custom.fp-falta::after {
+  content: "✕";
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Checkboxes menores para períodos */
+.fp-checkbox-wrapper.fp-mini .fp-radio-custom.fp-mini {
+  height: 18px;
+  width: 18px;
+  border: 2px solid #e2e8f0;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-custom.fp-presente.fp-mini {
+  border-color: #22c55e;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-input:checked ~ .fp-radio-custom.fp-presente.fp-mini {
+  background-color: #22c55e;
+  border-color: #22c55e;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-input:checked ~ .fp-radio-custom.fp-presente.fp-mini::after {
+  content: "✓";
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-custom.fp-falta.fp-mini {
+  border-color: #ef4444;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-input:checked ~ .fp-radio-custom.fp-falta.fp-mini {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+
+.fp-checkbox-wrapper.fp-mini .fp-radio-input:checked ~ .fp-radio-custom.fp-falta.fp-mini::after {
+  content: "✕";
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Hover states */
+.fp-checkbox-wrapper:hover .fp-radio-custom.fp-presente {
   border-color: #16a34a;
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
-.notas-input-nota.nota-reprovado {
-  border-color: #ef4444;
-  background-color: #fef2f2;
-  color: #dc2626;
-}
-
-.notas-input-nota.nota-reprovado:focus {
+.fp-checkbox-wrapper:hover .fp-radio-custom.fp-falta {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
-.notas-input-nota.nota-recuperacao {
-  border-color: #f59e0b;
-  background-color: #fffbeb;
-  color: #d97706;
-}
-
-.notas-input-nota.nota-recuperacao:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-}
-
-/* Inputs desabilitados */
-.notas-input-nota:disabled {
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
-  color: #64748b;
+/* Estados desabilitados */
+.fp-radio-input:disabled ~ .fp-radio-custom {
+  opacity: 0.6;
   cursor: not-allowed;
-  opacity: 0.8;
 }
 
-.notas-input-nota:disabled:hover {
-  border-color: #e2e8f0;
-  transform: none;
-}
-
-/* Inputs desabilitados com notas ainda mantêm as cores, mas mais suaves */
-.notas-input-nota:disabled.nota-aprovado {
-  background-color: #f0fdf4;
-  border-color: #22c55e;
-  color: #15803d;
-  opacity: 0.7;
-}
-
-.notas-input-nota:disabled.nota-reprovado {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
-  opacity: 0.7;
+.fp-checkbox-wrapper:has(.fp-radio-input:disabled) {
+  cursor: not-allowed;
 }
 
 /* Área de ações da tabela */
-.notas-table-actions {
+.fp-table-actions {
   display: flex;
   justify-content: flex-end;
 }
 
 /* Estado vazio */
-.notas-empty-state {
+.fp-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -555,7 +613,7 @@
   animation: fadeIn 0.4s ease-out;
 }
 
-.notas-empty-icon {
+.fp-empty-icon {
   width: 80px;
   height: 80px;
   background: #f1f5f9;
@@ -568,14 +626,14 @@
   font-size: 32px;
 }
 
-.notas-empty-state h4 {
+.fp-empty-state h4 {
   font-size: 18px;
   font-weight: 600;
   color: #1e293b;
   margin: 0 0 8px 0;
 }
 
-.notas-empty-state p {
+.fp-empty-state p {
   font-size: 14px;
   color: #64748b;
   margin: 0;
@@ -584,7 +642,7 @@
 }
 
 /* Loading state */
-.notas-loading {
+.fp-loading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -594,7 +652,7 @@
   gap: 8px;
 }
 
-.notas-loading-spinner {
+.fp-loading-spinner {
   width: 20px;
   height: 20px;
   border: 2px solid #e2e8f0;
@@ -604,93 +662,58 @@
 }
 
 /* Scrollbar personalizada */
-.notas-table-container::-webkit-scrollbar {
+.fp-table-container::-webkit-scrollbar {
   height: 8px;
 }
 
-.notas-table-container::-webkit-scrollbar-track {
+.fp-table-container::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
 }
 
-.notas-table-container::-webkit-scrollbar-thumb {
+.fp-table-container::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.notas-table-container::-webkit-scrollbar-thumb:hover {
+.fp-table-container::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
 /* Estados adicionais */
-.notas-disabled {
+.fp-disabled {
   opacity: 0.6;
   pointer-events: none;
 }
 
-.notas-saving {
+.fp-saving {
   opacity: 0.8;
 }
 
-.notas-error {
+.fp-error {
   border-color: #ef4444 !important;
   background-color: #fef2f2 !important;
 }
 
-.notas-success {
+.fp-success {
   border-color: #10b981 !important;
   background-color: #f0fdf4 !important;
 }
 
+/* Classe clickable */
+.fp-clickable {
+  cursor: pointer;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
-  .notas-container {
-    padding: 20px;
-  }
-  
-  .notas-table-header.notas-disciplinas,
-  .notas-aluno-row.notas-disciplinas {
-    grid-template-columns: 2fr repeat(4, 1fr);
-    gap: 8px;
-    min-width: 700px;
-  }
-  
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 900px) {
-  .notas-form-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .notas-form-group.notas-third-width:last-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 768px) {
-  .notas-container {
-    padding: 16px;
-    gap: 20px;
+  .fp-form-group.fp-full-width,
+  .fp-form-group.fp-half-width,
+  .fp-form-group.fp-third-width {
+    grid-column: span 12;
   }
 
-  .notas-form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 20px;
-  }
-  
-  .notas-form-group.notas-full-width,
-  .notas-form-group.notas-half-width,
-  .notas-form-group.notas-third-width {
-    grid-column: span 1;
-  }
-
-  .notas-section-header {
+  .fp-section-header {
     padding: 16px 20px;
     font-size: 15px;
     flex-direction: column;
@@ -698,46 +721,51 @@
     gap: 8px;
   }
 
-  .notas-turmas-list {
+  .fp-turmas-list {
     padding: 20px;
   }
 
-  .notas-turma-card {
+  .fp-turma-card {
     padding: 16px;
   }
 
-  .notas-turma-header {
+  .fp-turma-header {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
 
-  .notas-turma-header-left {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+  .fp-turma-header-left {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 
-  .notas-actions {
+  .fp-turma-header-left > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fp-actions {
     flex-direction: row;
     justify-content: stretch;
     margin-left: 0;
     gap: 8px;
   }
 
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
+  .fp-editar-button,
+  .fp-salvar-button {
     flex: 1;
-    min-width: 140px;
+    min-width: 120px;
   }
 
-  /* Tabelas responsivas - Globalizada */
-  .notas-table-header.notas-globalizada {
+  /* Tabelas responsivas - Globalizada (Fundamental I) */
+  .fp-table-header.fp-globalizada {
     display: none;
   }
 
-  .notas-aluno-row.notas-globalizada {
+  .fp-aluno-row.fp-globalizada {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -746,36 +774,49 @@
     border-left: 3px solid #3b82f6;
   }
 
-  .notas-aluno-nome {
+  .fp-aluno-row.fp-globalizada .fp-aluno-nome {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 8px;
     padding-right: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
   }
 
-  .notas-nota-input {
+  .fp-aluno-row.fp-globalizada .fp-checkbox-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    padding: 8px 0;
   }
 
-  .notas-nota-input::before {
-    content: "NOTA";
+  .fp-aluno-row.fp-globalizada .fp-checkbox-container:nth-child(2)::before {
+    content: "PRESENTE";
     font-size: 11px;
     font-weight: 600;
-    color: #64748b;
+    color: #22c55e;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    min-width: 60px;
+    min-width: 80px;
   }
 
-  /* Tabelas responsivas - Por Disciplinas */
-  .notas-table-header.notas-disciplinas {
+  .fp-aluno-row.fp-globalizada .fp-checkbox-container:nth-child(3)::before {
+    content: "FALTOU";
+    font-size: 11px;
+    font-weight: 600;
+    color: #ef4444;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 80px;
+  }
+
+  /* Tabelas responsivas - Por Períodos (Fundamental II) */
+  .fp-table-header.fp-periodos {
     display: none;
   }
 
-  .notas-aluno-row.notas-disciplinas {
+  .fp-aluno-row.fp-periodos {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -785,7 +826,7 @@
     min-width: auto;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-aluno-nome {
+  .fp-aluno-row.fp-periodos .fp-aluno-nome {
     font-size: 15px;
     font-weight: 600;
     margin-bottom: 12px;
@@ -793,14 +834,15 @@
     border-bottom: 1px solid #e2e8f0;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-nota-input {
+  .fp-aluno-row.fp-periodos .fp-periodo-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
+    padding: 6px 0;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
+  .fp-aluno-row.fp-periodos .fp-periodo-container::before {
     content: attr(data-label);
     font-size: 11px;
     font-weight: 600;
@@ -810,85 +852,25 @@
     min-width: 90px;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-input-nota {
-    width: 80px;
-    margin-left: 0;
+  .fp-aluno-row.fp-periodos .fp-periodo-opcoes {
+    gap: 16px;
   }
 
-  .notas-table-actions {
+  .fp-table-actions {
     padding: 12px 16px 0;
   }
 }
 
-@media (max-width: 480px) {
-  .notas-container {
-    padding: 12px;
-  }
-
-  .notas-form-grid {
-    padding: 16px;
-  }
-
-  .notas-section-header {
-    padding: 12px 16px;
-    font-size: 14px;
-  }
-
-  .notas-turmas-list {
-    padding: 16px;
-  }
-
-  .notas-turma-card {
-    padding: 12px;
-  }
-
-  .notas-turma-nome {
-    font-size: 14px;
-  }
-
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-
-  .notas-aluno-row.notas-globalizada,
-  .notas-aluno-row.notas-disciplinas {
-    padding: 12px;
-  }
-
-  .notas-aluno-nome {
-    font-size: 14px;
-  }
-
-  .notas-nota-input::before {
-    font-size: 10px;
-    min-width: 50px;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
-    min-width: 70px;
-  }
-
-  .notas-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .notas-empty-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .notas-empty-state {
-    padding: 40px 16px;
-  }
+/* Coluna de resumo de cada aluno */
+.fp-resumo-aluno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  padding: 6px 8px;
+  border-left: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 6px;
 }

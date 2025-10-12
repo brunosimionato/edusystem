@@ -9,8 +9,8 @@ const titulosPorRota = {
   '/professor/dashboard': 'Dashboard',
   '/professor/lista-turma': 'Lista de Turmas',
   '/professor/horario-profe': 'Horários',
-    '/professor/notas': 'Notas',
-  '/professor/conteudos': 'Conteúdos',
+  '/professor/notas-profe': 'Notas',
+  '/professor/faltas-prof': 'Registro de Faltas',
   '/professor/avaliacoes': 'Avaliações',
   '/professor/perfil': 'Meu Perfil',
 };
