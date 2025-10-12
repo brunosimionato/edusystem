@@ -27,6 +27,7 @@ import Professor from './Professor/InicioProf/prof';
 import ListaTurma from './Professor/ListaTurmas/listaTurma';
 import HorariosProf from './Professor/HorarioProf/horarioProf';
 import NotasProf from './Professor/NotasProf/notasProf';
+import FaltasProfessor from './Professor/FaltasProf/faltasProf';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
             <Route path="lista-turma" element={<ListaTurma />} />
             <Route path="horario-profe" element={<HorariosProf />} />
             <Route path="notas-profe" element={<NotasProf />} />
+            <Route path="faltas-prof" element={<FaltasProfessor />} />
           </Route>
         </Routes>
       </BrowserRouter>
