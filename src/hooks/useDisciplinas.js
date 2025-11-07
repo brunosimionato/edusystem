@@ -1,35 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
+// src/hooks/useDisciplinas.js
+import { useState, useEffect } from 'react';
+import { apiClient } from '../api/api';
 
-import DisciplinaService from '../Services/DisciplinaService';
+export function useDisciplinas() {
+  const [disciplinas, setDisciplinas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export const useDisciplinas = () => {
-    const [disciplinas, setDisciplinas] = useState([]);
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [hasError, setHasError] = useState(false);
-
-    const refetch = useCallback(async () => {
+  useEffect(() => {
+    const fetchDisciplinas = async () => {
+      try {
         setIsLoading(true);
-        setHasError(false);
-        try {
-            const list = await DisciplinaService.getAll();
-            setDisciplinas(list);
-        } catch (error) {
-            setHasError(true);
-            console.error("Erro ao buscar discpilinas:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+        // Supondo que você tenha um endpoint para disciplinas
+        const data = await apiClient.get('/disciplinas');
+        setDisciplinas(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Erro ao carregar disciplinas:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    useEffect(() => {
-        refetch();
-    }, [refetch]);
+    fetchDisciplinas();
+  }, []);
 
-    return {
-        disciplinas,
-        isLoading,
-        hasError,
-        refetch,
-    }
+  return {
+    disciplinas,
+    isLoading,
+    error,
+  };
 }
