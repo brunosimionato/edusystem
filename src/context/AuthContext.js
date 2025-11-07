@@ -1,42 +1,76 @@
-import { createContext, useContext, useState } from 'react'
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
-export const AuthContext = createContext(null);
+const AuthContext = createContext();
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    }
+    return context;
+};
 
 export const AuthProvider = ({ children }) => {
-    const [authToken, setAuthToken] = useState(() => localStorage.getItem('token'));
-    const [userRole, setUserRole] = useState(() => localStorage.getItem('role'));
+    const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
+    const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
+    const [user, setUser] = useState(null); // ✅ Alterado de userData para user
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (authToken) {
+            try {
+                const decoded = jwtDecode(authToken);
+
+                // ✅ pega só a parte importante
+                setUser({
+                    id: decoded.usuario?.id,
+                    nome: decoded.usuario?.nome,
+                    email: decoded.usuario?.email,
+                    role: decoded.usuario?.tipo_usuario,
+                });
+
+                if (!userRole && decoded.usuario?.tipo_usuario) {
+                    setUserRole(decoded.usuario.tipo_usuario);
+                    localStorage.setItem('userRole', decoded.usuario.tipo_usuario);
+                }
+            } catch (error) {
+                console.error('Erro ao decodificar token:', error);
+                logout();
+            }
+        }
+        setIsLoading(false);
+    }, [authToken, userRole]);
 
     const login = (token, role) => {
         setAuthToken(token);
         setUserRole(role);
         localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
+        localStorage.setItem('userRole', role);
     };
 
     const logout = () => {
         setAuthToken(null);
         setUserRole(null);
+        setUser(null);
         localStorage.removeItem('token');
-        localStorage.removeItem('role');
+        localStorage.removeItem('userRole');
+    };
+
+    const value = {
+        authToken,
+        userRole,
+        user,           // ✅ agora a sidebar pode pegar user.nome
+        login,
+        logout,
+        isLoading,
+        isAuthenticated: !!authToken
     };
 
     return (
-        <AuthContext.Provider value={{ authToken, userRole, login, logout }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
-}
-
-/**
- * Custom hook to access authentication context
- * @returns {object} Context value (authToken, userRole, login, logout)
- */
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-
-    return context;
-}
+};

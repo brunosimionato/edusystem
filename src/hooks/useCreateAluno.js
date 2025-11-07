@@ -1,23 +1,41 @@
-import { useState, useCallback } from 'react';
+// src/hooks/useCreateAluno.js
+import { useState } from 'react';
+import { alunoApi } from '../api/api';
 
-import AlunoService from '../Services/AlunoService';
+export function useCreateAluno() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
 
-export const useCreateAluno = () => {
-    const [isCreating, setIsCreating] = useState(false);
-    const [createError, setCreateError] = useState(null);
+  const create = async (alunoData) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Formata as datas para string ISO
+      const formattedData = {
+        ...alunoData,
+        nascimento: alunoData.nascimento instanceof Date 
+          ? alunoData.nascimento.toISOString() 
+          : alunoData.nascimento,
+      };
 
-    const create = useCallback(async (novoAluno) => {
-        setIsCreating(true);
-        setCreateError(null);
-        try {
-            return await AlunoService.create(novoAluno);
-        } catch (err) {
-            setCreateError(err);
-            throw err;
-        } finally {
-            setIsCreating(false);
-        }
-    }, []);
+      const response = await alunoApi.create(formattedData);
+      setData(response);
+      return response;
+    } catch (err) {
+      const errorMessage = err.message || 'Erro ao criar aluno';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return { create, isCreating, createError };
+  return {
+    create,
+    isLoading,
+    error,
+    data,
+  };
 }

@@ -140,30 +140,31 @@ const LoginForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedRole) {
-      setError('Por favor, selecione o tipo de usuário');
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setIsLoading(true);
-    setError(null);
+  if (!selectedRole) {
+    setError("Por favor, selecione o tipo de usuário");
+    return;
+  }
 
-    try {
-      const { token, role } = await AuthService.login({
-        ...formData,
-        role: selectedRole
-      });
+  setIsLoading(true);
+  setError(null);
 
-      login(token, role);
-    } catch (error) {
-      console.error('Login failed:', error);
-      setError('Falha no login. Verifique suas credenciais e tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    const { token, role } = await AuthService.login({
+      ...formData,
+      role: selectedRole
+    });
+
+    login(token, role);
+  } catch (error) {
+    console.error("Login failed:", error);
+    setError(error.message || "Erro ao fazer login.");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
   return (
