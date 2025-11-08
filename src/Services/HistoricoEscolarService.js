@@ -1,14 +1,13 @@
 import { z } from 'zod';
-
-import { API_URL } from '../utils/env.js'
+import { API_URL } from '../utils/env.js';
 
 export const novoHistoricoEscolarSchema = z.object({
     idAluno: z.number(),
     idDisciplina: z.number().nullish(),
     nomeEscola: z.string(),
     serieConcluida: z.string(),
-    nota: z.coerce.number(),
-    anoConclusao: z.number().int()
+    nota: z.coerce.number().nullable().optional(),  // ✅ permite vazio
+    anoConclusao: z.coerce.number().int()           // ✅ aceita string e converte
 });
 
 export const historicoEscolarSchema = z.object({
@@ -17,134 +16,87 @@ export const historicoEscolarSchema = z.object({
     idDisciplina: z.number().nullish(),
     nomeEscola: z.string(),
     serieConcluida: z.string(),
-    nota: z.coerce.number(),
-    anoConclusao: z.number().int().nullable(),
+    nota: z.coerce.number().nullable().optional(),
+    anoConclusao: z.coerce.number().int().nullable(),
     createdAt: z.union([z.string(), z.date()]).optional(),
     updatedAt: z.union([z.string(), z.date()]).optional()
 });
 
 class HistoricoEscolarService {
-    /**
-     * Get all historicos escolares
-     */
+
     async getAll() {
         const token = localStorage.getItem('token');
 
         const res = await fetch(API_URL + '/historicos-escolares', {
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
-        })
+        });
 
         if (!res.ok) {
-            throw new Error('Failed to fetch historicos escolares')
+            throw new Error('Failed to fetch historicos escolares');
         }
 
-        try {
-            const body = await res.json()
-            return body.map(historicoEscolarSchema.parse)
-        } catch (error) {
-            console.error("Error parsing historicos escolares:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return body.map(historicoEscolarSchema.parse);
     }
 
-    /**
-     * Get historico escolar by ID
-     * @param {number} id
-     */
     async getById(id) {
         const token = localStorage.getItem('token');
 
         const res = await fetch(API_URL + `/historicos-escolares/${id}`, {
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
-        })
+        });
 
         if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Histórico escolar not found')
-            }
-            throw new Error('Failed to fetch histórico escolar')
+            if (res.status === 404) throw new Error('Histórico escolar not found');
+            throw new Error('Failed to fetch histórico escolar');
         }
 
-        try {
-            const body = await res.json()
-            return historicoEscolarSchema.parse(body)
-        } catch (error) {
-            console.error("Error parsing histórico escolar:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return historicoEscolarSchema.parse(body);
     }
 
-    /**
-     * Get historicos escolares by aluno ID
-     * @param {number} alunoId
-     */
     async getByAlunoId(alunoId) {
         const token = localStorage.getItem('token');
 
         const res = await fetch(API_URL + `/historicos-escolares/aluno/${alunoId}`, {
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
-        })
+        });
 
-        if (!res.ok) {
-            throw new Error('Failed to fetch historicos escolares by aluno')
-        }
+        if (!res.ok) throw new Error('Failed to fetch historicos escolares by aluno');
 
-        try {
-            const body = await res.json()
-            return body.map(historicoEscolarSchema.parse)
-        } catch (error) {
-            console.error("Error parsing historicos escolares by aluno:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return body.map(historicoEscolarSchema.parse);
     }
 
-    /**
-     * Get historicos escolares by disciplina ID
-     * @param {number} disciplinaId
-     */
     async getByDisciplinaId(disciplinaId) {
         const token = localStorage.getItem('token');
 
         const res = await fetch(API_URL + `/historicos-escolares/disciplina/${disciplinaId}`, {
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
-        })
+        });
 
-        if (!res.ok) {
-            throw new Error('Failed to fetch historicos escolares by disciplina')
-        }
+        if (!res.ok) throw new Error('Failed to fetch historicos escolares by disciplina');
 
-        try {
-            const body = await res.json()
-            return body.map(historicoEscolarSchema.parse)
-        } catch (error) {
-            console.error("Error parsing historicos escolares by disciplina:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return body.map(historicoEscolarSchema.parse);
     }
 
-    /**
-     * Create new historico escolar
-     * @param {Object} novoHistoricoEscolar
-     */
     async create(novoHistoricoEscolar) {
         const token = localStorage.getItem('token');
-        const validatedData = novoHistoricoEscolarSchema.parse(novoHistoricoEscolar);
+
+        const validated = novoHistoricoEscolarSchema.parse(novoHistoricoEscolar);
 
         const res = await fetch(API_URL + '/historicos-escolares', {
             method: 'POST',
@@ -152,31 +104,22 @@ class HistoricoEscolarService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(validatedData)
-        })
+            body: JSON.stringify(validated)
+        });
 
         if (!res.ok) {
-            const errorData = await res.json();
+            const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.message || errorData.error || 'Failed to create histórico escolar');
         }
 
-        try {
-            const body = await res.json()
-            return historicoEscolarSchema.parse(body)
-        } catch (error) {
-            console.error("Error parsing created histórico escolar:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return historicoEscolarSchema.parse(body);
     }
 
-    /**
-     * Update historico escolar
-     * @param {number} id
-     * @param {Object} updateData
-     */
     async update(id, updateData) {
         const token = localStorage.getItem('token');
-        const validatedData = novoHistoricoEscolarSchema.parse(updateData);
+
+        const validated = novoHistoricoEscolarSchema.parse(updateData);
 
         const res = await fetch(API_URL + `/historicos-escolares/${id}`, {
             method: 'PUT',
@@ -184,31 +127,18 @@ class HistoricoEscolarService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(validatedData)
-        })
+            body: JSON.stringify(validated)
+        });
 
         if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Histórico escolar not found')
-            }
-            const errorData = await res.json();
+            const errorData = await res.json().catch(() => ({}));
             throw new Error(errorData.message || errorData.error || 'Failed to update histórico escolar');
         }
 
-        try {
-            const body = await res.json()
-            return historicoEscolarSchema.parse(body)
-        } catch (error) {
-            console.error("Error parsing updated histórico escolar:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return historicoEscolarSchema.parse(body);
     }
 
-    /**
-     * Delete historico escolar
-     * @param {number} id
-     * @returns {Promise<void>}
-     */
     async delete(id) {
         const token = localStorage.getItem('token');
 
@@ -218,17 +148,14 @@ class HistoricoEscolarService {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             }
-        })
+        });
 
         if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Histórico escolar not found')
-            }
-            let msg = 'Failed to delete histórico escolar';
+            let msg = "Failed to delete histórico escolar";
             try {
                 const errorData = await res.json();
-                msg = errorData.message || errorData.error || msg;
-            } catch { }
+                msg = errorData.message || msg;
+            } catch {}
             throw new Error(msg);
         }
     }

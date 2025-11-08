@@ -2,7 +2,8 @@
 
 // Usa a URL do ambiente ou um fallback.
 // Preferi o fallback do segundo código que inclui '/api', o que é mais comum.
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+
 
 /**
  * Cliente API centralizado para todas as requisições.
@@ -21,7 +22,7 @@ class ApiClient {
      * @returns {Promise<any>} O corpo da resposta (JSON ou texto).
      */
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
+        const url = `${this.baseURL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
 
         // 1. Configuração dos Headers
         const token = localStorage.getItem('token');
