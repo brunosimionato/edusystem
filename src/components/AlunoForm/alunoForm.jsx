@@ -20,27 +20,26 @@ const AlunoForm = ({
     nome: "",
     cpf: "",
     cns: "",
-    dataNascimento: "",
+    nascimento: "",
     genero: "",
     religiao: "",
     telefone: "",
-    rua: "",
+    logradouro: "",
     numero: "",
     bairro: "",
     cep: "",
     cidade: "",
     estado: "",
-    nomeR1: "",
-    cpfR1: "",
-    telefoneR1: "",
-    parentescoR1: "",
-    nomeR2: "",
-    cpfR2: "",
-    telefoneR2: "",
-    parentescoR2: "",
-    anoLetivo: "",
-    serie: "",
+    responsavel1Nome: "",
+    responsavel1Cpf: "",
+    responsavel1Telefone: "",
+    responsavel1Parentesco: "",
+    responsavel2Nome: "",
+    responsavel2Cpf: "",
+    responsavel2Telefone: "",
+    responsavel2Parentesco: "",
     turma: "",
+    historicoEscolar: null,
     alunoOutraEscola: false,
   });
 
@@ -58,17 +57,15 @@ const AlunoForm = ({
     "9ano",
   ];
 
-  // mapeamento do nome interno, utilizado dentro dos objetos, para o nome exibido na interface e salvo no banco
   const disciplinasMap = {
-    portugues: "Português",
+    ensinoGlobalizado: "Ensino Globalizado",
     matematica: "Matemática",
     ciencias: "Ciências",
     historia: "História",
     geografia: "Geografia",
     ingles: "Inglês",
-    artes: "Artes",
+    arte: "Arte",
     edFisica: "Educação Física",
-    religiao: "Religião",
   };
 
   const {
@@ -77,35 +74,17 @@ const AlunoForm = ({
     hasError: turmasError,
   } = useTurmas();
 
-  const [historicoEscolar, setHistoricoEscolar] = useState([
-    // {
-    //   escolaAnterior: "",
-    //   serieAnterior: "", // Mudei para vazio para que o usuário selecione
-    //   anoConclusao: "",
-    //   notaConclusao: "",
-    //   notas: {
-    //     portugues: "",
-    //     matemática: "",
-    //     ciencias: "",
-    //     historia: "",
-    //     geografia: "",
-    //     ingles: "",
-    //     artes: "",
-    //     edFisica: "",
-    //   },
-    // },
-  ]);
+  const [historicoEscolar, setHistoricoEscolar] = useState([]);
 
   // Se receber initialData (modo edição), popula os estados mantendo a estrutura do histórico
   useEffect(() => {
     if (initialData) {
-      // Preenche campos do formData a partir do initialData, se existirem
       setFormData((prev) => ({
         ...prev,
         nome: initialData.nome ?? prev.nome,
         cpf: initialData.cpf ?? prev.cpf,
         cns: initialData.cns ?? prev.cns,
-        dataNascimento: initialData.dataNascimento ?? prev.dataNascimento,
+        dataNascimento: initialData.nascimento ?? prev.dataNascimento,
         genero: initialData.genero ?? prev.genero,
         religiao: initialData.religiao ?? prev.religiao,
         telefone: initialData.telefone ?? prev.telefone,
@@ -130,7 +109,6 @@ const AlunoForm = ({
       }));
 
       if (initialData.historicoEscolar) {
-        // copia profunda para evitar mutação externa
         try {
           const copia = JSON.parse(
             JSON.stringify(initialData.historicoEscolar)
@@ -148,7 +126,6 @@ const AlunoForm = ({
   const camposObrigatoriosPrincipais = [
     "nome",
     "cpf",
-    "cns",
     "dataNascimento",
     "genero",
     "telefone",
@@ -184,6 +161,34 @@ const AlunoForm = ({
         buscarCEP(formattedValue);
       }
     }
+
+    // Se marcar/desmarcar o checkbox de aluno de outra escola
+    if (name === "alunoOutraEscola") {
+      if (checked && historicoEscolar.length === 0) {
+        // Adiciona o primeiro ano escolar automaticamente
+        setHistoricoEscolar([
+          {
+            escolaAnterior: "",
+            serieAnterior: "1ano",
+            anoConclusao: "",
+            notas: {
+              ensinoGlobalizado: "",
+              matematica: "",
+              ciencias: "",
+              historia: "",
+              geografia: "",
+              ingles: "",
+              arte: "",
+              edFisica: "",
+            },
+          },
+        ]);
+      } else if (!checked) {
+        // Limpa o histórico se desmarcar
+        setHistoricoEscolar([]);
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : formattedValue,
@@ -243,25 +248,28 @@ const AlunoForm = ({
         if (!ano.anoConclusao || ano.anoConclusao.trim() === "") {
           invalidos.push(`anoConclusao-${index}`);
         }
+
+        // Para 1º ao 5º ano, apenas Ensino Globalizado é obrigatório
         if (
           ["1ano", "2ano", "3ano", "4ano", "5ano"].includes(ano.serieAnterior)
         ) {
           if (
-            !ano.notaConclusao ||
-            ano.notaConclusao.toString().trim() === ""
+            !ano.notas.ensinoGlobalizado ||
+            ano.notas.ensinoGlobalizado.toString().trim() === ""
           ) {
-            invalidos.push(`notaConclusao-${index}`);
+            invalidos.push(`notas.ensinoGlobalizado-${index}`);
           }
-        } else if (
-          ["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior)
-        ) {
-          // Para 6º, 7º, 8º e 9º ano, todas as notas de disciplina são obrigatórias
+        }
+        // Para 6º ao 9º ano, todas as disciplinas exceto Ensino Globalizado são obrigatórias
+        else if (["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior)) {
           Object.keys(ano.notas).forEach((materia) => {
-            if (
-              !ano.notas[materia] ||
-              ano.notas[materia].toString().trim() === ""
-            ) {
-              invalidos.push(`notas.${materia}-${index}`);
+            if (materia !== "ensinoGlobalizado") {
+              if (
+                !ano.notas[materia] ||
+                ano.notas[materia].toString().trim() === ""
+              ) {
+                invalidos.push(`notas.${materia}-${index}`);
+              }
             }
           });
         }
@@ -270,27 +278,36 @@ const AlunoForm = ({
 
     if (invalidos.length > 0) {
       setCamposInvalidos(invalidos);
-      alert("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
     setCamposInvalidos([]);
-    const payload = { ...formData, historicoEscolar };
 
-    if (onSave) {
-      try {
-        await onSave(payload);
-        handleLimpar(false);
-        alert("Aluno salvo com sucesso!");
-      } catch (error) {
-        alert("Erro ao salvar o aluno. Verifique os dados e tente novamente.");
-        console.error("Erro ao salvar:", error);
-      } finally {
-        return;
-      }
+    const payload = {
+      ...formData,
+      nascimento: formData.dataNascimento, // 🔥 mapeia para o nome que o backend espera
+      historicoEscolar: formData.alunoOutraEscola ? historicoEscolar : null,
+    };
+
+if (onSave) {
+  try {
+    const sucesso = await onSave(payload); // 🔥 backend retorna true quando salvar
+
+    if (sucesso === true) {
+      handleLimpar(false); // ✅ agora só limpa quando realmente deu certo
     }
 
-    handleLimpar(false);
+  } catch (error) {
+    if (error.message?.toLowerCase().includes("cpf")) {
+    } else {
+      alert("Erro ao salvar o aluno. Verifique os dados e tente novamente.");
+    }
+
+    console.error("Erro ao salvar:", error);
+    return; // ⛔ impede de limpar o formulário
+  }
+}
+
   };
 
   const handleLimpar = (confirmar = true) => {
@@ -326,24 +343,7 @@ const AlunoForm = ({
       turma: "",
       alunoOutraEscola: false,
     });
-    setHistoricoEscolar([
-      {
-        escolaAnterior: "",
-        serieAnterior: "",
-        notaConclusao: "",
-        anoConclusao: "",
-        notas: {
-          portugues: "",
-          matematica: "",
-          ciencias: "",
-          historia: "",
-          geografia: "",
-          ingles: "",
-          artes: "",
-          edFisica: "",
-        },
-      },
-    ]);
+    setHistoricoEscolar([]);
     setCamposInvalidos([]);
   };
 
@@ -355,37 +355,46 @@ const AlunoForm = ({
   };
 
   const adicionarAnoEscolar = () => {
-    // Verifica se já temos 9 anos escolares
-    if (historicoEscolar.length >= 9) {
-      alert("O máximo de anos escolares permitidos é 9.");
-      return;
-    }
+    const seriesOrdenadas = [
+      "1ano",
+      "2ano",
+      "3ano",
+      "4ano",
+      "5ano",
+      "6ano",
+      "7ano",
+      "8ano",
+    ];
 
-    let proximaSerie = "1ano"; // padrão
+    let nextSerie = "1ano"; // default se for o primeiro
+
     if (historicoEscolar.length > 0) {
       const ultimaSerie =
         historicoEscolar[historicoEscolar.length - 1].serieAnterior;
-      const indiceUltimaSerie = series.indexOf(ultimaSerie);
-      if (indiceUltimaSerie !== -1 && indiceUltimaSerie < series.length - 1) {
-        proximaSerie = series[indiceUltimaSerie + 1];
+      const idx = seriesOrdenadas.indexOf(ultimaSerie);
+
+      if (idx === -1 || idx === seriesOrdenadas.length - 1) {
+        alert("O último ano escolar já foi adicionado (8º ano).");
+        return;
       }
+
+      nextSerie = seriesOrdenadas[idx + 1];
     }
 
     setHistoricoEscolar([
       ...historicoEscolar,
       {
         escolaAnterior: "",
-        serieAnterior: proximaSerie,
+        serieAnterior: nextSerie,
         anoConclusao: "",
-        notaConclusao: "",
         notas: {
-          portugues: "",
+          ensinoGlobalizado: "",
           matematica: "",
           ciencias: "",
           historia: "",
           geografia: "",
           ingles: "",
-          artes: "",
+          arte: "",
           edFisica: "",
         },
       },
@@ -393,21 +402,18 @@ const AlunoForm = ({
   };
 
   const removerAnoEscolar = (index) => {
-    // Impede remover se não for o último
     if (index !== historicoEscolar.length - 1) {
       alert("Os anos escolares devem ser excluídos em ordem decrescente.");
       return;
     }
 
-    // Impede remover se for o único
     if (historicoEscolar.length === 1) {
       alert(
-        "Para remover o único ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
+        "Para remover o último ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
       );
       return;
     }
 
-    // Remove normalmente se for o último
     setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -447,7 +453,7 @@ const AlunoForm = ({
                 />
               </div>
               <div className="form-group-aluno medium">
-                <label htmlFor="cns">CNS*</label>
+                <label htmlFor="cns">CNS</label>
                 <input
                   className={
                     camposInvalidos.includes("cns") ? "input-error" : ""
@@ -609,14 +615,14 @@ const AlunoForm = ({
                     handleInputChange({
                       target: {
                         name: "estado",
-                        value: e.target.value.toUpperCase(), // transforma em maiúsculo
+                        value: e.target.value.toUpperCase(),
                       },
                     })
                   }
-                  maxLength={2} // impede mais de 2 caracteres
-                  pattern="[A-Z]{2}" // só permite 2 letras maiúsculas
+                  maxLength={2}
+                  pattern="[A-Z]{2}"
                   title="Digite a sigla do estado (ex: SP, RJ)"
-                  style={{ textTransform: "uppercase" }} // exibe sempre em maiúsculo
+                  style={{ textTransform: "uppercase" }}
                 />
               </div>
             </div>
@@ -827,107 +833,16 @@ const AlunoForm = ({
           </div>
 
           {/* Histórico Escolar - aparece só se alunoOutraEscola for true */}
-          {formData.alunoOutraEscola && (
+          {formData.alunoOutraEscola && historicoEscolar.length > 0 && (
             <div className="form-section-aluno">
               <div className="section-title-cad-aluno">Histórico Escolar</div>
 
               <div className="historico-container">
                 {historicoEscolar.map((ano, index) => (
                   <div key={index} className="historico-ano-container">
-                    {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
-                    <div className="form-group-aluno">
-                      <label htmlFor={`escolaAnterior-${index}`}>
-                        Escola Anterior*
-                      </label>
-                      <input
-                        type="text"
-                        id={`escolaAnterior-${index}`}
-                        name="escolaAnterior"
-                        value={ano.escolaAnterior}
-                        onChange={(e) => handleHistoricoChange(index, e)}
-                        className={
-                          camposInvalidos.includes(`escolaAnterior-${index}`)
-                            ? "input-error"
-                            : ""
-                        }
-                      />
-                    </div>
-                    <div
-                      className="form-group-aluno"
-                      style={{
-                        gridColumn: ["6ano", "7ano", "8ano", "9ano"].includes(
-                          ano.serieAnterior
-                        )
-                          ? "span 2"
-                          : "span 1",
-                      }}
-                    >
-                      <label htmlFor={`serieAnterior-${index}`}>Série*</label>
-                      <select
-                        id={`serieAnterior-${index}`}
-                        name="serieAnterior"
-                        value={ano.serieAnterior}
-                        onChange={(e) => handleHistoricoChange(index, e)}
-                        className={
-                          camposInvalidos.includes(`serieAnterior-${index}`)
-                            ? "input-error"
-                            : ""
-                        }
-                      >
-                        <option value="">Selecione</option>
-                        <option value="1ano">1º Ano</option>
-                        <option value="2ano">2º Ano</option>
-                        <option value="3ano">3º Ano</option>
-                        <option value="4ano">4º Ano</option>
-                        <option value="5ano">5º Ano</option>
-                        <option value="6ano">6º Ano</option>
-                        <option value="7ano">7º Ano</option>
-                        <option value="8ano">8º Ano</option>
-                        <option value="9ano">9º Ano</option>
-                      </select>
-                    </div>
-
-                    {/* Renderiza nota de conclusão para 1º ao 5º ano */}
-                    {!["6ano", "7ano", "8ano", "9ano"].includes(
-                      ano.serieAnterior
-                    ) && (
-                      <div className="form-group-aluno">
-                        <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
-                        <input
-                          type="number"
-                          id={`notaConclusao-${index}`}
-                          name="notaConclusao"
-                          value={ano.notaConclusao}
-                          onChange={(e) => handleHistoricoChange(index, e)}
-                          className={
-                            camposInvalidos.includes(`notaConclusao-${index}`)
-                              ? "input-error"
-                              : ""
-                          }
-                        />
-                      </div>
-                    )}
-
-                    <div className="form-group-aluno">
-                      <label htmlFor={`anoConclusao-${index}`}>
-                        Ano de Conclusão*
-                      </label>
-                      <input
-                        type="text"
-                        id={`anoConclusao-${index}`}
-                        name="anoConclusao"
-                        value={ano.anoConclusao}
-                        onChange={(e) => handleHistoricoChange(index, e)}
-                        maxLength={4}
-                        className={
-                          camposInvalidos.includes(`anoConclusao-${index}`)
-                            ? "input-error"
-                            : ""
-                        }
-                      />
-                    </div>
-
-                    <div className="form-group-aluno">
+                    {/* Cabeçalho do ano escolar */}
+                    <div className="historico-header">
+                      <h4 className="historico-titulo">{index + 1}º Ano</h4>
                       <button
                         type="button"
                         onClick={() => removerAnoEscolar(index)}
@@ -938,45 +853,151 @@ const AlunoForm = ({
                       </button>
                     </div>
 
-                    {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
-                    {["6ano", "7ano", "8ano", "9ano"].includes(
-                      ano.serieAnterior
-                    ) && (
-                      <div className="form-row-aluno-materias">
-                        {Object.keys(ano.notas).map((materia) => (
-                          <div
-                            key={materia}
-                            className="form-group-aluno flex-1"
-                          >
-                            <label>
-                              {disciplinasMap[materia] ||
-                                materia.charAt(0).toUpperCase() +
-                                  materia.slice(1)}
-                              *
-                            </label>
-                            <input
-                              type="number"
-                              name={`notas.${materia}`}
-                              value={ano.notas[materia]}
-                              onChange={(e) => {
-                                const novosHistoricos = [...historicoEscolar];
-                                novosHistoricos[index].notas[materia] =
-                                  e.target.value;
-                                setHistoricoEscolar(novosHistoricos);
-                              }}
-                              className={
-                                camposInvalidos.includes(
-                                  `notas.${materia}-${index}`
-                                )
-                                  ? "input-error"
-                                  : ""
-                              }
-                            />
-                          </div>
-                        ))}
+                    {/* Informações básicas */}
+                    <div className="historico-info-basica">
+                      {/* Escola Anterior */}
+                      <div className="form-group-aluno flex-3">
+                        <label htmlFor={`escolaAnterior-${index}`}>
+                          Escola Anterior*
+                        </label>
+                        <input
+                          type="text"
+                          id={`escolaAnterior-${index}`}
+                          name="escolaAnterior"
+                          value={ano.escolaAnterior}
+                          onChange={(e) => handleHistoricoChange(index, e)}
+                          className={
+                            camposInvalidos.includes(`escolaAnterior-${index}`)
+                              ? "input-error"
+                              : ""
+                          }
+                        />
                       </div>
-                    )}
-                  </div> /* Fim do historico-ano-container */
+
+                      {/* Série (bloqueada para edição) */}
+                      <div className="form-group-aluno">
+                        <label htmlFor={`serieAnterior-${index}`}>Série*</label>
+                        <select
+                          id={`serieAnterior-${index}`}
+                          name="serieAnterior"
+                          value={ano.serieAnterior}
+                          disabled // ✅ usuário não altera manualmente
+                          className={
+                            camposInvalidos.includes(`serieAnterior-${index}`)
+                              ? "input-error"
+                              : ""
+                          }
+                        >
+                          <option value="">Selecione</option>
+                          <option value="1ano">1º Ano</option>
+                          <option value="2ano">2º Ano</option>
+                          <option value="3ano">3º Ano</option>
+                          <option value="4ano">4º Ano</option>
+                          <option value="5ano">5º Ano</option>
+                          <option value="6ano">6º Ano</option>
+                          <option value="7ano">7º Ano</option>
+                          <option value="8ano">8º Ano</option>
+                        </select>
+                      </div>
+
+                      {/* Ano de Conclusão */}
+                      <div className="form-group-aluno">
+                        <label htmlFor={`anoConclusao-${index}`}>
+                          Ano de Conclusão*
+                        </label>
+                        <input
+                          type="text"
+                          id={`anoConclusao-${index}`}
+                          name="anoConclusao"
+                          value={ano.anoConclusao}
+                          onChange={(e) => handleHistoricoChange(index, e)}
+                          maxLength={4}
+                          className={
+                            camposInvalidos.includes(`anoConclusao-${index}`)
+                              ? "input-error"
+                              : ""
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* Notas por disciplina */}
+                    <div className="historico-notas">
+                      <h5 className="notas-titulo">Notas</h5>
+                      <div className="notas-grid">
+                        {Object.keys(ano.notas).map((materia) => {
+                          // Define se a disciplina é obrigatória baseado na série
+                          const isObrigatoria =
+                            (["1ano", "2ano", "3ano", "4ano", "5ano"].includes(
+                              ano.serieAnterior
+                            ) &&
+                              materia === "ensinoGlobalizado") ||
+                            (["6ano", "7ano", "8ano", "9ano"].includes(
+                              ano.serieAnterior
+                            ) &&
+                              materia !== "ensinoGlobalizado");
+
+                          // Para 1º ao 5º ano, mostra apenas Ensino Globalizado
+                          if (
+                            ["1ano", "2ano", "3ano", "4ano", "5ano"].includes(
+                              ano.serieAnterior
+                            )
+                          ) {
+                            if (materia !== "ensinoGlobalizado") {
+                              return null; // Não renderiza outras disciplinas
+                            }
+                          }
+
+                          // Para 6º ao 9º ano, não mostra Ensino Globalizado
+                          if (
+                            ["6ano", "7ano", "8ano", "9ano"].includes(
+                              ano.serieAnterior
+                            )
+                          ) {
+                            if (materia === "ensinoGlobalizado") {
+                              return null; // Não renderiza Ensino Globalizado
+                            }
+                          }
+
+                          return (
+                            <div key={materia} className="form-group-aluno">
+                              <label>
+                                {disciplinasMap[materia] || materia}
+                                {isObrigatoria && "*"}
+                              </label>
+                              <input
+                                type="number"
+                                step="1"
+                                min="0"
+                                max="100" // ✅ Limita a nota até 100
+                                name={`notas.${materia}`}
+                                value={ano.notas[materia]}
+                                onChange={(e) => {
+                                  const valor = Math.min(
+                                    100,
+                                    Math.max(0, e.target.value)
+                                  ); // ✅ Garante limite no JS
+                                  const novosHistoricos = [...historicoEscolar];
+                                  novosHistoricos[index].notas[materia] = valor;
+                                  setHistoricoEscolar(novosHistoricos);
+                                }}
+                                className={
+                                  camposInvalidos.includes(
+                                    `notas.${materia}-${index}`
+                                  )
+                                    ? "input-error"
+                                    : ""
+                                }
+                                placeholder={
+                                  isObrigatoria ? "Obrigatório" : "Opcional"
+                                }
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
 
