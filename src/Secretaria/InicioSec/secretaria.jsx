@@ -15,7 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const Secretaria = () => {
   const navigate = useNavigate();
-  const { authToken } = useAuth()
+  const { authToken } = useAuth();
 
   // Estado que armazena os dados vindos do backend
   const [stats, setStats] = useState({
@@ -25,40 +25,41 @@ const Secretaria = () => {
     disciplinas: 0,
   });
 
-// Busca os dados do backend assim que o componente for carregado
-useEffect(() => {
-  if (!authToken) return; // evita chamadas sem token
+  // Busca os dados do backend assim que o componente for carregado
+  useEffect(() => {
+    if (!authToken) return; // evita chamadas sem token
 
-  const fetchStats = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/api/dashboard", {
-        headers: {
-          "Authorization": `Bearer ${authToken}`,  // ✅ ENVIA O TOKEN
-          "Content-Type": "application/json",
-        },
-      });
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/dashboard", {
+          headers: {
+            Authorization: `Bearer ${authToken}`, // ✅ ENVIA O TOKEN
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Erro ao buscar dados do dashboard");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            errorData.error || "Erro ao buscar dados do dashboard"
+          );
+        }
+
+        const data = await response.json();
+
+        setStats({
+          alunos: data.alunos,
+          professores: data.professores, // já vem filtrado no backend
+          turmas: data.turmas,
+          disciplinas: data.disciplinas,
+        });
+      } catch (error) {
+        console.error("Erro ao carregar estatísticas:", error);
       }
+    };
 
-      const data = await response.json();
-
-      setStats({
-        alunos: data.alunos,
-        professores: data.professores, // já vem filtrado no backend
-        turmas: data.turmas,
-        disciplinas: data.disciplinas,
-      });
-    } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error);
-    }
-  };
-
-  fetchStats();
-}, [authToken]);
-
+    fetchStats();
+  }, [authToken]);
 
   // Dados para renderização dos cards
   const dashboardStats = [

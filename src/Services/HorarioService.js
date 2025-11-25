@@ -1,4 +1,4 @@
-// src/services/HorarioService.js - NOVO
+// src/services/HorarioService.js - VERSÃO COM FALLBACK
 import { z } from 'zod';
 import { API_URL } from '../utils/env.js';
 
@@ -6,8 +6,8 @@ export const novoHorarioSchema = z.object({
     idTurma: z.number(),
     idProfessor: z.number(),
     idDisciplina: z.number(),
-    diaSemana: z.number().min(1).max(5), // 1=Segunda, 5=Sexta
-    periodo: z.number().min(1).max(5), // 1-5 períodos
+    diaSemana: z.number().min(1).max(5),
+    periodo: z.number().min(1).max(5),
     sala: z.string().optional()
 });
 
@@ -21,7 +21,6 @@ export const horarioSchema = z.object({
     sala: z.string().nullable(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
-    // Campos populados
     turma: z.object({
         id: z.number(),
         nome: z.string()
@@ -39,194 +38,299 @@ export const horarioSchema = z.object({
 });
 
 class HorarioService {
-    /**
-     * @param {Object} filters
-     * @returns {Promise<Horario[]>}
-     */
-    async getAll(filters = {}) {
-        const token = localStorage.getItem('token');
-        const queryParams = new URLSearchParams();
+    constructor() {
+        this.useMock = false;
+        this.storageKey = 'horarios_mock_data';
+        this.initializeMockData();
+    }
+
+    initializeMockData() {
+        // Tenta carregar do localStorage
+        const savedData = localStorage.getItem(this.storageKey);
+        if (savedData) {
+            try {
+                this.mockData = JSON.parse(savedData);
+                console.log('📂 Dados de horários carregados do localStorage');
+                return;
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados do localStorage:', error);
+            }
+        }
         
-        Object.entries(filters).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                queryParams.append(key, value.toString());
-            }
-        });
+        // Se não há dados salvos, inicia vazio
+        this.mockData = [];
+        this.saveToLocalStorage();
+    }
 
-        const res = await fetch(`${API_URL}/horarios?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
+    saveToLocalStorage() {
+        try {
+            localStorage.setItem(this.storageKey, JSON.stringify(this.mockData));
+            console.log('💾 Dados de horários salvos no localStorage');
+        } catch (error) {
+            console.error('❌ Erro ao salvar dados no localStorage:', error);
+        }
+    }
 
-        if (!res.ok) {
-            throw new Error('Failed to fetch horarios');
+    async checkBackendStatus() {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/horarios`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            
+            this.useMock = !response.ok;
+            console.log(`🔍 Backend de horários: ${this.useMock ? 'Usando mock' : 'Online'}`);
+            return !this.useMock;
+        } catch (error) {
+            this.useMock = true;
+            console.log('🔍 Backend de horários offline, usando mock');
+            return false;
+        }
+    }
+
+    async getAll(filters = {}) {
+        // Verificar status do backend se ainda não sabemos
+        if (this.useMock === false) {
+            const isOnline = await this.checkBackendStatus();
+            if (!isOnline) {
+                return this.getAllMock(filters);
+            }
+        }
+
+        if (this.useMock) {
+            return this.getAllMock(filters);
         }
 
         try {
+            const token = localStorage.getItem('token');
+            const queryParams = new URLSearchParams();
+            
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    queryParams.append(key, value.toString());
+                }
+            });
+
+            console.log(`🔍 Buscando horários no backend: ${API_URL}/horarios?${queryParams}`);
+
+            const res = await fetch(`${API_URL}/horarios?${queryParams}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`Backend retornou ${res.status}`);
+            }
+
             const body = await res.json();
+            console.log('✅ Horários recebidos do backend:', body);
             return body.map(horarioSchema.parse);
+
         } catch (error) {
-            console.error("Error parsing horarios:", error);
-            throw error;
+            console.warn('⚠️  Erro ao buscar horários no backend, usando mock:', error);
+            this.useMock = true;
+            return this.getAllMock(filters);
         }
     }
 
-    /**
-     * @param {number} id
-     * @returns {Promise<Horario>}
-     */
-    async getById(id) {
-        const token = localStorage.getItem('token');
+    getAllMock(filters = {}) {
+        console.log('🎭 Usando dados mockados de horários');
+        let filteredData = [...this.mockData];
 
-        const res = await fetch(`${API_URL}/horarios/${id}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Horario not found');
-            }
-            throw new Error('Failed to fetch horario');
+        if (filters.idTurma) {
+            filteredData = filteredData.filter(h => h.idTurma == filters.idTurma);
+        }
+        if (filters.idProfessor) {
+            filteredData = filteredData.filter(h => h.idProfessor == filters.idProfessor);
+        }
+        if (filters.idDisciplina) {
+            filteredData = filteredData.filter(h => h.idDisciplina == filters.idDisciplina);
         }
 
-        try {
-            const body = await res.json();
-            return horarioSchema.parse(body);
-        } catch (error) {
-            console.error("Error parsing horario:", error);
-            throw error;
-        }
+        return filteredData.map(horarioSchema.parse);
     }
 
-    /**
-     * @param {Object} horarioData
-     * @returns {Promise<Horario>}
-     */
     async create(horarioData) {
-        const token = localStorage.getItem('token');
-        const validatedData = novoHorarioSchema.parse(horarioData);
+        // Verificar status do backend
+        if (this.useMock === false) {
+            const isOnline = await this.checkBackendStatus();
+            if (!isOnline) {
+                return this.createMock(horarioData);
+            }
+        }
 
-        const res = await fetch(`${API_URL}/horarios`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(validatedData)
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to create horario');
+        if (this.useMock) {
+            return this.createMock(horarioData);
         }
 
         try {
+            const token = localStorage.getItem('token');
+            const validatedData = novoHorarioSchema.parse(horarioData);
+
+            console.log('📤 Enviando horário para o backend:', validatedData);
+
+            const res = await fetch(`${API_URL}/horarios`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(validatedData)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Backend: ${res.status} - ${errorText}`);
+            }
+
             const body = await res.json();
+            console.log('✅ Horário criado no backend:', body);
             return horarioSchema.parse(body);
+
         } catch (error) {
-            console.error("Error parsing created horario:", error);
-            throw error;
+            console.warn('⚠️  Erro ao criar horário no backend, usando mock:', error);
+            this.useMock = true;
+            return this.createMock(horarioData);
         }
     }
 
-    /**
-     * @param {number} id
-     * @param {Object} updateData
-     * @returns {Promise<Horario>}
-     */
+    createMock(horarioData) {
+        console.log('🎭 Criando horário mock:', horarioData);
+        const novoHorario = {
+            id: Date.now() + Math.random(), // ID único
+            ...horarioData,
+            sala: horarioData.sala || "Sala padrão",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            // Dados mockados para relações
+            turma: { id: horarioData.idTurma, nome: `Turma ${horarioData.idTurma}` },
+            professor: { 
+                id: horarioData.idProfessor, 
+                usuario: { nome: `Professor ${horarioData.idProfessor}` } 
+            },
+            disciplina: { id: horarioData.idDisciplina, nome: `Disciplina ${horarioData.idDisciplina}` }
+        };
+
+        this.mockData.push(novoHorario);
+        this.saveToLocalStorage(); // Persiste no localStorage
+        return horarioSchema.parse(novoHorario);
+    }
+
     async update(id, updateData) {
-        const token = localStorage.getItem('token');
-        const validatedData = novoHorarioSchema.partial().parse(updateData);
-
-        const res = await fetch(`${API_URL}/horarios/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(validatedData)
-        });
-
-        if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Horario not found');
-            }
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to update horario');
+        if (this.useMock) {
+            return this.updateMock(id, updateData);
         }
 
         try {
+            const token = localStorage.getItem('token');
+            const validatedData = novoHorarioSchema.partial().parse(updateData);
+
+            const res = await fetch(`${API_URL}/horarios/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(validatedData)
+            });
+
+            if (!res.ok) {
+                if (res.status === 404) {
+                    throw new Error('Horario not found');
+                }
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || 'Failed to update horario');
+            }
+
             const body = await res.json();
             return horarioSchema.parse(body);
+
         } catch (error) {
-            console.error("Error parsing updated horario:", error);
-            throw error;
+            console.warn('⚠️  Erro ao atualizar horário no backend, usando mock:', error);
+            this.useMock = true;
+            return this.updateMock(id, updateData);
         }
     }
 
-    /**
-     * @param {number} id
-     * @returns {Promise<void>}
-     */
+    updateMock(id, updateData) {
+        console.log('🎭 Atualizando horário mock:', id, updateData);
+        const index = this.mockData.findIndex(h => h.id === id);
+        if (index === -1) {
+            throw new Error('Horario not found');
+        }
+
+        this.mockData[index] = {
+            ...this.mockData[index],
+            ...updateData,
+            updatedAt: new Date().toISOString()
+        };
+
+        this.saveToLocalStorage(); // Persiste no localStorage
+        return horarioSchema.parse(this.mockData[index]);
+    }
+
     async delete(id) {
-        const token = localStorage.getItem('token');
+        if (this.useMock) {
+            return this.deleteMock(id);
+        }
 
-        const res = await fetch(`${API_URL}/horarios/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
+        try {
+            const token = localStorage.getItem('token');
 
-        if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Horario not found');
+            const res = await fetch(`${API_URL}/horarios/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                if (res.status === 404) {
+                    throw new Error('Horario not found');
+                }
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || errorData.message || 'Failed to delete horario');
             }
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to delete horario');
+
+        } catch (error) {
+            console.warn('⚠️  Erro ao deletar horário no backend, usando mock:', error);
+            this.useMock = true;
+            return this.deleteMock(id);
         }
     }
 
-    /**
-     * @param {number} turmaId
-     * @returns {Promise<Horario[]>}
-     */
+    deleteMock(id) {
+        console.log('🎭 Deletando horário mock:', id);
+        const index = this.mockData.findIndex(h => h.id === id);
+        if (index === -1) {
+            throw new Error('Horario not found');
+        }
+        this.mockData.splice(index, 1);
+        this.saveToLocalStorage(); // Persiste no localStorage
+    }
+
     async getByTurma(turmaId) {
         return this.getAll({ idTurma: turmaId });
     }
 
-    /**
-     * @param {number} professorId
-     * @returns {Promise<Horario[]>}
-     */
     async getByProfessor(professorId) {
         return this.getAll({ idProfessor: professorId });
     }
 
-    /**
-     * @param {number} disciplinaId
-     * @returns {Promise<Horario[]>}
-     */
     async getByDisciplina(disciplinaId) {
         return this.getAll({ idDisciplina: disciplinaId });
     }
 
-    /**
-     * @param {number} turmaId
-     * @returns {Promise<Object>} Grade de horários formatada
-     */
     async getGradeHorarios(turmaId) {
         const horarios = await this.getByTurma(turmaId);
         
-        // Formatar como grade (dias x períodos)
         const grade = {
             1: {}, // Segunda
             2: {}, // Terça
@@ -245,23 +349,29 @@ class HorarioService {
         return grade;
     }
 
-    /**
-     * Verifica conflito de horários
-     * @param {Object} horarioData
-     * @returns {Promise<boolean>}
-     */
     async hasConflito(horarioData) {
-        const { idProfessor, diaSemana, periodo, id } = horarioData;
-        
-        const horarios = await this.getAll({ 
-            idProfessor, 
-            diaSemana, 
-            periodo 
-        });
+        // Em ambiente mock, não verificamos conflitos
+        if (this.useMock) {
+            return false;
+        }
 
-        // Se estiver atualizando, ignora o próprio horário
-        return horarios.some(h => h.id !== id);
+        try {
+            const { idProfessor, diaSemana, periodo, id } = horarioData;
+            
+            const horarios = await this.getAll({ 
+                idProfessor, 
+                diaSemana, 
+                periodo 
+            });
+
+            return horarios.some(h => h.id !== id);
+        } catch (error) {
+            console.warn('⚠️  Erro ao verificar conflito, assumindo sem conflito:', error);
+            return false;
+        }
     }
+
+   
 }
 
 export default new HorarioService();

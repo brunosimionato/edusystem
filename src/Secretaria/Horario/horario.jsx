@@ -10,15 +10,21 @@ import {
   Trash2,
   Clock,
   Save,
+  Loader,
+  AlertCircle,
 } from "lucide-react";
 
 import "./horario.css";
+import { useTurmasParaHorarios } from "../../hooks/useTurmasParaHorarios";
+import { useProfessores } from "../../hooks/useProfessores";
+import { useDisciplinas } from "../../hooks/useDisciplinasHorarios";
+import { useHorarios } from "../../hooks/useHorarios";
+import { gerarRelatorioHorarioTurma } from "../../Relatorios/horarios";
+
 const Horarios = () => {
   const [turmaSelecionada, setTurmaSelecionada] = useState("");
-  const [turmas, setTurmas] = useState([]);
-  const [periodoSelecionado, setPeriodoSelecionado] = useState("");
-  const [horarios, setHorarios] = useState({});
-  const [horariosGrades, setHorariosGrades] = useState([]);
+  const [periodoSelecionado, setPeriodoSelecionado] = useState("manha");
+  const [horariosInput, setHorariosInput] = useState({});
   const [gradeExpandida, setGradeExpandida] = useState({});
   const [gradeEditando, setGradeEditando] = useState(null);
   const [horariosEdicao, setHorariosEdicao] = useState({});
@@ -27,48 +33,87 @@ const Horarios = () => {
     periodoSelecionado: false,
   });
 
+  // Hooks para dados reais
+  const {
+    turmas,
+    isLoading: isLoadingTurmas,
+    error: errorTurmas,
+  } = useTurmasParaHorarios();
+  const { professores, isLoading: isLoadingProfessores } = useProfessores();
+  const { disciplinas, isLoading: isLoadingDisciplinas } = useDisciplinas();
+  const {
+    horarios: horariosExistentes,
+    isLoading: isLoadingHorarios,
+    createHorario,
+    updateHorario,
+    deleteHorario,
+    refetch: refetchHorarios,
+    usingMock,
+    tryReconnect,
+  } = useHorarios();
+
   const horariosManha = [
-    { inicio: "07:30", fim: "08:15", periodo: "1º Período" },
-    { inicio: "08:15", fim: "09:00", periodo: "2º Período" },
-    { inicio: "09:00", fim: "09:45", periodo: "3º Período" },
+    { inicio: "07:30", fim: "08:15", periodo: "1º Período", numero: 1 },
+    { inicio: "08:15", fim: "09:00", periodo: "2º Período", numero: 2 },
+    { inicio: "09:00", fim: "09:45", periodo: "3º Período", numero: 3 },
     { inicio: "09:15", fim: "09:30", periodo: "Lanche", isBreak: true },
     { inicio: "09:45", fim: "10:00", periodo: "Recreio", isBreak: true },
-    { inicio: "10:00", fim: "10:45", periodo: "4º Período" },
-    { inicio: "10:45", fim: "11:30", periodo: "5º Período" },
+    { inicio: "10:00", fim: "10:45", periodo: "4º Período", numero: 4 },
+    { inicio: "10:45", fim: "11:30", periodo: "5º Período", numero: 5 },
   ];
 
   const horariosTarde = [
-    { inicio: "13:00", fim: "13:45", periodo: "1º Período" },
-    { inicio: "13:45", fim: "14:30", periodo: "2º Período" },
-    { inicio: "14:30", fim: "15:15", periodo: "3º Período" },
-    { inicio: "15:00", fim: "14:15", periodo: "Lanche", isBreak: true },
+    { inicio: "13:00", fim: "13:45", periodo: "1º Período", numero: 1 },
+    { inicio: "13:45", fim: "14:30", periodo: "2º Período", numero: 2 },
+    { inicio: "14:30", fim: "15:15", periodo: "3º Período", numero: 3 },
+    { inicio: "15:00", fim: "15:15", periodo: "Lanche", isBreak: true },
     { inicio: "15:15", fim: "15:30", periodo: "Recreio", isBreak: true },
-    { inicio: "15:30", fim: "16:15", periodo: "4º Período" },
-    { inicio: "16:15", fim: "17:00", periodo: "5º Período" },
+    { inicio: "15:30", fim: "16:15", periodo: "4º Período", numero: 4 },
+    { inicio: "16:15", fim: "17:00", periodo: "5º Período", numero: 5 },
   ];
 
-  const diasSemana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+  const diasSemana = [
+    { nome: "Segunda", numero: 1 },
+    { nome: "Terça", numero: 2 },
+    { nome: "Quarta", numero: 3 },
+    { nome: "Quinta", numero: 4 },
+    { nome: "Sexta", numero: 5 },
+  ];
 
-  useEffect(() => {
-    const turmasSimuladas = [
-      { id: 1, nome: "1º ANO A", turno: "Manhã" },
-      { id: 2, nome: "1º ANO B", turno: "Manhã" },
-      { id: 3, nome: "2º ANO A", turno: "Tarde" },
-      { id: 4, nome: "3º ANO A", turno: "Manhã" },
-      { id: 5, nome: "4º ANO A", turno: "Tarde" },
-      { id: 6, nome: "5º ANO A", turno: "Manhã" },
-    ];
-    setTurmas(turmasSimuladas);
-  }, []);
+  // 🔥 FUNÇÃO PARA VERIFICAR SE HORÁRIO JÁ ESTÁ CADASTRADO
+  const isHorarioOcupado = (diaNumero, periodoNumero, professorId, disciplinaId, turmaId) => {
+    // Verificar se já existe um horário com o mesmo professor no mesmo dia e período
+    const horarioExistente = horariosExistentes.find(horario => 
+      horario.diaSemana === diaNumero && 
+      horario.periodo === periodoNumero && 
+      horario.idProfessor === parseInt(professorId) &&
+      horario.idTurma !== parseInt(turmaId) // Permitir na mesma turma (edição)
+    );
+
+    // Verificar se já existe um horário com a mesma disciplina no mesmo dia e período
+    const disciplinaExistente = horariosExistentes.find(horario => 
+      horario.diaSemana === diaNumero && 
+      horario.periodo === periodoNumero && 
+      horario.idDisciplina === parseInt(disciplinaId) &&
+      horario.idTurma !== parseInt(turmaId) // Permitir na mesma turma (edição)
+    );
+
+    return {
+      professorOcupado: !!horarioExistente,
+      disciplinaOcupada: !!disciplinaExistente,
+      professorConflito: horarioExistente,
+      disciplinaConflito: disciplinaExistente
+    };
+  };
 
   const handleSelecionarTurma = (e) => {
     setTurmaSelecionada(e.target.value);
-    setHorarios({});
+    setHorariosInput({});
   };
 
-  
-  const handleAdicionarHorario = (event) => {
+  const handleAdicionarHorario = async (event) => {
     event.preventDefault();
+
     let temErro = false;
     const novosErros = {
       turmaSelecionada: false,
@@ -92,18 +137,78 @@ const Horarios = () => {
       return;
     }
 
-    const turmaInfo = turmas.find((t) => t.id == turmaSelecionada);
-    const novaGrade = {
-      id: Date.now(),
-      turmaId: turmaSelecionada,
-      turma: turmaInfo?.nome || "",
-      periodo: periodoSelecionado,
-      horarios: { ...horarios },
-    };
+    try {
+      const horariosParaCriar = [];
+      const horariosAtivos =
+        periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-    setHorariosGrades((prev) => [...prev, novaGrade]);
-    handleClearForm(false);
-    alert("Grade de horários cadastrada com sucesso!");
+      // 🔥 VERIFICAR CONFLITOS ANTES DE SALVAR
+      const conflitos = [];
+      
+      diasSemana.forEach((dia) => {
+        horariosAtivos.forEach((horario) => {
+          if (!horario.isBreak) {
+            const materiaKey = `${dia.numero}_${horario.numero}_materia`;
+            const professorKey = `${dia.numero}_${horario.numero}_professor`;
+
+            const disciplinaId = horariosInput[materiaKey];
+            const professorId = horariosInput[professorKey];
+
+            if (disciplinaId && professorId) {
+              const ocupacao = isHorarioOcupado(dia.numero, horario.numero, professorId, disciplinaId, turmaSelecionada);
+              
+              if (ocupacao.professorOcupado) {
+                const professor = professores.find(p => p.id === parseInt(professorId));
+                const turmaConflito = turmas.find(t => t.id === ocupacao.professorConflito.idTurma);
+                conflitos.push(
+                  `Professor ${professor?.usuario?.nome || professor?.nome} já está alocado na ${turmaConflito?.nome} no mesmo horário`
+                );
+              }
+
+              if (ocupacao.disciplinaOcupada) {
+                const disciplina = disciplinas.find(d => d.id === parseInt(disciplinaId));
+                const turmaConflito = turmas.find(t => t.id === ocupacao.disciplinaConflito.idTurma);
+                conflitos.push(
+                  `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
+                );
+              }
+
+              if (!ocupacao.professorOcupado && !ocupacao.disciplinaOcupada) {
+                horariosParaCriar.push({
+                  idTurma: parseInt(turmaSelecionada),
+                  idProfessor: parseInt(professorId),
+                  idDisciplina: parseInt(disciplinaId),
+                  diaSemana: dia.numero,
+                  periodo: horario.numero,
+                  sala: "Sala padrão",
+                });
+              }
+            }
+          }
+        });
+      });
+
+      if (conflitos.length > 0) {
+        alert(`Conflitos encontrados:\n\n${conflitos.join('\n')}\n\nAjuste os horários e tente novamente.`);
+        return;
+      }
+
+      if (horariosParaCriar.length === 0) {
+        alert("Por favor, preencha pelo menos um horário antes de salvar.");
+        return;
+      }
+
+      for (const horarioData of horariosParaCriar) {
+        await createHorario(horarioData);
+      }
+
+      handleClearForm(false);
+      alert("Grade de horários cadastrada com sucesso!");
+      refetchHorarios();
+    } catch (error) {
+      console.error("Erro ao criar horários:", error);
+      alert(`Erro ao salvar horários: ${error.message}`);
+    }
   };
 
   const handleClearForm = (confirmar = true) => {
@@ -116,87 +221,244 @@ const Horarios = () => {
 
     setTurmaSelecionada("");
     setPeriodoSelecionado("manha");
-    setHorarios({});
+    setHorariosInput({});
     setErros({
       turmaSelecionada: false,
       periodoSelecionado: false,
     });
   };
 
-  const handleMateriaChange = (dia, index, valor, tipo) => {
-    const key = `${dia}_${index}_${tipo}`;
-    setHorarios((prev) => ({
+  const handleMateriaChange = (diaNumero, periodoNumero, valor, tipo) => {
+    const key = `${diaNumero}_${periodoNumero}_${tipo}`;
+    setHorariosInput((prev) => ({
       ...prev,
       [key]: valor,
     }));
   };
 
-  const handleRemoverGrade = (id) => {
+  const handleRemoverGrade = async (turmaId) => {
     const confirmar = window.confirm(
-      "Deseja realmente remover esta grade de horários?"
+      "Deseja realmente remover todos os horários desta turma?"
     );
     if (!confirmar) return;
-    setHorariosGrades((prev) => prev.filter((grade) => grade.id !== id));
+
+    try {
+      const horariosDaTurma = horariosPorTurma[turmaId];
+      for (const horario of horariosDaTurma) {
+        await deleteHorario(horario.id);
+      }
+      alert("Horários removidos com sucesso!");
+      refetchHorarios();
+    } catch (error) {
+      console.error("Erro ao remover horários:", error);
+      alert(`Erro ao remover horários: ${error.message}`);
+    }
   };
 
-  const toggleGradeExpansao = (id) => {
+  const toggleGradeExpansao = (turmaId) => {
     setGradeExpandida((prev) => ({
       ...prev,
-      [id]: !prev[id],
+      [turmaId]: !prev[turmaId],
     }));
   };
 
-  const iniciarEdicao = (grade) => {
-    setGradeEditando(grade.id);
-    setHorariosEdicao({ ...grade.horarios });
+  const iniciarEdicao = (turmaId) => {
+    setGradeEditando(turmaId);
+    // Carregar horários atuais para edição
+    const horariosDaTurma = horariosPorTurma[turmaId];
+    const horariosMap = {};
+
+    horariosDaTurma.forEach((h) => {
+      horariosMap[`${h.diaSemana}_${h.periodo}_materia`] = h.idDisciplina;
+      horariosMap[`${h.diaSemana}_${h.periodo}_professor`] = h.idProfessor;
+    });
+
+    setHorariosEdicao(horariosMap);
   };
 
-  const salvarEdicao = (gradeId) => {
-    setHorariosGrades((prev) =>
-      prev.map((grade) =>
-        grade.id === gradeId
-          ? { ...grade, horarios: { ...horariosEdicao } }
-          : grade
-      )
-    );
-    setGradeEditando(null);
-    setHorariosEdicao({});
-    alert("Grade de horários atualizada com sucesso!");
+  const salvarEdicao = async (turmaId) => {
+    try {
+      // 🔥 VERIFICAR CONFLITOS NA EDIÇÃO
+      const turma = turmas.find((t) => t.id == turmaId);
+      const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
+      const horariosAtivos = periodo === "manha" ? horariosManha : horariosTarde;
+
+      const conflitos = [];
+      const horariosParaCriar = [];
+
+      diasSemana.forEach((dia) => {
+        horariosAtivos.forEach((horario) => {
+          if (!horario.isBreak) {
+            const materiaKey = `${dia.numero}_${horario.numero}_materia`;
+            const professorKey = `${dia.numero}_${horario.numero}_professor`;
+
+            const disciplinaId = horariosEdicao[materiaKey];
+            const professorId = horariosEdicao[professorKey];
+
+            if (disciplinaId && professorId) {
+              const ocupacao = isHorarioOcupado(dia.numero, horario.numero, professorId, disciplinaId, turmaId);
+              
+              if (ocupacao.professorOcupado) {
+                const professor = professores.find(p => p.id === parseInt(professorId));
+                const turmaConflito = turmas.find(t => t.id === ocupacao.professorConflito.idTurma);
+                conflitos.push(
+                  `Professor ${professor?.usuario?.nome || professor?.nome} já está alocado na ${turmaConflito?.nome} no mesmo horário`
+                );
+              }
+
+              if (ocupacao.disciplinaOcupada) {
+                const disciplina = disciplinas.find(d => d.id === parseInt(disciplinaId));
+                const turmaConflito = turmas.find(t => t.id === ocupacao.disciplinaConflito.idTurma);
+                conflitos.push(
+                  `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
+                );
+              }
+
+              if (!ocupacao.professorOcupado && !ocupacao.disciplinaOcupada) {
+                horariosParaCriar.push({
+                  idTurma: parseInt(turmaId),
+                  idProfessor: parseInt(professorId),
+                  idDisciplina: parseInt(disciplinaId),
+                  diaSemana: dia.numero,
+                  periodo: horario.numero,
+                  sala: "Sala padrão",
+                });
+              }
+            }
+          }
+        });
+      });
+
+      if (conflitos.length > 0) {
+        alert(`Conflitos encontrados:\n\n${conflitos.join('\n')}\n\nAjuste os horários e tente novamente.`);
+        return;
+      }
+
+      // Remover horários antigos
+      const horariosAntigos = horariosPorTurma[turmaId];
+      for (const horario of horariosAntigos) {
+        await deleteHorario(horario.id);
+      }
+
+      // Criar novos horários
+      for (const horarioData of horariosParaCriar) {
+        await createHorario(horarioData);
+      }
+
+      setGradeEditando(null);
+      setHorariosEdicao({});
+      alert("Grade de horários atualizada com sucesso!");
+      refetchHorarios();
+    } catch (error) {
+      console.error("Erro ao atualizar horários:", error);
+      alert(`Erro ao atualizar horários: ${error.message}`);
+    }
   };
 
-  const handleEditarOuSalvar = (grade) => {
-    if (gradeEditando === grade.id) {
-      // Está editando, então salvar
-      salvarEdicao(grade.id);
+  const handleEditarOuSalvar = (turmaId) => {
+    if (gradeEditando === turmaId) {
+      salvarEdicao(turmaId);
     } else {
-      // Não está editando, então iniciar edição
-      iniciarEdicao(grade);
+      iniciarEdicao(turmaId);
       setGradeExpandida((prev) => ({
         ...prev,
-        [grade.id]: true,
+        [turmaId]: true,
       }));
     }
   };
 
-  const handleMateriaEdicaoChange = (dia, index, valor, tipo) => {
-    const key = `${dia}_${index}_${tipo}`;
+  const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
+    const key = `${diaNumero}_${periodoNumero}_${tipo}`;
     setHorariosEdicao((prev) => ({
       ...prev,
       [key]: valor,
     }));
   };
 
+  // 🔥 FUNÇÃO DE IMPRESSÃO
+  const handlePrintHorario = (turmaId) => {
+    const turma = turmas.find((t) => t.id == turmaId);
+    const horariosDaTurma = horariosPorTurma[turmaId] || [];
+
+    // Organizar os dados para o relatório
+    const horariosProcessados = [];
+
+    const horariosBase = turma.turno === "Manhã" ? horariosManha : horariosTarde;
+
+    horariosBase.forEach((h) => {
+      horariosProcessados.push({
+        label: `${h.inicio} - ${h.fim}`,
+        isBreak: !!h.isBreak,
+        dias: diasSemana.map((dia) => {
+          const encontrado = horariosDaTurma.find(
+            (x) => x.diaSemana === dia.numero && x.periodo === h.numero
+          );
+
+          return h.isBreak ? null : encontrado || null;
+        }),
+      });
+    });
+
+    const dataHoraAgora = new Date().toLocaleString("pt-BR");
+
+    const html = gerarRelatorioHorarioTurma({
+      turma,
+      horarios: horariosProcessados,
+      professores,
+      disciplinas,
+      dataHoraAgora,
+    });
+
+    // Remove iframe antigo
+    const old = document.getElementById("print-frame");
+    if (old) old.remove();
+
+    const iframe = document.createElement("iframe");
+    iframe.id = "print-frame";
+    iframe.style.position = "fixed";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    iframe.onload = () => {
+      setTimeout(() => {
+        doc.defaultView.print();
+      }, 200);
+    };
+  };
+
   const horariosAtivos =
     periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-  const renderTabelaHorarios = (
-    horarios,
-    periodo,
-    isEdicao = false,
-    gradeId = null
-  ) => {
-    const horariosParaUsar =
-      periodo === "manha" ? horariosManha : horariosTarde;
+  // Agrupar horários por turma
+  const horariosPorTurma = horariosExistentes.reduce((acc, horario) => {
+    if (!acc[horario.idTurma]) {
+      acc[horario.idTurma] = [];
+    }
+    acc[horario.idTurma].push(horario);
+    return acc;
+  }, {});
+
+  // Função para renderizar tabela de horários - CORRIGIDA
+  const renderTabelaHorarios = (turmaId, isEdicao = false) => {
+    const turma = turmas.find((t) => t.id == turmaId);
+    const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
+    const horariosParaUsar = periodo === "manha" ? horariosManha : horariosTarde;
+    const horariosDaTurma = horariosPorTurma[turmaId] || [];
+
+    // Criar mapa de horários para acesso rápido
+    const horariosMap = {};
+    horariosDaTurma.forEach((h) => {
+      const key = `${h.diaSemana}_${h.periodo}`;
+      horariosMap[key] = h;
+    });
 
     return (
       <div className="table-wrapper">
@@ -205,7 +467,7 @@ const Horarios = () => {
             <tr>
               <th>Horário</th>
               {diasSemana.map((dia) => (
-                <th key={dia}>{dia}</th>
+                <th key={dia.numero}>{dia.nome}</th>
               ))}
             </tr>
           </thead>
@@ -221,52 +483,86 @@ const Horarios = () => {
                   </div>
                 </td>
                 {diasSemana.map((dia) => (
-                  <td key={dia} className="materia-cell">
+                  <td key={dia.numero} className="materia-cell">
                     {horario.isBreak ? (
                       <span className="break-text">{horario.periodo}</span>
                     ) : isEdicao ? (
                       <div className="materia-professor-inputs">
-                        <input
-                          type="text"
-                          placeholder="Matéria"
+                        <select
                           className="input-materia"
                           value={
-                            horariosEdicao[`${dia}_${index}_materia`] || ""
+                            horariosEdicao[
+                              `${dia.numero}_${horario.numero}_materia`
+                            ] || ""
                           }
                           onChange={(e) =>
                             handleMateriaEdicaoChange(
-                              dia,
-                              index,
+                              dia.numero,
+                              horario.numero,
                               e.target.value,
                               "materia"
                             )
                           }
-                        />
-                        <input
-                          type="text"
-                          placeholder="Professor"
+                        >
+                          <option value="">Selecione a disciplina</option>
+                          {disciplinas.map((disciplina) => (
+                            <option key={disciplina.id} value={disciplina.id}>
+                              {disciplina.nome}
+                            </option>
+                          ))}
+                        </select>
+                        <select
                           className="input-materia"
                           value={
-                            horariosEdicao[`${dia}_${index}_professor`] || ""
+                            horariosEdicao[
+                              `${dia.numero}_${horario.numero}_professor`
+                            ] || ""
                           }
                           onChange={(e) =>
                             handleMateriaEdicaoChange(
-                              dia,
-                              index,
+                              dia.numero,
+                              horario.numero,
                               e.target.value,
                               "professor"
                             )
                           }
-                        />
+                        >
+                          <option value="">Selecione o professor</option>
+                          {professores.map((professor) => (
+                            <option key={professor.id} value={professor.id}>
+                              {professor.usuario?.nome || professor.nome}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     ) : (
                       <div className="materia-professor-view">
-                        <span className="materia-nome">
-                          {horarios[`${dia}_${index}_materia`] || "-"}
-                        </span>
-                        <span className="materia-nome">
-                          {horarios[`${dia}_${index}_professor`] || ""}
-                        </span>
+                        {(() => {
+                          const h = horariosMap[`${dia.numero}_${horario.numero}`];
+                          if (!h) {
+                            return (
+                              <>
+                                <span className="materia-nome">-</span>
+                                <span className="professor-nome"></span>
+                              </>
+                            );
+                          }
+
+                          // 🔥 CORREÇÃO: Buscar nomes reais das disciplinas e professores
+                          const disciplinaEncontrada = disciplinas.find(d => d.id === h.idDisciplina);
+                          const professorEncontrado = professores.find(p => p.id === h.idProfessor);
+
+                          return (
+                            <>
+                              <span className="materia-nome">
+                                {disciplinaEncontrada?.nome || h.disciplina?.nome || `Disciplina ${h.idDisciplina}`}
+                              </span>
+                              <span className="professor-nome">
+                                {professorEncontrado?.usuario?.nome || professorEncontrado?.nome || h.professor?.usuario?.nome || `Professor ${h.idProfessor}`}
+                              </span>
+                            </>
+                          );
+                        })()}
                       </div>
                     )}
                   </td>
@@ -279,8 +575,34 @@ const Horarios = () => {
     );
   };
 
+  // Estados de loading
+  if (isLoadingTurmas) {
+    return (
+      <div className="cadastro-horario-form-container">
+        <div className="loading-state">
+          <Loader size={48} className="spinner" />
+          <h4>Carregando dados...</h4>
+          <p>Aguarde enquanto buscamos as turmas e professores.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorTurmas) {
+    return (
+      <div className="cadastro-horario-form-container">
+        <div className="error-state">
+          <AlertCircle size={48} />
+          <h4>Erro ao carregar dados</h4>
+          <p>Não foi possível carregar as turmas.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="cadastro-horario-form-container">
+      {/* FORMULÁRIO DE NOVO HORÁRIO */}
       <div className="cadastro-horario-form-section">
         <h3 className="cadastro-horario-section-header">Novo Horário</h3>
         <div className="form-fields-container">
@@ -317,7 +639,6 @@ const Horarios = () => {
                     value={periodoSelecionado}
                     onChange={(e) => setPeriodoSelecionado(e.target.value)}
                   >
-                    <option value="">Selecione um Período</option>
                     <option value="manha">Manhã (07:30 - 11:15)</option>
                     <option value="tarde">Tarde (13:00 - 17:00)</option>
                   </select>
@@ -335,13 +656,20 @@ const Horarios = () => {
               <button
                 type="submit"
                 className="cadastro-horario-submit-button blue-button"
+                disabled={isLoadingHorarios}
               >
-                <Plus size={17} /> Cadastrar Horário
+                {isLoadingHorarios ? (
+                  <Loader size={17} className="spinner" />
+                ) : (
+                  <Plus size={17} />
+                )}
+                {isLoadingHorarios ? "Salvando..." : "Cadastrar Horário"}
               </button>
             </div>
           </form>
         </div>
 
+        {/* TABELA DE HORÁRIOS PARA PREENCHIMENTO */}
         {turmaSelecionada && (
           <div className="horarios-table-div-container">
             <div className="horarios-table-container">
@@ -351,7 +679,7 @@ const Horarios = () => {
                     <tr>
                       <th>Horário</th>
                       {diasSemana.map((dia) => (
-                        <th key={dia}>{dia}</th>
+                        <th key={dia.numero}>{dia.nome}</th>
                       ))}
                     </tr>
                   </thead>
@@ -370,45 +698,70 @@ const Horarios = () => {
                           </div>
                         </td>
                         {diasSemana.map((dia) => (
-                          <td key={dia} className="materia-cell">
+                          <td key={dia.numero} className="materia-cell">
                             {horario.isBreak ? (
                               <span className="break-text">
                                 {horario.periodo}
                               </span>
                             ) : (
                               <div className="materia-professor-inputs">
-                                <input
-                                  type="text"
-                                  placeholder="Matéria"
+                                <select
                                   className="input-materia"
                                   value={
-                                    horarios[`${dia}_${index}_materia`] || ""
+                                    horariosInput[
+                                      `${dia.numero}_${horario.numero}_materia`
+                                    ] || ""
                                   }
                                   onChange={(e) =>
                                     handleMateriaChange(
-                                      dia,
-                                      index,
+                                      dia.numero,
+                                      horario.numero,
                                       e.target.value,
                                       "materia"
                                     )
                                   }
-                                />
-                                <input
-                                  type="text"
-                                  placeholder="Professor"
+                                >
+                                  <option value="">
+                                    Selecione a disciplina
+                                  </option>
+                                  {disciplinas.map((disciplina) => (
+                                    <option
+                                      key={disciplina.id}
+                                      value={disciplina.id}
+                                    >
+                                      {disciplina.nome}
+                                    </option>
+                                  ))}
+                                </select>
+                                <select
                                   className="input-professor"
                                   value={
-                                    horarios[`${dia}_${index}_professor`] || ""
+                                    horariosInput[
+                                      `${dia.numero}_${horario.numero}_professor`
+                                    ] || ""
                                   }
                                   onChange={(e) =>
                                     handleMateriaChange(
-                                      dia,
-                                      index,
+                                      dia.numero,
+                                      horario.numero,
                                       e.target.value,
                                       "professor"
                                     )
                                   }
-                                />
+                                >
+                                  <option value="">
+                                    Selecione o professor
+                                  </option>
+                                  {professores.map((professor) => (
+                                    <option
+                                      key={professor.id}
+                                      value={professor.id}
+                                    >
+                                      {professor.usuario?.nome ||
+                                        professor.nome}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
                             )}
                           </td>
@@ -423,14 +776,35 @@ const Horarios = () => {
         )}
       </div>
 
+      {/* HORÁRIOS CADASTRADOS */}
       <div className="cadastro-horario-form-section">
         <div className="cadastro-horario-section-header-with-button">
           <h3 className="cadastro-horario-section-header-turmas">
             Horários Cadastrados
           </h3>
+          {usingMock && (
+            <button
+              onClick={async () => {
+                const isOnline = await tryReconnect();
+                if (isOnline) {
+                  alert("Backend reconectado!");
+                } else {
+                  alert("Backend ainda offline. Continuando com dados locais.");
+                }
+              }}
+              className="reconnect-button"
+            >
+              🎭 Dados Locais - Tentar Reconectar
+            </button>
+          )}
         </div>
 
-        {horariosGrades.length === 0 ? (
+        {isLoadingHorarios ? (
+          <div className="loading-state">
+            <Loader size={32} className="spinner" />
+            <p>Carregando horários...</p>
+          </div>
+        ) : Object.keys(horariosPorTurma).length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
               <Calendar size={48} />
@@ -440,100 +814,97 @@ const Horarios = () => {
           </div>
         ) : (
           <div className="turmas-list">
-            {horariosGrades.map((grade) => {
-              const isExpandido = gradeExpandida[grade.id];
+            {Object.entries(horariosPorTurma).map(
+              ([turmaId, horariosDaTurma]) => {
+                const turma = turmas.find((t) => t.id == turmaId);
+                const isExpandido = gradeExpandida[turmaId];
 
-              return (
-                <div key={grade.id} className="grade-card">
-                  <div className="grade-info">
-                    {/* Header com informações e botões */}
-                    <div className="grade-header">
-                      {/* Lado esquerdo: ícone de expansão + avatar + info */}
-                      <div
-                        className="grade-basic-info-container clickable"
-                        onClick={() => toggleGradeExpansao(grade.id)}
-                      >
-                        {isExpandido ? (
-                          <ChevronDown size={20} />
-                        ) : (
-                          <ChevronRight size={20} />
-                        )}
-                        <div className="grade-avatar">
-                          <Clock size={24} />
-                        </div>
-                        <div className="grade-basic-info">
-                          <h3 className="grade-nome">{grade.turma}</h3>
-                          <p className="grade-periodo">
-                            {grade.periodo === "manha"
-                              ? "Manhã (07:30 - 11:15)"
-                              : "Tarde (13:00 - 17:00)"}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Lado direito: botões */}
-                      <div className="grade-header-actions">
-                        <button
-                          className={`action-button-horarios ${
-                            gradeEditando === grade.id
-                              ? "save-button-horarios"
-                              : "edit-button-horarios"
-                          }`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditarOuSalvar(grade);
-                          }}
+                return (
+                  <div key={turmaId} className="grade-card">
+                    <div className="grade-info">
+                      <div className="grade-header">
+                        <div
+                          className="grade-basic-info-container clickable"
+                          onClick={() => toggleGradeExpansao(turmaId)}
                         >
-                          {gradeEditando === grade.id ? (
-                            <>
-                              <Save size={16} /> Salvar
-                            </>
+                          {isExpandido ? (
+                            <ChevronDown size={20} />
                           ) : (
-                            <>
-                              <Edit size={16} /> Editar
-                            </>
+                            <ChevronRight size={20} />
                           )}
-                        </button>
-                        <button
-                          className="action-button-horarios remove-button-horarios"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemoverGrade(grade.id);
-                          }}
-                        >
-                          <Trash2 size={17} /> Remover
-                        </button>
-                        <button
-                          className="action-button-horarios print-button-horarios"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.print();
-                          }}
-                        >
-                          <Printer size={16} /> Imprimir
-                        </button>
-                      </div>
-                    </div>
+                          <div className="grade-avatar">
+                            <Clock size={24} />
+                          </div>
+                          <div className="grade-basic-info">
+                            <h3 className="grade-nome">
+                              {turma?.nome || `Turma ${turmaId}`}
+                            </h3>
+                            <p className="grade-periodo">
+                              {turma?.turno === "Manhã"
+                                ? "Manhã (07:30 - 11:15)"
+                                : "Tarde (13:00 - 17:00)"}
+                            </p>
+                          </div>
+                        </div>
 
-                    {/* Detalhes expandidos */}
-                    {isExpandido && (
-                      <div className="grade-details-container">
-                        <div className="grade-content">
-                          {renderTabelaHorarios(
-                            gradeEditando === grade.id
-                              ? horariosEdicao
-                              : grade.horarios,
-                            grade.periodo,
-                            gradeEditando === grade.id,
-                            grade.id
-                          )}
+                        <div className="grade-header-actions">
+                          <button
+                            className={`action-button-horarios ${
+                              gradeEditando === turmaId
+                                ? "save-button-horarios"
+                                : "edit-button-horarios"
+                            }`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditarOuSalvar(turmaId);
+                            }}
+                          >
+                            {gradeEditando === turmaId ? (
+                              <>
+                                <Save size={16} /> Salvar
+                              </>
+                            ) : (
+                              <>
+                                <Edit size={16} /> Editar
+                              </>
+                            )}
+                          </button>
+                          <button
+                            className="action-button-horarios remove-button-horarios"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoverGrade(turmaId);
+                            }}
+                          >
+                            <Trash2 size={17} /> Remover
+                          </button>
+                          <button
+                            className="action-button-horarios print-button-horarios"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePrintHorario(turmaId);
+                            }}
+                          >
+                            <Printer size={16} /> Imprimir
+                          </button>
                         </div>
                       </div>
-                    )}
+
+                      {isExpandido && (
+                        <div className="grade-details-container">
+                          <div className="grade-content">
+                            {renderTabelaHorarios(
+                              turmaId,
+                              gradeEditando === turmaId
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              }
+            )}
           </div>
         )}
       </div>

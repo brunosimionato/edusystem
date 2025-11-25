@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
+import html2pdf from "html2pdf.js";
+import { gerarRelatorioTurmas } from "../../Relatorios/listaTurma";
 
-import { useTurmas } from "../../hooks/useTurmas";
+import { useTurmasComAlunos } from "../../hooks/useTurmasComAlunos";
+
 import { useCreateTurma } from "./useCreateTurma";
 import { useDeleteTurma } from "./useDeleteTurma";
 
 const CriarTurma = () => {
-  const { turmas, refetch } = useTurmas();
+  const { turmas, refetch } = useTurmasComAlunos();
+
   const { remove, isDeleting } = useDeleteTurma();
 
   const handleRemoveTurma = async (id) => {
@@ -29,13 +33,51 @@ const CriarTurma = () => {
       await remove(id);
       await refetch();
     } catch (err) {
-      alert(err.message || 'Erro ao remover turma');
+      alert(err.message || "Erro ao remover turma");
     }
   };
 
-  const handlePrintTurmas = () => {
-    window.print();
+const handlePrintTurmas = (e) => {
+  e?.stopPropagation?.();
+
+  const dataHoraAgora = new Date().toLocaleString("pt-BR");
+
+  const html = gerarRelatorioTurmas({
+    turmas,
+    dataHoraAgora,
+  });
+
+  // Remove iframe anterior caso exista
+  const oldFrame = document.getElementById("print-frame");
+  if (oldFrame) oldFrame.remove();
+
+  // Cria o iframe oculto
+  const iframe = document.createElement("iframe");
+  iframe.id = "print-frame";
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  document.body.appendChild(iframe);
+
+  const frameWindow = iframe.contentWindow;
+  const frameDoc = frameWindow.document;
+
+  // Escreve o conteúdo do relatório no iframe
+  frameDoc.open();
+  frameDoc.write(html);
+  frameDoc.close();
+
+  // Aguarda o conteúdo carregar antes de imprimir
+  iframe.onload = () => {
+    setTimeout(() => {
+      frameWindow.focus();
+      frameWindow.print();
+    }, 150);
   };
+};
 
   return (
     <div className="cadastro-turma-form-container">
@@ -96,11 +138,12 @@ const CriarTurma = () => {
                     <div className="turma-details">
                       <span className="alunos-count">
                         <strong>{turma.alunosMatriculados}</strong> de{" "}
-                        <strong>{turma.quantidadeMaxima}</strong> alunos matriculados
+                        <strong>{turma.quantidadeMaxima}</strong> alunos
+                        matriculados
                       </span>
                       <div className="progress-bar">
                         <div
-                          className="progress-fill"
+                          className="progress-fill-lista"
                           style={{ width: `${percentualOcupacao}%` }}
                         ></div>
                       </div>
@@ -173,7 +216,7 @@ const NovaTurmaForm = ({ onCreated }) => {
       handleClearForm(false);
       alert("Turma cadastrada com sucesso!");
     } catch (err) {
-      alert(err.message || 'Erro ao cadastrar turma');
+      alert(err.message || "Erro ao cadastrar turma");
     }
   };
 
@@ -206,7 +249,9 @@ const NovaTurmaForm = ({ onCreated }) => {
               <input
                 type="text"
                 id="nomeTurma"
-                className={`cadastro-turma-input ${erros.nomeTurma ? "input-error" : ""}`}
+                className={`cadastro-turma-input ${
+                  erros.nomeTurma ? "input-error" : ""
+                }`}
                 value={nomeTurma}
                 onChange={(e) => setNomeTurma(e.target.value)}
               />
@@ -218,7 +263,9 @@ const NovaTurmaForm = ({ onCreated }) => {
             <div className="cadastro-turma-input-wrapper">
               <select
                 id="turno"
-                className={`cadastro-turma-select ${erros.turno ? "input-error" : ""}`}
+                className={`cadastro-turma-select ${
+                  erros.turno ? "input-error" : ""
+                }`}
                 value={turno}
                 onChange={(e) => setTurno(e.target.value)}
               >
@@ -235,7 +282,9 @@ const NovaTurmaForm = ({ onCreated }) => {
               <input
                 type="number"
                 id="quantidadeMaxima"
-                className={`cadastro-turma-input ${erros.quantidadeMaxima ? "input-error" : ""}`}
+                className={`cadastro-turma-input ${
+                  erros.quantidadeMaxima ? "input-error" : ""
+                }`}
                 value={quantidadeMaxima}
                 onChange={(e) => setQuantidadeMaxima(e.target.value)}
                 min="1"
@@ -257,7 +306,8 @@ const NovaTurmaForm = ({ onCreated }) => {
             className="cadastro-turma-submit-button blue-button"
             disabled={isCreating}
           >
-            <Plus size={17} /> {isCreating ? 'Cadastrando...' : 'Cadastrar Turma'}
+            <Plus size={17} />{" "}
+            {isCreating ? "Cadastrando..." : "Cadastrar Turma"}
           </button>
         </div>
       </form>

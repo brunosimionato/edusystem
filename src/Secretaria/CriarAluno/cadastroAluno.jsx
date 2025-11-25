@@ -7,27 +7,33 @@ import { useCreateAluno } from "../../hooks/useCreateAluno";
 export default function CadastroAlunoPage() {
   const { create: createAluno } = useCreateAluno();
 
-  const handleCreate = async (payload) => {
-    try {
-      console.log("📤 Enviando para o backend:", payload);
+const handleCreate = async (payload) => {
+  try {
+    console.log("📤 Enviando para o backend:", payload);
 
-      await createAluno(payload);
+    await createAluno(payload);
 
-      return true; // ✅ Indica sucesso
+    alert("Aluno cadastrado com sucesso!");
 
-    } catch (error) {
-      console.error("Erro ao cadastrar aluno:", error);
+    return true; // sucesso → form limpa
 
-      // Se erro for CPF duplicado (unique constraint)
-      if (error?.message?.toLowerCase().includes("cpf")) {
-        alert("Já existe um aluno cadastrado com esse CPF.");
-      } else {
-        alert("Erro ao cadastrar aluno: " + error.message);
-      }
+  } catch (error) {
+    console.error("Erro ao cadastrar aluno:", error);
 
-      throw error; // ✅ devolve erro para o Form não limpar
+    const msg = error?.message?.toLowerCase() || "";
+
+    // 🔥 Verifica se o backend enviou erro de CPF duplicado
+    if (msg.includes("cpf") || msg.includes("unique") || msg.includes("duplic")) {
+      alert("Já existe um aluno cadastrado com esse CPF.");
+    } else {
+      alert("Erro ao cadastrar aluno: " + error.message);
     }
-  };
+
+    // 🔥 Impede o cadastro e evita limpar o formulário
+    throw error;
+  }
+};
+
 
   return (
     <div className="cadastro-aluno-page">

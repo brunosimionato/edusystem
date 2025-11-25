@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
@@ -15,7 +14,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
     const [userRole, setUserRole] = useState(localStorage.getItem('userRole'));
-    const [user, setUser] = useState(null); // ✅ Alterado de userData para user
+    const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }) => {
             try {
                 const decoded = jwtDecode(authToken);
 
-                // ✅ pega só a parte importante
                 setUser({
                     id: decoded.usuario?.id,
                     nome: decoded.usuario?.nome,
@@ -61,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     const value = {
         authToken,
         userRole,
-        user,           // ✅ agora a sidebar pode pegar user.nome
+        user,
         login,
         logout,
         isLoading,

@@ -1,6 +1,6 @@
 // src/hooks/useNotas.js - NOVO
 import { useState, useEffect, useCallback } from 'react';
-import NotaService from '../services/NotaService';
+import NotaService from '../Services/NotaService';
 
 export const useNotas = (filters = {}) => {
     const [notas, setNotas] = useState([]);
