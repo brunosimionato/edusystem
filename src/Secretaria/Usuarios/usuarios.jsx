@@ -189,45 +189,44 @@ const Usuarios = () => {
   };
 
   const salvarEdicao = async (id) => {
-  try {
-    const response = await fetch(`http://localhost:3000/usuarios/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({
-        nome: dadosEdicao.nome,
-        email: dadosEdicao.email,
-        senha: dadosEdicao.senha || undefined,
-      }),
-    });
+    try {
+      const response = await fetch(`http://localhost:3000/usuarios/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          nome: dadosEdicao.nome,
+          email: dadosEdicao.email,
+          senha: dadosEdicao.senha || undefined,
+        }),
+      });
 
-    const resultado = await response.json();
+      const resultado = await response.json();
 
-    // 🚨 Se o backend retornou erro, exibe alerta e NÃO prossegue
-    if (!response.ok) {
-      alert(resultado.error || "Erro ao salvar alterações.");
-      return;
+      // 🚨 Se o backend retornou erro, exibe alerta e NÃO prossegue
+      if (!response.ok) {
+        alert(resultado.error || "Erro ao salvar alterações.");
+        return;
+      }
+
+      // ✅ Atualizar lista local
+      setUsuarios((prev) =>
+        prev.map((usuario) =>
+          usuario.id === id
+            ? { ...usuario, nome: dadosEdicao.nome, email: dadosEdicao.email }
+            : usuario
+        )
+      );
+
+      cancelarEdicao();
+      alert("Usuário atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao editar usuário", error);
+      alert("Erro ao editar o usuário.");
     }
-
-    // ✅ Atualizar lista local
-    setUsuarios((prev) =>
-      prev.map((usuario) =>
-        usuario.id === id
-          ? { ...usuario, nome: dadosEdicao.nome, email: dadosEdicao.email }
-          : usuario
-      )
-    );
-
-    cancelarEdicao();
-    alert("Usuário atualizado com sucesso!");
-  } catch (error) {
-    console.error("Erro ao editar usuário", error);
-    alert("Erro ao editar o usuário.");
-  }
-};
-
+  };
 
   const toggleUsuarioExpansao = (id) =>
     setUsuarioExpandido((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -243,54 +242,72 @@ const Usuarios = () => {
         <div className="usuario-form-fields-container">
           <div className="cadastro-usuario-form-grid">
             <div className="cadastro-usuario-form-group half-width">
-              <label>Nome Completo*</label>
+              <label htmlFor="nomeCompleto">Nome Completo*</label>
               <input
+                id="nomeCompleto"
                 type="text"
-                className={`cadastro-usuario-input ${erros.nome ? "usuario-input-error" : ""}`}
+                className={`cadastro-usuario-input ${
+                  erros.nome ? "usuario-input-error" : ""
+                }`}
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
               />
             </div>
 
             <div className="cadastro-usuario-form-group half-width">
-              <label>Email*</label>
+              <label htmlFor="emailCadastro">Email*</label>
               <input
+                id="emailCadastro"
                 type="email"
-                className={`cadastro-usuario-input ${erros.email ? "usuario-input-error" : ""}`}
+                className={`cadastro-usuario-input ${
+                  erros.email ? "usuario-input-error" : ""
+                }`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             <div className="cadastro-usuario-form-group half-width">
-              <label>Senha*</label>
+              <label htmlFor="senhaCadastro">Senha*</label>
               <input
+                id="senhaCadastro"
                 type="password"
-                className={`cadastro-usuario-input ${erros.senha ? "usuario-input-error" : ""}`}
+                className={`cadastro-usuario-input ${
+                  erros.senha ? "usuario-input-error" : ""
+                }`}
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
             </div>
 
             <div className="cadastro-usuario-form-group half-width">
-              <label>Tipo de Usuário*</label>
+              <label htmlFor="tipoUsuario">Tipo de Usuário*</label>
 
-              {/* Select bloqueado */}
-              <select className="cadastro-usuario-select blocked" value="secretaria" disabled>
+              <select
+                id="tipoUsuario"
+                className="cadastro-usuario-select blocked"
+                value="secretaria"
+                disabled
+              >
                 <option value="secretaria">Secretaria</option>
               </select>
 
-              {/* Hidden real que envia para o backend */}
               <input type="hidden" value="secretaria" />
             </div>
           </div>
 
           <div className="cadastro-usuario-form-actions">
-            <button className="usuario-clear-button red-button" onClick={handleLimparForm}>
+            <button
+              className="usuario-clear-button red-button"
+              onClick={handleLimparForm}
+            >
               <XCircle size={17} /> Limpar
             </button>
 
-            <button className="usuario-submit-button blue-button" onClick={handleSubmit}>
+            <button
+              className="usuario-submit-button blue-button"
+              onClick={handleSubmit}
+            >
               <Plus size={17} /> Cadastrar Usuário
             </button>
           </div>
@@ -300,14 +317,18 @@ const Usuarios = () => {
       {/* ✅ Abas */}
       <div className="usuario-tabs">
         <button
-          className={`usuario-tab ${abaSelecionada === "secretaria" ? "active" : ""}`}
+          className={`usuario-tab ${
+            abaSelecionada === "secretaria" ? "active" : ""
+          }`}
           onClick={() => setAbaSelecionada("secretaria")}
         >
           Secretários
         </button>
 
         <button
-          className={`usuario-tab ${abaSelecionada === "professor" ? "active" : ""}`}
+          className={`usuario-tab ${
+            abaSelecionada === "professor" ? "active" : ""
+          }`}
           onClick={() => setAbaSelecionada("professor")}
         >
           Professores
@@ -317,7 +338,9 @@ const Usuarios = () => {
       {/* LISTAGEM */}
       <div className="cadastro-usuario-form-section">
         <div className="cadastro-usuario-section-header-with-button">
-          <h3 className="cadastro-usuario-section-header-list">Usuários Cadastrados</h3>
+          <h3 className="cadastro-usuario-section-header-list">
+            Usuários Cadastrados
+          </h3>
         </div>
 
         {usuarios
@@ -334,7 +357,10 @@ const Usuarios = () => {
               .filter((u) => u.tipo === abaSelecionada)
               .sort((a, b) => (b.ativo === a.ativo ? 0 : b.ativo ? 1 : -1))
               .map((usuario) => (
-                <div key={usuario.id} className={`usuario-card ${usuario.ativo ? "" : "inativo"}`}>
+                <div
+                  key={usuario.id}
+                  className={`usuario-card ${usuario.ativo ? "" : "inativo"}`}
+                >
                   <div className="usuario-info">
                     <div className="usuario-header">
                       <div
@@ -354,7 +380,9 @@ const Usuarios = () => {
                         <div className="usuario-basic-info">
                           <h3 className="usuario-nome">{usuario.nome}</h3>
                           <p className="usuario-tipo">
-                            {usuario.tipo === "professor" ? "Professor" : "Secretaria"}
+                            {usuario.tipo === "professor"
+                              ? "Professor"
+                              : "Secretaria"}
                           </p>
                         </div>
                       </div>
@@ -450,7 +478,11 @@ const Usuarios = () => {
 
                               <div className="cadastro-usuario-form-group half-width">
                                 <label>Tipo de Usuário</label>
-                                <select disabled className="cadastro-usuario-select disabled" value={dadosEdicao.tipo}>
+                                <select
+                                  disabled
+                                  className="cadastro-usuario-select disabled"
+                                  value={dadosEdicao.tipo}
+                                >
                                   <option value="professor">Professor</option>
                                   <option value="secretaria">Secretaria</option>
                                 </select>
@@ -458,10 +490,16 @@ const Usuarios = () => {
                             </div>
 
                             <div className="usuario-edicao-actions">
-                              <button className="usuario-cancelar-button" onClick={cancelarEdicao}>
+                              <button
+                                className="usuario-cancelar-button"
+                                onClick={cancelarEdicao}
+                              >
                                 <XCircle size={16} /> Cancelar
                               </button>
-                              <button className="usuario-salvar-button" onClick={() => salvarEdicao(usuario.id)}>
+                              <button
+                                className="usuario-salvar-button"
+                                onClick={() => salvarEdicao(usuario.id)}
+                              >
                                 <Plus size={16} /> Salvar
                               </button>
                             </div>
@@ -472,16 +510,24 @@ const Usuarios = () => {
                               <div className="usuario-info-item">
                                 <Mail size={16} className="usuario-info-icon" />
                                 <div>
-                                  <span className="usuario-info-label">Email:</span>
-                                  <span className="usuario-info-value">{usuario.email}</span>
+                                  <span className="usuario-info-label">
+                                    Email:
+                                  </span>
+                                  <span className="usuario-info-value">
+                                    {usuario.email}
+                                  </span>
                                 </div>
                               </div>
 
                               <div className="usuario-info-item">
                                 <User size={16} className="usuario-info-icon" />
                                 <div>
-                                  <span className="usuario-info-label">Cadastrado em:</span>
-                                  <span className="usuario-info-value">{usuario.dataCadastro}</span>
+                                  <span className="usuario-info-label">
+                                    Cadastrado em:
+                                  </span>
+                                  <span className="usuario-info-value">
+                                    {usuario.dataCadastro}
+                                  </span>
                                 </div>
                               </div>
                             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Save,
@@ -7,8 +7,12 @@ import {
   Calendar,
   Edit3,
   Users,
+  Loader,
+  AlertCircle,
 } from "lucide-react";
 import "./faltas.css";
+import { useTurmasComAlunosFaltas } from "../../hooks/useTurmasComAlunosFaltas";
+import FaltaService from "../../Services/FaltaService";
 
 const Faltas = () => {
   const [filtro, setFiltro] = useState("");
@@ -20,97 +24,81 @@ const Faltas = () => {
   );
   const [faltas, setFaltas] = useState({});
   const [errosValidacao, setErrosValidacao] = useState(new Set());
+  const [salvando, setSalvando] = useState({});
+
+  // Carregar turmas e alunos
+  const {
+    turmas: turmasData,
+    refetch,
+    hasError,
+    isLoading,
+  } = useTurmasComAlunosFaltas();
 
   // Períodos de aula para Fundamental II
   const periodos = {
     1: "1º Período",
-    2: "2º Período", 
+    2: "2º Período",
     3: "3º Período",
     4: "4º Período",
-    5: "5º Período"
+    5: "5º Período",
   };
 
-  // Dados mockados das turmas e alunos (mesmo do modelo de notas)
-  const turmas = [
-    // Ensino Fundamental I (1º ao 5º ano)
-    {
-      id: 1,
-      nome: "1º ANO A",
-      turno: "manhã",
-      tipo: "fundamental1",
-      alunos: [
-        { id: 1, nome: "Ana Silva" },
-        { id: 2, nome: "Bruno Costa" },
-        { id: 3, nome: "Carlos Mendes" },
-        { id: 4, nome: "Diana Oliveira" },
-        { id: 5, nome: "Eduardo Santos" },
-      ],
-    },
-    {
-      id: 2,
-      nome: "3º ANO B",
-      turno: "tarde",
-      tipo: "fundamental1",
-      alunos: [
-        { id: 6, nome: "Fernanda Lima" },
-        { id: 7, nome: "Gabriel Rocha" },
-        { id: 8, nome: "Helena Cardoso" },
-        { id: 9, nome: "Igor Ferreira" },
-      ],
-    },
-    {
-      id: 3,
-      nome: "5º ANO A",
-      turno: "manhã",
-      tipo: "fundamental1",
-      alunos: [
-        { id: 10, nome: "Julia Alves" },
-        { id: 11, nome: "Lucas Barbosa" },
-        { id: 12, nome: "Maria João" },
-      ],
-    },
-    // Ensino Fundamental II (6º ao 9º ano)
-    {
-      id: 4,
-      nome: "6º ANO A",
-      turno: "manhã",
-      tipo: "fundamental2",
-      alunos: [
-        { id: 13, nome: "Nicolas Pereira" },
-        { id: 14, nome: "Olga Nascimento" },
-        { id: 15, nome: "Paulo Dias" },
-        { id: 16, nome: "Queila Monteiro" },
-      ],
-    },
-    {
-      id: 5,
-      nome: "8º ANO B",
-      turno: "tarde",
-      tipo: "fundamental2",
-      alunos: [
-        { id: 17, nome: "Rafael Torres" },
-        { id: 18, nome: "Sofia Campos" },
-        { id: 19, nome: "Tiago Oliveira" },
-      ],
-    },
-    {
-      id: 6,
-      nome: "9º ANO A",
-      turno: "manhã",
-      tipo: "fundamental2",
-      alunos: [
-        { id: 20, nome: "Ursula Santos" },
-        { id: 21, nome: "Victor Lima" },
-        { id: 22, nome: "Wagner Silva" },
-        { id: 23, nome: "Ximena Costa" },
-      ],
-    },
-  ];
+  // Carregar faltas existentes quando a data mudar
+  useEffect(() => {
+    if (dataSelecionada) {
+      carregarFaltasExistentes();
+    }
+  }, [dataSelecionada, turmasData]);
+
+  const carregarFaltasExistentes = async () => {
+    console.log("🔄 Carregando faltas existentes para:", dataSelecionada);
+
+    const faltasCarregadas = {};
+
+    try {
+      // Para cada turma, carrega as faltas da data selecionada
+      for (const turma of turmasData) {
+        try {
+          const faltasTurma = await FaltaService.getByTurma(
+            turma.id,
+            dataSelecionada
+          );
+          console.log(
+            `✅ Faltas da turma ${turma.id} em ${dataSelecionada}:`,
+            faltasTurma
+          );
+
+          // Processa as faltas carregadas
+          faltasTurma.forEach((falta) => {
+            if (turma.tipo === "fundamental1") {
+              // Fundamental I - falta por dia
+              const chave = `${falta.idAluno}-${dataSelecionada}`;
+              faltasCarregadas[chave] = true;
+            } else {
+              // Fundamental II - falta por período
+              const chave = `${falta.idAluno}-${dataSelecionada}-${falta.periodo}`;
+              faltasCarregadas[chave] = true;
+            }
+          });
+        } catch (error) {
+          console.warn(
+            `⚠️  Não foi possível carregar faltas da turma ${turma.id}:`,
+            error
+          );
+        }
+      }
+
+      setFaltas(faltasCarregadas);
+      console.log("✅ Faltas carregadas:", faltasCarregadas);
+    } catch (error) {
+      console.error("❌ Erro ao carregar faltas:", error);
+    }
+  };
 
   // Filtrar turmas baseado no termo de busca
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return turmas;
-    return turmas
+    if (!filtro) return turmasData;
+    return turmasData
       .filter((turma) => {
         const turmaNomeMatch = turma.nome
           .toLowerCase()
@@ -129,7 +117,7 @@ const Faltas = () => {
             aluno.nome.toLowerCase().includes(filtro.toLowerCase())
         ),
       }));
-  }, [filtro]);
+  }, [filtro, turmasData]);
 
   const toggleTurma = (turmaId) => {
     setTurmasExpandidas((prev) => {
@@ -137,7 +125,7 @@ const Faltas = () => {
       if (novaSet.has(turmaId)) {
         novaSet.delete(turmaId);
         // Quando fecha a turma, também remove do modo edição
-        setTurmasEditaveis(prevEdit => {
+        setTurmasEditaveis((prevEdit) => {
           const novaEditSet = new Set(prevEdit);
           novaEditSet.delete(turmaId);
           return novaEditSet;
@@ -178,10 +166,10 @@ const Faltas = () => {
       // Para Fundamental I - falta por dia
       chave = `${alunoId}-${dataSelecionada}`;
     }
-    
-    setFaltas(prev => ({
+
+    setFaltas((prev) => ({
       ...prev,
-      [chave]: faltou
+      [chave]: faltou,
     }));
   };
 
@@ -198,138 +186,239 @@ const Faltas = () => {
   };
 
   const formatarData = (data) => {
-    const dataObj = new Date(data + 'T00:00:00');
-    return dataObj.toLocaleDateString('pt-BR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    const dataObj = new Date(data + "T00:00:00");
+    return dataObj.toLocaleDateString("pt-BR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
-  const handleSalvarFaltas = (turmaId) => {
-    console.log("Salvando faltas da turma:", turmaId, "Data:", dataSelecionada);
-    console.log("Faltas:", faltas);
-    
-    // Remove do modo edição após salvar
-    setTurmasEditaveis(prev => {
-      const novaSet = new Set(prev);
-      novaSet.delete(turmaId);
-      return novaSet;
-    });
-    
-    alert("Faltas salvas com sucesso!");
+  const handleSalvarFaltas = async (turmaId) => {
+    setSalvando((prev) => ({ ...prev, [turmaId]: true }));
+
+    try {
+      const turma = turmasData.find((t) => t.id === turmaId);
+      const faltasParaSalvar = [];
+
+      console.log(
+        `💾 Salvando faltas da turma ${turmaId} para ${dataSelecionada}`
+      );
+
+      // Coletar todas as faltas da turma para salvar
+      turma.alunos.forEach((aluno) => {
+        if (turma.tipo === "fundamental1") {
+          // Fundamental I - falta por dia
+          const faltou = getFaltaAluno(aluno.id);
+          if (faltou) {
+            faltasParaSalvar.push({
+              idAluno: aluno.id,
+              idTurma: turmaId,
+              data: dataSelecionada,
+              periodo: null,
+              justificada: false,
+              observacao: "Falta registrada no sistema",
+            });
+          }
+        } else {
+          // Fundamental II - faltas por período
+          Object.keys(periodos).forEach((periodo) => {
+            const faltou = getFaltaAluno(aluno.id, periodo);
+            if (faltou) {
+              faltasParaSalvar.push({
+                idAluno: aluno.id,
+                idTurma: turmaId,
+                data: dataSelecionada,
+                periodo: parseInt(periodo),
+                justificada: false,
+                observacao: `Falta no ${periodos[periodo]}`,
+              });
+            }
+          });
+        }
+      });
+
+      console.log("📤 Faltas para salvar:", faltasParaSalvar);
+
+      // Salvar cada falta
+      if (faltasParaSalvar.length > 0) {
+        await FaltaService.createMultiple(faltasParaSalvar);
+        console.log(`✅ ${faltasParaSalvar.length} faltas salvas com sucesso`);
+      }
+
+      // Remove do modo edição após salvar
+      setTurmasEditaveis((prev) => {
+        const novaSet = new Set(prev);
+        novaSet.delete(turmaId);
+        return novaSet;
+      });
+
+      alert(
+        `Faltas salvas com sucesso! ${faltasParaSalvar.length} falta(s) registrada(s).`
+      );
+    } catch (error) {
+      console.error("❌ Erro ao salvar faltas:", error);
+      alert(`Erro ao salvar faltas: ${error.message}`);
+    } finally {
+      setSalvando((prev) => ({ ...prev, [turmaId]: false }));
+    }
   };
 
   const handleGerarRelatorio = (turmaId, turmaNome) => {
-    const turma = turmas.find(t => t.id === turmaId);
-    
+    const turma = turmasData.find((t) => t.id === turmaId);
+
     let alunosComFalta = [];
     let alunosPresentes = [];
     let totalFaltas = 0;
-    let detalheFaltas = {}; // Declarar a variável aqui
-    
+    let detalheFaltas = {};
+
     if (turma.tipo === "fundamental1") {
       // Fundamental I - uma falta por dia
-      alunosComFalta = turma.alunos.filter(aluno => getFaltaAluno(aluno.id));
-      alunosPresentes = turma.alunos.filter(aluno => !getFaltaAluno(aluno.id));
+      alunosComFalta = turma.alunos.filter((aluno) => getFaltaAluno(aluno.id));
+      alunosPresentes = turma.alunos.filter(
+        (aluno) => !getFaltaAluno(aluno.id)
+      );
       totalFaltas = alunosComFalta.length;
     } else {
       // Fundamental II - faltas por período
-      turma.alunos.forEach(aluno => {
-        const faltasPorPeriodo = Object.keys(periodos).filter(periodo => 
+      turma.alunos.forEach((aluno) => {
+        const faltasPorPeriodo = Object.keys(periodos).filter((periodo) =>
           getFaltaAluno(aluno.id, periodo)
         );
         if (faltasPorPeriodo.length > 0) {
-          detalheFaltas[aluno.nome] = faltasPorPeriodo.map(p => periodos[p]);
+          detalheFaltas[aluno.nome] = faltasPorPeriodo.map((p) => periodos[p]);
           totalFaltas += faltasPorPeriodo.length;
         }
       });
-      
+
       alunosComFalta = Object.keys(detalheFaltas);
-      alunosPresentes = turma.alunos.filter(aluno => !detalheFaltas[aluno.nome]);
+      alunosPresentes = turma.alunos.filter(
+        (aluno) => !detalheFaltas[aluno.nome]
+      );
     }
-    
+
     console.log("Gerando relatório de faltas da turma:", turmaId, turmaNome);
     console.log("Data:", dataSelecionada);
     console.log("Alunos faltosos:", alunosComFalta);
-    console.log("Alunos presentes:", alunosPresentes.map(a => a.nome || a));
-    
-    let mensagem = `Relatório de Frequência - ${turmaNome}\n\n` +
+    console.log(
+      "Alunos presentes:",
+      alunosPresentes.map((a) => a.nome)
+    );
+
+    let mensagem =
+      `Relatório de Frequência - ${turmaNome}\n\n` +
       `Data: ${formatarData(dataSelecionada)}\n\n` +
       `Total de alunos: ${turma.alunos.length}\n`;
-    
+
     if (turma.tipo === "fundamental1") {
-      mensagem += `Presentes: ${alunosPresentes.length}\n` +
+      mensagem +=
+        `Presentes: ${alunosPresentes.length}\n` +
         `Faltas: ${alunosComFalta.length}\n\n` +
-        (alunosComFalta.length > 0 ? 
-          `Alunos faltosos:\n${alunosComFalta.map(a => `• ${a.nome}`).join('\n')}` : 
-          'Todos os alunos presentes!'
-        );
+        (alunosComFalta.length > 0
+          ? `Alunos faltosos:\n${alunosComFalta
+              .map((a) => `• ${a.nome}`)
+              .join("\n")}`
+          : "Todos os alunos presentes!");
     } else {
-      mensagem += `Alunos totalmente presentes: ${alunosPresentes.length}\n` +
+      mensagem +=
+        `Alunos totalmente presentes: ${alunosPresentes.length}\n` +
         `Total de faltas por período: ${totalFaltas}\n` +
         `Alunos com faltas: ${alunosComFalta.length}\n\n`;
-      
+
       if (alunosComFalta.length > 0) {
         mensagem += `Detalhes das faltas:\n`;
-        Object.keys(detalheFaltas).forEach(aluno => {
-          mensagem += `• ${aluno}: ${detalheFaltas[aluno].join(', ')}\n`;
+        Object.keys(detalheFaltas).forEach((aluno) => {
+          mensagem += `• ${aluno}: ${detalheFaltas[aluno].join(", ")}\n`;
         });
       } else {
-        mensagem += 'Todos os alunos presentes em todos os períodos!';
+        mensagem += "Todos os alunos presentes em todos os períodos!";
       }
     }
-    
+
     alert(mensagem);
   };
 
   // Calcular estatísticas de presença para uma turma
   const getEstatisticasTurma = (turma) => {
     const totalAlunos = turma.alunos.length;
-    
+
     if (turma.tipo === "fundamental1") {
       // Fundamental I - uma falta por dia
-      const alunosFaltosos = turma.alunos.filter(aluno => getFaltaAluno(aluno.id)).length;
+      const alunosFaltosos = turma.alunos.filter((aluno) =>
+        getFaltaAluno(aluno.id)
+      ).length;
       const alunosPresentes = totalAlunos - alunosFaltosos;
-      const percentualPresenca = totalAlunos > 0 ? (alunosPresentes / totalAlunos * 100).toFixed(1) : 0;
-      
+      const percentualPresenca =
+        totalAlunos > 0
+          ? ((alunosPresentes / totalAlunos) * 100).toFixed(1)
+          : 0;
+
       return {
         total: totalAlunos,
         presentes: alunosPresentes,
         faltosos: alunosFaltosos,
         percentual: percentualPresenca,
-        tipo: "dia"
+        tipo: "dia",
       };
     } else {
       // Fundamental II - faltas por período
       let totalFaltas = 0;
       let alunosComFalta = 0;
-      
-      turma.alunos.forEach(aluno => {
-        const faltasPorPeriodo = Object.keys(periodos).filter(periodo => 
+
+      turma.alunos.forEach((aluno) => {
+        const faltasPorPeriodo = Object.keys(periodos).filter((periodo) =>
           getFaltaAluno(aluno.id, periodo)
         ).length;
-        
+
         if (faltasPorPeriodo > 0) {
           alunosComFalta++;
           totalFaltas += faltasPorPeriodo;
         }
       });
-      
+
       const alunosPresentes = totalAlunos - alunosComFalta;
-      const percentualPresenca = totalAlunos > 0 ? (alunosPresentes / totalAlunos * 100).toFixed(1) : 0;
-      
+      const percentualPresenca =
+        totalAlunos > 0
+          ? ((alunosPresentes / totalAlunos) * 100).toFixed(1)
+          : 0;
+
       return {
         total: totalAlunos,
         presentes: alunosPresentes,
         faltosos: alunosComFalta,
         totalFaltasPeriodo: totalFaltas,
         percentual: percentualPresenca,
-        tipo: "periodo"
+        tipo: "periodo",
       };
     }
   };
+
+  // Estados de loading e error
+  if (isLoading) {
+    return (
+      <div className="faltas-container">
+        <div className="faltas-loading">
+          <Loader size={32} className="faltas-spinner" />
+          <p>Carregando turmas e alunos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="faltas-container">
+        <div className="faltas-error">
+          <AlertCircle size={32} />
+          <p>Erro ao carregar dados das turmas</p>
+          <button onClick={refetch} className="faltas-retry-button">
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="faltas-container">
@@ -340,8 +429,9 @@ const Faltas = () => {
         </div>
         <div className="faltas-form-grid">
           <div className="faltas-form-group faltas-third-width">
-            <label>Ano Letivo</label>
+            <label htmlFor="anoLetivo">Ano Letivo</label>
             <select
+              id="anoLetivo"
               className="faltas-select"
               value={anoLetivo}
               onChange={(e) => setAnoLetivo(e.target.value)}
@@ -351,20 +441,24 @@ const Faltas = () => {
               <option value="2022">2022</option>
             </select>
           </div>
+
           <div className="faltas-form-group faltas-third-width">
-            <label>Data da Aula</label>
+            <label htmlFor="dataAula">Data da Aula</label>
             <input
+              id="dataAula"
               type="date"
               className="faltas-input"
               value={dataSelecionada}
               onChange={(e) => setDataSelecionada(e.target.value)}
             />
           </div>
+
           <div className="faltas-form-group faltas-third-width">
-            <label>Buscar por turma ou aluno</label>
+            <label htmlFor="filtroBusca">Buscar por turma ou aluno</label>
             <div className="faltas-input-wrapper">
               <Search className="faltas-input-icon" size={18} />
               <input
+                id="filtroBusca"
                 type="text"
                 className="faltas-input faltas-search-input"
                 placeholder="Digite para buscar..."
@@ -379,7 +473,9 @@ const Faltas = () => {
       {/* Lista de Turmas */}
       <div className="faltas-form-section">
         <div className="faltas-section-header">
-          <span>Registro de Faltas - {anoLetivo} - {formatarData(dataSelecionada)}</span>
+          <span>
+            Registro de Faltas - {anoLetivo} - {formatarData(dataSelecionada)}
+          </span>
           <span className="faltas-counter">
             {turmasFiltradas.length} turma
             {turmasFiltradas.length !== 1 ? "s" : ""} encontrada
@@ -403,13 +499,14 @@ const Faltas = () => {
             {turmasFiltradas.map((turma) => {
               const isExpandida = turmasExpandidas.has(turma.id);
               const isEditavel = turmasEditaveis.has(turma.id);
+              const isSalvando = salvando[turma.id];
               const stats = getEstatisticasTurma(turma);
-              
+
               return (
                 <div key={turma.id} className="faltas-turma-card">
                   <div className="faltas-turma-info">
                     <div className="faltas-turma-header">
-                      <div 
+                      <div
                         className="faltas-turma-header-left faltas-clickable"
                         onClick={() => toggleTurma(turma.id)}
                       >
@@ -419,10 +516,17 @@ const Faltas = () => {
                           <ChevronRight size={20} />
                         )}
                         <h3 className="faltas-turma-nome">{turma.nome}</h3>
-                        <span className={`faltas-turno ${getTurnoClass(turma.turno)}`}>
+                        <span
+                          className={`faltas-turno ${getTurnoClass(
+                            turma.turno
+                          )}`}
+                        >
                           {turma.turno}
                         </span>
-
+                        <span className="faltas-stats">
+                          {stats.presentes}/{stats.total} presentes (
+                          {stats.percentual}%)
+                        </span>
                       </div>
 
                       {/* Botão para gerar relatório apenas desta turma */}
@@ -440,7 +544,7 @@ const Faltas = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Lista de Alunos Expandida */}
                     {isExpandida && (
                       <>
@@ -456,7 +560,10 @@ const Faltas = () => {
                               {turma.alunos.map((aluno) => {
                                 const faltou = getFaltaAluno(aluno.id);
                                 return (
-                                  <div key={aluno.id} className="faltas-aluno-row faltas-globalizada">
+                                  <div
+                                    key={aluno.id}
+                                    className="faltas-aluno-row faltas-globalizada"
+                                  >
                                     <div className="faltas-aluno-nome">
                                       {aluno.nome}
                                     </div>
@@ -467,8 +574,10 @@ const Faltas = () => {
                                           name={`presenca-${aluno.id}`}
                                           className="faltas-radio-input"
                                           checked={!faltou}
-                                          onChange={() => handleFaltaChange(aluno.id, false)}
-                                          disabled={!isEditavel}
+                                          onChange={() =>
+                                            handleFaltaChange(aluno.id, false)
+                                          }
+                                          disabled={!isEditavel || isSalvando}
                                         />
                                         <span className="faltas-radio-custom faltas-presente"></span>
                                       </label>
@@ -480,8 +589,10 @@ const Faltas = () => {
                                           name={`presenca-${aluno.id}`}
                                           className="faltas-radio-input"
                                           checked={faltou}
-                                          onChange={() => handleFaltaChange(aluno.id, true)}
-                                          disabled={!isEditavel}
+                                          onChange={() =>
+                                            handleFaltaChange(aluno.id, true)
+                                          }
+                                          disabled={!isEditavel || isSalvando}
                                         />
                                         <span className="faltas-radio-custom faltas-falta"></span>
                                       </label>
@@ -497,43 +608,78 @@ const Faltas = () => {
                             <>
                               <div className="faltas-table-header faltas-periodos">
                                 <span>Nome do Aluno</span>
-                                {Object.values(periodos).map((periodo, index) => (
-                                  <span key={index}>{periodo}</span>
-                                ))}
+                                {Object.values(periodos).map(
+                                  (periodo, index) => (
+                                    <span key={index}>{periodo}</span>
+                                  )
+                                )}
                               </div>
                               {turma.alunos.map((aluno) => (
-                                <div key={aluno.id} className="faltas-aluno-row faltas-periodos">
+                                <div
+                                  key={aluno.id}
+                                  className="faltas-aluno-row faltas-periodos"
+                                >
                                   <div className="faltas-aluno-nome">
                                     {aluno.nome}
                                   </div>
-                                  {Object.keys(periodos).map((periodoKey, index) => (
-                                    <div key={index} className="faltas-periodo-container" data-label={periodos[periodoKey]}>
-                                      <div className="faltas-periodo-opcoes">
-                                        <label className="faltas-checkbox-wrapper faltas-mini">
-                                          <input
-                                            type="radio"
-                                            name={`presenca-${aluno.id}-${periodoKey}`}
-                                            className="faltas-radio-input"
-                                            checked={!getFaltaAluno(aluno.id, periodoKey)}
-                                            onChange={() => handleFaltaChange(aluno.id, false, periodoKey)}
-                                            disabled={!isEditavel}
-                                          />
-                                          <span className="faltas-radio-custom faltas-presente faltas-mini"></span>
-                                        </label>
-                                        <label className="faltas-checkbox-wrapper faltas-mini">
-                                          <input
-                                            type="radio"
-                                            name={`presenca-${aluno.id}-${periodoKey}`}
-                                            className="faltas-radio-input"
-                                            checked={getFaltaAluno(aluno.id, periodoKey)}
-                                            onChange={() => handleFaltaChange(aluno.id, true, periodoKey)}
-                                            disabled={!isEditavel}
-                                          />
-                                          <span className="faltas-radio-custom faltas-falta faltas-mini"></span>
-                                        </label>
+                                  {Object.keys(periodos).map(
+                                    (periodoKey, index) => (
+                                      <div
+                                        key={index}
+                                        className="faltas-periodo-container"
+                                        data-label={periodos[periodoKey]}
+                                      >
+                                        <div className="faltas-periodo-opcoes">
+                                          <label className="faltas-checkbox-wrapper faltas-mini">
+                                            <input
+                                              type="radio"
+                                              name={`presenca-${aluno.id}-${periodoKey}`}
+                                              className="faltas-radio-input"
+                                              checked={
+                                                !getFaltaAluno(
+                                                  aluno.id,
+                                                  periodoKey
+                                                )
+                                              }
+                                              onChange={() =>
+                                                handleFaltaChange(
+                                                  aluno.id,
+                                                  false,
+                                                  periodoKey
+                                                )
+                                              }
+                                              disabled={
+                                                !isEditavel || isSalvando
+                                              }
+                                            />
+                                            <span className="faltas-radio-custom faltas-presente faltas-mini"></span>
+                                          </label>
+                                          <label className="faltas-checkbox-wrapper faltas-mini">
+                                            <input
+                                              type="radio"
+                                              name={`presenca-${aluno.id}-${periodoKey}`}
+                                              className="faltas-radio-input"
+                                              checked={getFaltaAluno(
+                                                aluno.id,
+                                                periodoKey
+                                              )}
+                                              onChange={() =>
+                                                handleFaltaChange(
+                                                  aluno.id,
+                                                  true,
+                                                  periodoKey
+                                                )
+                                              }
+                                              disabled={
+                                                !isEditavel || isSalvando
+                                              }
+                                            />
+                                            <span className="faltas-radio-custom faltas-falta faltas-mini"></span>
+                                          </label>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    )
+                                  )}
                                 </div>
                               ))}
                             </>
@@ -547,6 +693,7 @@ const Faltas = () => {
                               className="faltas-editar-button"
                               onClick={() => toggleEdicao(turma.id)}
                               title="Editar faltas"
+                              disabled={isSalvando}
                             >
                               <Edit3 size={16} />
                               Editar Faltas
@@ -556,9 +703,14 @@ const Faltas = () => {
                               className="faltas-salvar-button"
                               onClick={() => handleSalvarFaltas(turma.id)}
                               title="Salvar faltas"
+                              disabled={isSalvando}
                             >
-                              <Save size={16} />
-                              Salvar Faltas
+                              {isSalvando ? (
+                                <Loader size={16} className="faltas-spinner" />
+                              ) : (
+                                <Save size={16} />
+                              )}
+                              {isSalvando ? "Salvando..." : "Salvar Faltas"}
                             </button>
                           )}
                         </div>

@@ -1,137 +1,154 @@
-// src/services/NotaService.js - ADAPTADO
-import { z } from 'zod';
+// src/services/NotaService.js
 import { API_URL } from '../utils/env.js';
-import HistoricoEscolarService from './HistoricoEscolarService';
-
-// Usando histórico escolar como base para notas
-export const novaNotaSchema = z.object({
-    idAluno: z.number(),
-    idDisciplina: z.number(),
-    trimestre: z.number().min(1).max(3),
-    nota: z.number().min(0).max(100),
-    anoLetivo: z.number()
-});
-
-export const notaSchema = z.object({
-    id: z.number(),
-    idAluno: z.number(),
-    idDisciplina: z.number(),
-    trimestre: z.number(),
-    nota: z.number(),
-    anoLetivo: z.number(),
-    createdAt: z.string().optional()
-});
 
 class NotaService {
-    /**
-     * Usa histórico escolar para simular notas
-     */
-    async getByAluno(alunoId, anoLetivo, trimestre) {
-        try {
-            const historicos = await HistoricoEscolarService.getByAlunoId(alunoId);
-            
-            // Filtrar por ano letivo e converter para estrutura de nota
-            const notas = historicos
-                .filter(h => {
-                    const historicoYear = h.anoConclusao;
-                    return historicoYear === anoLetivo;
-                })
-                .map(h => ({
-                    id: h.id,
-                    idAluno: h.idAluno,
-                    idDisciplina: h.idDisciplina || 0, // Se não tem disciplina, usa 0
-                    trimestre: trimestre || 1,
-                    nota: h.nota,
-                    anoLetivo: h.anoConclusao,
-                    createdAt: h.createdAt
-                }));
+  async getByAluno(alunoId, anoLetivo, trimestre) {
+    try {
+      const token = localStorage.getItem('token');
+      const url = new URL(`${API_URL}/notas`);
+      url.searchParams.append('idAluno', alunoId);
+      url.searchParams.append('anoLetivo', anoLetivo);
+      if (trimestre) {
+        url.searchParams.append('trimestre', trimestre);
+      }
 
-            return notas.map(notaSchema.parse);
-        } catch (error) {
-            console.error("Error fetching notas from historico:", error);
-            throw new Error('Failed to fetch notas');
-        }
+      console.log(`🔍 Buscando notas do aluno ${alunoId}:`, url.toString());
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log(`📊 Status das notas do aluno ${alunoId}:`, response.status);
+
+      if (!response.ok) {
+        console.warn(`⚠️  Não foi possível carregar notas do aluno ${alunoId}: ${response.status}`);
+        return [];
+      }
+
+      const notas = await response.json();
+      console.log(`✅ Notas do aluno ${alunoId}:`, notas);
+      return notas;
+
+    } catch (error) {
+      console.warn(`⚠️  Erro ao buscar notas do aluno ${alunoId}:`, error.message);
+      return [];
     }
+  }
 
-    /**
-     * Cria uma nova "nota" como histórico escolar
-     */
-    async create(notaData) {
-        const validatedData = novaNotaSchema.parse(notaData);
-        
-        // Criar como histórico escolar
-        const historicoData = {
-            idAluno: validatedData.idAluno,
-            idDisciplina: validatedData.idDisciplina,
-            nomeEscola: "Sistema de Notas", // Placeholder
-            serieConcluida: `${validatedData.trimestre}º Trimestre`,
-            nota: validatedData.nota,
-            anoConclusao: validatedData.anoLetivo
-        };
+  async getByTurma(turmaId, anoLetivo, trimestre) {
+    try {
+      const token = localStorage.getItem('token');
+      const url = new URL(`${API_URL}/notas`);
+      url.searchParams.append('idTurma', turmaId);
+      url.searchParams.append('anoLetivo', anoLetivo);
+      if (trimestre) {
+        url.searchParams.append('trimestre', trimestre);
+      }
 
-        try {
-            const historico = await HistoricoEscolarService.create(historicoData);
-            
-            // Converter de volta para estrutura de nota
-            const nota = {
-                id: historico.id,
-                idAluno: historico.idAluno,
-                idDisciplina: historico.idDisciplina || 0,
-                trimestre: validatedData.trimestre,
-                nota: historico.nota,
-                anoLetivo: historico.anoConclusao,
-                createdAt: historico.createdAt
-            };
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-            return notaSchema.parse(nota);
-        } catch (error) {
-            console.error("Error creating nota as historico:", error);
-            throw new Error('Failed to create nota');
-        }
+      if (!response.ok) {
+        console.warn(`⚠️  Não foi possível carregar notas da turma ${turmaId}: ${response.status}`);
+        return [];
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.warn(`⚠️  Erro ao buscar notas da turma ${turmaId}:`, error.message);
+      return [];
     }
+  }
 
-    /**
-     * Atualiza uma "nota" via histórico escolar
-     */
-    async update(id, updateData) {
-        const validatedData = novaNotaSchema.partial().parse(updateData);
-        
-        try {
-            const historico = await HistoricoEscolarService.update(id, {
-                ...validatedData,
-                nomeEscola: "Sistema de Notas", // Manter placeholder
-                serieConcluida: `${validatedData.trimestre || 1}º Trimestre`
-            });
+  async create(notaData) {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('📤 Criando nota:', notaData);
+      
+      // Valida se todos os campos obrigatórios estão presentes
+      if (!notaData.idTurma) {
+        throw new Error('idTurma é obrigatório para criar uma nota');
+      }
 
-            // Converter de volta para estrutura de nota
-            const nota = {
-                id: historico.id,
-                idAluno: historico.idAluno,
-                idDisciplina: historico.idDisciplina || 0,
-                trimestre: validatedData.trimestre || 1,
-                nota: historico.nota,
-                anoLetivo: historico.anoConclusao,
-                createdAt: historico.createdAt
-            };
+      const response = await fetch(`${API_URL}/notas`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(notaData),
+      });
 
-            return notaSchema.parse(nota);
-        } catch (error) {
-            console.error("Error updating nota as historico:", error);
-            throw new Error('Failed to update nota');
-        }
+      console.log('📊 Status da criação da nota:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erro ${response.status}: ${errorText}`);
+      }
+
+      const notaCriada = await response.json();
+      console.log('✅ Nota criada:', notaCriada);
+      return notaCriada;
+
+    } catch (error) {
+      console.error('❌ Erro no NotaService.create:', error);
+      throw error;
     }
+  }
 
-    /**
-     * Deleta uma "nota" via histórico escolar
-     */
-    async delete(id) {
-        try {
-            await HistoricoEscolarService.delete(id);
-        } catch (error) {
-            console.error("Error deleting nota as historico:", error);
-            throw new Error('Failed to delete nota');
-        }
+  async update(id, notaData) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/notas/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(notaData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar nota: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro no NotaService.update:', error);
+      throw error;
     }
+  }
+
+  async delete(id) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/notas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao deletar nota: ${response.statusText}`);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Erro no NotaService.delete:', error);
+      throw error;
+    }
+  }
 }
 
 export default new NotaService();

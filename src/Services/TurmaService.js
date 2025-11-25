@@ -28,26 +28,30 @@ const turmaWithAlunosSchema = turmaSchema.extend({
 });
 
 class TurmaService {
-    async list({ withAlunos }) {
-        const jwt = localStorage.getItem('token');
+async list({ withAlunos }) {
+    const jwt = localStorage.getItem('token');
 
-        const params = new URLSearchParams();
-        if (withAlunos) params.append('with', 'alunos');
+    const params = new URLSearchParams();
+    if (withAlunos) params.append('with', 'alunos');
 
-        const url = `${API_URL}/turmas?${params.toString()}`;
+    const url = `${API_URL}/turmas?${params.toString()}`;
 
-        const res = await fetch(url, {
-            headers: { 'Authorization': `Bearer ${jwt}` }
-        });
+    const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${jwt}` }
+    });
 
-        if (!res.ok) throw new Error('Failed to fetch turmas');
+    if (!res.ok) throw new Error('Failed to fetch turmas');
 
-        const data = await res.json();
+    const data = await res.json();
 
-        const schema = withAlunos ? turmaWithAlunosSchema : turmaSchema;
+    const schema = withAlunos ? turmaWithAlunosSchema : turmaSchema;
 
-        return schema.array().parse(data).map(t => ({ ...t, alunosMatriculados: 0 }));
-    }
+    return schema.array().parse(data).map(t => ({
+        ...t,
+        alunosMatriculados: t.alunos ? t.alunos.length : 0   // ✅ mantém alunos e ainda adiciona o contador
+    }));
+}
+
 
     async create(novaTurma) {
         const jwt = localStorage.getItem('token');

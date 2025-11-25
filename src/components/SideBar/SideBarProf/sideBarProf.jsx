@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import {
   Users,
   GraduationCap,
-  Settings,
   Home,
   LogOut,
   ChevronDown,
   ClipboardList,
   CheckCircle,
-  BookOpen,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './sideBarProf.css';
