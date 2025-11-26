@@ -12,8 +12,6 @@ import {
 import "./listaProfe.css";
 import ProfeForm from "../../components/ProfeForm/profeForm";
 import ProfessorService from "../../Services/ProfessorService";
-
-// 🔥 IMPORTAÇÃO DO RELATÓRIO DE PROFESSOR
 import { gerarRelatorioProfessor } from "../../Relatorios/listaProfessor";
 
 const ListaProfe = () => {
@@ -32,8 +30,8 @@ const ListaProfe = () => {
         status: prof.status || "ativo",
       }));
       setProfessores(
-  professoresComStatus.filter((prof) => prof.status === "ativo")
-);
+        professoresComStatus.filter((prof) => prof.status === "ativo")
+      );
     } catch (error) {
       console.error("Erro ao buscar professores:", error);
     } finally {
@@ -50,15 +48,23 @@ const ListaProfe = () => {
     const filtroLower = filtro.toLowerCase();
 
     return professores.filter((professor) => {
-      const nomeMatch = professor.usuario?.nome?.toLowerCase().includes(filtroLower);
-      const formacaoMatch = (professor.formacaoAcademica || "").toLowerCase().includes(filtroLower);
+      const nomeMatch = professor.usuario?.nome
+        ?.toLowerCase()
+        .includes(filtroLower);
+      const formacaoMatch = (professor.formacaoAcademica || "")
+        .toLowerCase()
+        .includes(filtroLower);
 
-      const disciplinasMatch = (professor.disciplinas || []).some(
-        (disc) => (typeof disc === "object" ? disc.nome : disc).toLowerCase().includes(filtroLower)
+      const disciplinasMatch = (professor.disciplinas || []).some((disc) =>
+        (typeof disc === "object" ? disc.nome : disc)
+          .toLowerCase()
+          .includes(filtroLower)
       );
 
-      const turmasMatch = (professor.turmas || []).some(
-        (turma) => (typeof turma === "object" ? turma.nome : turma).toLowerCase().includes(filtroLower)
+      const turmasMatch = (professor.turmas || []).some((turma) =>
+        (typeof turma === "object" ? turma.nome : turma)
+          .toLowerCase()
+          .includes(filtroLower)
       );
 
       return nomeMatch || formacaoMatch || disciplinasMatch || turmasMatch;
@@ -83,9 +89,7 @@ const ListaProfe = () => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  /** ============================================================
-   *   🖨️ FUNÇÃO DE IMPRESSÃO – COM IFRAME IGUAL AOS ALUNOS
-   *  ============================================================ */
+  // IMPRESSÃO RELATÓRIO
   const handlePrintProfessor = (professor) => {
     const dataHoraAgora = new Date().toLocaleString("pt-BR");
 
@@ -135,7 +139,10 @@ const ListaProfe = () => {
           <div className="cadastro-turma-form-group full-width">
             <label>Buscar por professor, formação, disciplina ou turma</label>
             <div className="cadastro-turma-input-wrapper">
-              <Search className="cadastro-turma-input-icon-professor" size={18} />
+              <Search
+                className="cadastro-turma-input-icon-professor"
+                size={18}
+              />
               <input
                 type="text"
                 className="cadastro-turma-input search-input-lista-professor"
@@ -152,7 +159,9 @@ const ListaProfe = () => {
       <div className="cadastro-turma-form-section">
         <div className="cadastro-turma-section-header">
           <span>Professores Cadastrados</span>
-          <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}>
+          <span
+            style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}
+          >
             {isLoading
               ? "Carregando..."
               : `${professoresFiltrados.length} professor(es) encontrado(s)`}
@@ -190,12 +199,17 @@ const ListaProfe = () => {
         <div
           className="modal-overlay"
           onClick={(e) => {
-            if (e.target.classList.contains("modal-overlay")) handleFecharModal();
+            if (e.target.classList.contains("modal-overlay"))
+              handleFecharModal();
           }}
         >
           <div className="modal-content">
             <ProfeForm
-              key={professorSelecionado ? `edit-${professorSelecionado.id}` : "create"}
+              key={
+                professorSelecionado
+                  ? `edit-${professorSelecionado.id}`
+                  : "create"
+              }
               professor={professorSelecionado}
               isEditing={Boolean(professorSelecionado)}
               onClose={handleFecharModal}
@@ -234,7 +248,11 @@ const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
             className="professor-basic-info-container clickable"
             onClick={() => setIsExpanded((p) => !p)}
           >
-            {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            {isExpanded ? (
+              <ChevronDown size={20} />
+            ) : (
+              <ChevronRight size={20} />
+            )}
             <div className="professor-avatar">
               <User size={24} />
             </div>
@@ -249,11 +267,17 @@ const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
           </div>
 
           <div className="professor-header-actions">
-            <button className="action-button-professor edit-button-profe" onClick={onEditar}>
+            <button
+              className="action-button-professor edit-button-profe"
+              onClick={onEditar}
+            >
               <Edit size={16} /> Editar
             </button>
 
-            <button className="action-button-professor print-button-profe" onClick={onImprimir}>
+            <button
+              className="action-button-professor print-button-profe"
+              onClick={onImprimir}
+            >
               <Printer size={17} /> Imprimir
             </button>
           </div>

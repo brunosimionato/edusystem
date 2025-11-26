@@ -45,7 +45,7 @@ const ProfeForm = ({
   const [errorTurmas, setErrorTurmas] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [buscandoCep, setBuscandoCep] = useState(false);
-
+  const [professoresExistentes, setProfessoresExistentes] = useState([]);
 
   // Carregar disciplinas
   useEffect(() => {
@@ -71,7 +71,6 @@ const ProfeForm = ({
       setIsLoadingTurmas(true);
       try {
         const data = await TurmaService.list({ withAlunos: false });
-        // 🔥 FILTRAR APENAS TURMAS ATIVAS
         const turmasAtivas = data.filter(
           (turma) =>
             turma.status === undefined ||
@@ -89,6 +88,19 @@ const ProfeForm = ({
       }
     };
     fetchTurmas();
+  }, []);
+
+  // Carregar lista de professores para validação de duplicatas
+  useEffect(() => {
+    const fetchProfessores = async () => {
+      try {
+        const data = await ProfessorService.getAll();
+        setProfessoresExistentes(data);
+      } catch (error) {
+        console.error("Erro ao carregar professores para validação:", error);
+      }
+    };
+    fetchProfessores();
   }, []);
 
   // Popula o formulário quando for edição
@@ -116,7 +128,7 @@ const ProfeForm = ({
       return;
     }
 
-    // 🔥 VERIFICAR SE PROFESSOR ESTÁ ATIVO
+    // VERIFICAR SE PROFESSOR ESTÁ ATIVO
     if (professor.status === "inativo") {
       console.warn("Tentativa de editar professor inativo:", professor);
       return;
@@ -146,7 +158,6 @@ const ProfeForm = ({
     const turmas = (professor.turmas || [])
       .map((t) => (typeof t === "object" ? t.id : t))
       .filter((turmaId) => {
-        // Verificar se a turma está disponível nas turmas ativas
         const turmaDisponivel = turmasDisponiveis.find((t) => t.id === turmaId);
         return turmaDisponivel;
       });
@@ -181,6 +192,62 @@ const ProfeForm = ({
     setDisciplinasSelecionadas(disciplinasIds);
     setCamposInvalidos([]);
   }, [professor, turmasDisponiveis]);
+
+  // NOVA FUNÇÃO: Validar email e CPF duplicados
+  const validarDuplicatas = () => {
+    const cpfLimpo = formData.cpf.replace(/\D/g, "");
+    const emailLimpo = formData.email.trim().toLowerCase();
+
+    // Verificar se há professores com mesmo email ou CPF
+    const professorComMesmoEmail = professoresExistentes.find((prof) => {
+      const profEmail = prof.usuario?.email?.trim().toLowerCase();
+      return profEmail === emailLimpo;
+    });
+
+    const professorComMesmoCPF = professoresExistentes.find((prof) => {
+      const profCPF = prof.cpf?.replace(/\D/g, "");
+      return profCPF === cpfLimpo;
+    });
+
+    // Se estiver editando, ignorar o próprio professor
+    if (editing && professor?.id) {
+      if (
+        professorComMesmoEmail &&
+        professorComMesmoEmail.id !== professor.id
+      ) {
+        return {
+          duplicado: true,
+          campo: "email",
+          mensagem: "Já existe um professor cadastrado com este e-mail.",
+        };
+      }
+      if (professorComMesmoCPF && professorComMesmoCPF.id !== professor.id) {
+        return {
+          duplicado: true,
+          campo: "cpf",
+          mensagem: "Já existe um professor cadastrado com este CPF.",
+        };
+      }
+    } else {
+      // Se estiver criando
+      if (professorComMesmoEmail) {
+        return {
+          duplicado: true,
+          campo: "email",
+          mensagem: "Já existe um professor cadastrado com este e-mail.",
+        };
+      }
+      if (professorComMesmoCPF) {
+        return {
+          duplicado: true,
+          campo: "cpf",
+          mensagem: "Já existe um professor cadastrado com este CPF.",
+        };
+      }
+    }
+
+    return { duplicado: false };
+  };
 
   // Função para buscar o endereço pelo CEP
   const buscarEndereco = async (cep) => {
@@ -237,7 +304,7 @@ const ProfeForm = ({
       formattedValue = mascaraTelefone(value);
     } else if (name === "cep") {
       formattedValue = mascaraCEP(value);
-      // Buscar endereço quando CEP estiver completo
+
       if (value.replace(/\D/g, "").length === 8) {
         buscarEndereco(value);
       }
@@ -250,7 +317,6 @@ const ProfeForm = ({
       [name]: formattedValue,
     }));
 
-    // Remover do array de inválidos se o campo foi preenchido
     if (value.trim() && camposInvalidos.includes(name)) {
       setCamposInvalidos((prev) => prev.filter((campo) => campo !== name));
     }
@@ -262,7 +328,6 @@ const ProfeForm = ({
         ? prev.filter((d) => d !== disciplinaId)
         : [...prev, disciplinaId];
 
-      // Remover "disciplinas" dos campos inválidos se selecionou alguma
       if (
         novasDisciplinas.length > 0 &&
         camposInvalidos.includes("disciplinas")
@@ -277,7 +342,6 @@ const ProfeForm = ({
   };
 
   const handleTurmaChange = (turmaId) => {
-    // 🔥 VERIFICAR SE A TURMA ESTÁ ATIVA
     const turmaSelecionada = turmasDisponiveis.find((t) => t.id === turmaId);
     if (!turmaSelecionada) {
       alert("Esta turma não está disponível ou está inativa.");
@@ -289,7 +353,6 @@ const ProfeForm = ({
         ? prev.turmas.filter((t) => t !== turmaId)
         : [...prev.turmas, turmaId];
 
-      // Remover "turmas" dos campos inválidos se selecionou alguma
       if (novasTurmas.length > 0 && camposInvalidos.includes("turmas")) {
         setCamposInvalidos((prev) =>
           prev.filter((campo) => campo !== "turmas")
@@ -324,18 +387,15 @@ const ProfeForm = ({
       }
     });
 
-    // Validar CPF
     if (formData.cpf && formData.cpf.replace(/\D/g, "").length !== 11) {
       if (!invalidos.includes("cpf")) invalidos.push("cpf");
     }
 
-    // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (formData.email && !emailRegex.test(formData.email)) {
       if (!invalidos.includes("email")) invalidos.push("email");
     }
 
-    // Validar CEP
     if (formData.cep && formData.cep.replace(/\D/g, "").length !== 8) {
       if (!invalidos.includes("cep")) invalidos.push("cep");
     }
@@ -355,6 +415,21 @@ const ProfeForm = ({
     e.preventDefault();
     setIsSubmitting(true);
 
+    const validacaoDuplicatas = validarDuplicatas();
+    if (validacaoDuplicatas.duplicado) {
+      alert(validacaoDuplicatas.mensagem);
+      setIsSubmitting(false);
+
+      const campoDuplicado = document.querySelector(
+        `[name="${validacaoDuplicatas.campo}"]`
+      );
+      if (campoDuplicado) {
+        campoDuplicado.scrollIntoView({ behavior: "smooth", block: "center" });
+        campoDuplicado.focus();
+      }
+      return;
+    }
+
     const invalidos = validateForm();
     if (invalidos.length > 0) {
       setCamposInvalidos(invalidos);
@@ -372,12 +447,10 @@ const ProfeForm = ({
     setCamposInvalidos([]);
 
     try {
-      // 🔥 CORREÇÃO: Estrutura correta para o update
       const payload = {
         usuario: {
           nome: formData.nome.trim(),
           email: formData.email.trim(),
-          // Em edição, não enviamos senha nem tipo_usuario
         },
         professor: {
           cpf: formData.cpf.replace(/\D/g, ""),
@@ -398,14 +471,14 @@ const ProfeForm = ({
         },
       };
 
-      console.log("📤 Payload enviado:", JSON.stringify(payload, null, 2)); // Debug
+      console.log("📤 Payload enviado:", JSON.stringify(payload, null, 2));
 
       if (editing && professor?.id) {
         await ProfessorService.update(professor.id, payload);
         alert("Professor atualizado com sucesso!");
       } else {
         // Para criação, adiciona senha e tipo_usuario
-        payload.usuario.senha = "password";
+        payload.usuario.senha = formData.cpf.replace(/\D/g, "");
         payload.usuario.tipo_usuario = "professor";
 
         await ProfessorService.create(payload);
@@ -479,7 +552,6 @@ const ProfeForm = ({
     setCamposInvalidos([]);
   };
 
-  // 🔥 SE O PROFESSOR FOR INATIVO, NÃO RENDERIZA O FORMULÁRIO
   if (professor && professor.status === "inativo") {
     return (
       <div className="cadastro-container-professor">
@@ -518,7 +590,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("nome") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="Digite o nome completo"
                 />
                 {camposInvalidos.includes("nome") && (
                   <span className="error-message">
@@ -538,7 +609,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("cpf") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="000.000.000-00"
                 />
                 {camposInvalidos.includes("cpf") && (
                   <span className="error-message">
@@ -603,7 +673,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("telefone") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="(00) 00000-0000"
                 />
                 {camposInvalidos.includes("telefone") && (
                   <span className="error-message">
@@ -622,7 +691,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("email") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="exemplo@email.com"
                 />
                 {camposInvalidos.includes("email") && (
                   <span className="error-message">
@@ -651,7 +719,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("cep") ? "input-error" : ""
                   }
                   disabled={isSubmitting || buscandoCep}
-                  placeholder="00000-000"
                 />
                 {buscandoCep && (
                   <span className="info-message">Buscando endereço...</span>
@@ -673,7 +740,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("rua") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="Rua, Avenida, etc."
                 />
                 {camposInvalidos.includes("rua") && (
                   <span className="error-message">
@@ -692,7 +758,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("numero") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="123"
                 />
                 {camposInvalidos.includes("numero") && (
                   <span className="error-message">
@@ -713,7 +778,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("bairro") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="Nome do bairro"
                 />
                 {camposInvalidos.includes("bairro") && (
                   <span className="error-message">
@@ -732,7 +796,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("cidade") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="Nome da cidade"
                 />
                 {camposInvalidos.includes("cidade") && (
                   <span className="error-message">
@@ -752,7 +815,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("estado") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="SP"
                 />
                 {camposInvalidos.includes("estado") && (
                   <span className="error-message">
@@ -780,7 +842,6 @@ const ProfeForm = ({
                     camposInvalidos.includes("formacao") ? "input-error" : ""
                   }
                   disabled={isSubmitting}
-                  placeholder="Ex: Licenciatura em Matemática"
                 />
                 {camposInvalidos.includes("formacao") && (
                   <span className="error-message">

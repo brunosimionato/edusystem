@@ -126,7 +126,7 @@
 
 
 .search-input-lista-aluno {
-  text-indent: 20px; /* desloca o início do texto */
+  text-indent: 20px;
 }
 
 /* Placeholder */
@@ -362,20 +362,13 @@ textarea.input-error:hover {
   overflow: hidden;
 }
 
-.progress-fill {
+.progress-fill-lista {
   height: 100%;
-  background: #22c55e;
+  background: #64748b;
   border-radius: 4px;
   transition: all 0.3s ease;
 }
 
-.turma-card.quase-lotada .progress-fill {
-  background: #f59e0b;
-}
-
-.turma-card.lotada .progress-fill {
-  background: #ef4444;
-}
 
 .percentual-text {
   font-size: 12px;

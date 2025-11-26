@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Eye,
   EyeOff,
@@ -8,28 +8,27 @@ import {
   Users,
   BarChart3,
   ChevronRight,
-  Loader2
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+  Loader2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-import AuthService from '../Services/AuthService';
+import AuthService from "../Services/AuthService";
 
-import './login.css';
-import { useAuth } from '../context/AuthContext';
-
+import "./login.css";
+import { useAuth } from "../context/AuthContext";
 
 const features = [
   {
     icon: BookOpen,
-    text: 'Gerenciamento intuitivo'
+    text: "Gerenciamento intuitivo",
   },
   {
     icon: Users,
-    text: 'Controle de Usuários'
+    text: "Controle de Usuários",
   },
   {
     icon: BarChart3,
-    text: 'Interface simples e eficiente'
+    text: "Interface simples e eficiente",
   },
 ];
 
@@ -39,11 +38,11 @@ const Login = () => {
 
   useEffect(() => {
     if (authToken) {
-      if (userRole === 'professor') {
-        navigate('/professor/dashboard');
+      if (userRole === "professor") {
+        navigate("/professor/dashboard");
         return;
-      } else if (userRole === 'secretaria') {
-        navigate('/secretaria/dashboard');
+      } else if (userRole === "secretaria") {
+        navigate("/secretaria/dashboard");
         return;
       }
     }
@@ -56,7 +55,7 @@ const Login = () => {
         <div className="login-left">
           <div className="logo-section">
             <div className="logo-icon">
-              <GraduationCap style={{ width: '40px', height: '40px' }} />
+              <GraduationCap style={{ width: "40px", height: "40px" }} />
             </div>
 
             <h1>EduSystem</h1>
@@ -67,8 +66,8 @@ const Login = () => {
             <h2>Bem-vindo de volta!</h2>
             <p>
               Acesse sua conta e gerencie todas as atividades escolares de forma
-              simples e eficiente. Nossa plataforma oferece ferramentas completas
-              para educadores e administradores.
+              simples e eficiente. Nossa plataforma oferece ferramentas
+              completas para educadores e administradores.
             </p>
 
             <div className="features-list">
@@ -106,66 +105,65 @@ export default Login;
 
 const userTypes = [
   {
-    id: 'professor',
-    title: 'Professor',
-    description: 'Portal do educador',
-    icon: GraduationCap
+    id: "professor",
+    title: "Professor",
+    description: "Portal do educador",
+    icon: GraduationCap,
   },
   {
-    id: 'secretaria',
-    title: 'Secretaria',
-    description: 'Administração escolar',
-    icon: Building
-  }
+    id: "secretaria",
+    title: "Secretaria",
+    description: "Administração escolar",
+    icon: Building,
+  },
 ];
 
 const LoginForm = () => {
   const { login } = useAuth();
 
-  const [selectedRole, setSelectedUserType] = useState('');
+  const [selectedRole, setSelectedUserType] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
+    email: "",
+    password: "",
+    rememberMe: false,
   });
   const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!selectedRole) {
-    setError("Por favor, selecione o tipo de usuário");
-    return;
-  }
+    if (!selectedRole) {
+      setError("Por favor, selecione o tipo de usuário");
+      return;
+    }
 
-  setIsLoading(true);
-  setError(null);
+    setIsLoading(true);
+    setError(null);
 
-  try {
-    const { token, role } = await AuthService.login({
-      ...formData,
-      role: selectedRole
-    });
+    try {
+      const { token, role } = await AuthService.login({
+        ...formData,
+        role: selectedRole,
+      });
 
-    login(token, role);
-  } catch (error) {
-    console.error("Login failed:", error);
-    setError(error.message || "Erro ao fazer login.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+      login(token, role);
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError(error.message || "Erro ao fazer login.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
@@ -174,7 +172,7 @@ const handleSubmit = async (e) => {
         {userTypes.map((type) => (
           <div
             key={type.id}
-            className={`user-type ${selectedRole === type.id ? 'active' : ''}`}
+            className={`user-type ${selectedRole === type.id ? "active" : ""}`}
             onClick={() => setSelectedUserType(type.id)}
           >
             <div className="user-icon">
@@ -206,7 +204,7 @@ const handleSubmit = async (e) => {
         <label htmlFor="password">Senha</label>
         <div className="password-input-wrapper">
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             placeholder="Digite sua senha"
@@ -218,7 +216,7 @@ const handleSubmit = async (e) => {
             type="button"
             className="password-toggle"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -238,16 +236,10 @@ const handleSubmit = async (e) => {
         </label>
       </div>
 
-      <div className="error-message">
-        {error && <p>{error}</p>}
-      </div>
+      <div className="error-message">{error && <p>{error}</p>}</div>
 
       {/* Botão de Login */}
-      <button
-        type="submit"
-        className="login-button"
-        disabled={isLoading}
-      >
+      <button type="submit" className="login-button" disabled={isLoading}>
         {isLoading ? (
           <>
             <Loader2 className="loading-spinner" size={18} />
@@ -261,5 +253,5 @@ const handleSubmit = async (e) => {
         )}
       </button>
     </form>
-  )
-}
+  );
+};

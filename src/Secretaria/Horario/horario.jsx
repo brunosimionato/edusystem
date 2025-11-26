@@ -80,29 +80,36 @@ const Horarios = () => {
     { nome: "Sexta", numero: 5 },
   ];
 
-  // 🔥 FUNÇÃO PARA VERIFICAR SE HORÁRIO JÁ ESTÁ CADASTRADO
-  const isHorarioOcupado = (diaNumero, periodoNumero, professorId, disciplinaId, turmaId) => {
+  const isHorarioOcupado = (
+    diaNumero,
+    periodoNumero,
+    professorId,
+    disciplinaId,
+    turmaId
+  ) => {
     // Verificar se já existe um horário com o mesmo professor no mesmo dia e período
-    const horarioExistente = horariosExistentes.find(horario => 
-      horario.diaSemana === diaNumero && 
-      horario.periodo === periodoNumero && 
-      horario.idProfessor === parseInt(professorId) &&
-      horario.idTurma !== parseInt(turmaId) // Permitir na mesma turma (edição)
+    const horarioExistente = horariosExistentes.find(
+      (horario) =>
+        horario.diaSemana === diaNumero &&
+        horario.periodo === periodoNumero &&
+        horario.idProfessor === parseInt(professorId) &&
+        horario.idTurma !== parseInt(turmaId)
     );
 
     // Verificar se já existe um horário com a mesma disciplina no mesmo dia e período
-    const disciplinaExistente = horariosExistentes.find(horario => 
-      horario.diaSemana === diaNumero && 
-      horario.periodo === periodoNumero && 
-      horario.idDisciplina === parseInt(disciplinaId) &&
-      horario.idTurma !== parseInt(turmaId) // Permitir na mesma turma (edição)
+    const disciplinaExistente = horariosExistentes.find(
+      (horario) =>
+        horario.diaSemana === diaNumero &&
+        horario.periodo === periodoNumero &&
+        horario.idDisciplina === parseInt(disciplinaId) &&
+        horario.idTurma !== parseInt(turmaId)
     );
 
     return {
       professorOcupado: !!horarioExistente,
       disciplinaOcupada: !!disciplinaExistente,
       professorConflito: horarioExistente,
-      disciplinaConflito: disciplinaExistente
+      disciplinaConflito: disciplinaExistente,
     };
   };
 
@@ -142,9 +149,8 @@ const Horarios = () => {
       const horariosAtivos =
         periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-      // 🔥 VERIFICAR CONFLITOS ANTES DE SALVAR
       const conflitos = [];
-      
+
       diasSemana.forEach((dia) => {
         horariosAtivos.forEach((horario) => {
           if (!horario.isBreak) {
@@ -155,19 +161,35 @@ const Horarios = () => {
             const professorId = horariosInput[professorKey];
 
             if (disciplinaId && professorId) {
-              const ocupacao = isHorarioOcupado(dia.numero, horario.numero, professorId, disciplinaId, turmaSelecionada);
-              
+              const ocupacao = isHorarioOcupado(
+                dia.numero,
+                horario.numero,
+                professorId,
+                disciplinaId,
+                turmaSelecionada
+              );
+
               if (ocupacao.professorOcupado) {
-                const professor = professores.find(p => p.id === parseInt(professorId));
-                const turmaConflito = turmas.find(t => t.id === ocupacao.professorConflito.idTurma);
+                const professor = professores.find(
+                  (p) => p.id === parseInt(professorId)
+                );
+                const turmaConflito = turmas.find(
+                  (t) => t.id === ocupacao.professorConflito.idTurma
+                );
                 conflitos.push(
-                  `Professor ${professor?.usuario?.nome || professor?.nome} já está alocado na ${turmaConflito?.nome} no mesmo horário`
+                  `Professor ${
+                    professor?.usuario?.nome || professor?.nome
+                  } já está alocado na ${turmaConflito?.nome} no mesmo horário`
                 );
               }
 
               if (ocupacao.disciplinaOcupada) {
-                const disciplina = disciplinas.find(d => d.id === parseInt(disciplinaId));
-                const turmaConflito = turmas.find(t => t.id === ocupacao.disciplinaConflito.idTurma);
+                const disciplina = disciplinas.find(
+                  (d) => d.id === parseInt(disciplinaId)
+                );
+                const turmaConflito = turmas.find(
+                  (t) => t.id === ocupacao.disciplinaConflito.idTurma
+                );
                 conflitos.push(
                   `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
                 );
@@ -189,7 +211,11 @@ const Horarios = () => {
       });
 
       if (conflitos.length > 0) {
-        alert(`Conflitos encontrados:\n\n${conflitos.join('\n')}\n\nAjuste os horários e tente novamente.`);
+        alert(
+          `Conflitos encontrados:\n\n${conflitos.join(
+            "\n"
+          )}\n\nAjuste os horários e tente novamente.`
+        );
         return;
       }
 
@@ -278,10 +304,12 @@ const Horarios = () => {
 
   const salvarEdicao = async (turmaId) => {
     try {
-      // 🔥 VERIFICAR CONFLITOS NA EDIÇÃO
+      // VERIFICAR CONFLITOS NA EDIÇÃO
       const turma = turmas.find((t) => t.id == turmaId);
-      const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
-      const horariosAtivos = periodo === "manha" ? horariosManha : horariosTarde;
+      const periodo =
+        turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
+      const horariosAtivos =
+        periodo === "manha" ? horariosManha : horariosTarde;
 
       const conflitos = [];
       const horariosParaCriar = [];
@@ -296,19 +324,35 @@ const Horarios = () => {
             const professorId = horariosEdicao[professorKey];
 
             if (disciplinaId && professorId) {
-              const ocupacao = isHorarioOcupado(dia.numero, horario.numero, professorId, disciplinaId, turmaId);
-              
+              const ocupacao = isHorarioOcupado(
+                dia.numero,
+                horario.numero,
+                professorId,
+                disciplinaId,
+                turmaId
+              );
+
               if (ocupacao.professorOcupado) {
-                const professor = professores.find(p => p.id === parseInt(professorId));
-                const turmaConflito = turmas.find(t => t.id === ocupacao.professorConflito.idTurma);
+                const professor = professores.find(
+                  (p) => p.id === parseInt(professorId)
+                );
+                const turmaConflito = turmas.find(
+                  (t) => t.id === ocupacao.professorConflito.idTurma
+                );
                 conflitos.push(
-                  `Professor ${professor?.usuario?.nome || professor?.nome} já está alocado na ${turmaConflito?.nome} no mesmo horário`
+                  `Professor ${
+                    professor?.usuario?.nome || professor?.nome
+                  } já está alocado na ${turmaConflito?.nome} no mesmo horário`
                 );
               }
 
               if (ocupacao.disciplinaOcupada) {
-                const disciplina = disciplinas.find(d => d.id === parseInt(disciplinaId));
-                const turmaConflito = turmas.find(t => t.id === ocupacao.disciplinaConflito.idTurma);
+                const disciplina = disciplinas.find(
+                  (d) => d.id === parseInt(disciplinaId)
+                );
+                const turmaConflito = turmas.find(
+                  (t) => t.id === ocupacao.disciplinaConflito.idTurma
+                );
                 conflitos.push(
                   `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
                 );
@@ -330,7 +374,11 @@ const Horarios = () => {
       });
 
       if (conflitos.length > 0) {
-        alert(`Conflitos encontrados:\n\n${conflitos.join('\n')}\n\nAjuste os horários e tente novamente.`);
+        alert(
+          `Conflitos encontrados:\n\n${conflitos.join(
+            "\n"
+          )}\n\nAjuste os horários e tente novamente.`
+        );
         return;
       }
 
@@ -375,7 +423,7 @@ const Horarios = () => {
     }));
   };
 
-  // 🔥 FUNÇÃO DE IMPRESSÃO
+  // FUNÇÃO DE IMPRESSÃO
   const handlePrintHorario = (turmaId) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
@@ -383,7 +431,8 @@ const Horarios = () => {
     // Organizar os dados para o relatório
     const horariosProcessados = [];
 
-    const horariosBase = turma.turno === "Manhã" ? horariosManha : horariosTarde;
+    const horariosBase =
+      turma.turno === "Manhã" ? horariosManha : horariosTarde;
 
     horariosBase.forEach((h) => {
       horariosProcessados.push({
@@ -446,11 +495,17 @@ const Horarios = () => {
     return acc;
   }, {});
 
+  // FILTRAR TURMAS: Mostrar apenas as que NÃO têm horários cadastrados
+  const turmasDisponiveis = turmas.filter(
+    (turma) => !horariosPorTurma[turma.id]
+  );
+
   // Função para renderizar tabela de horários - CORRIGIDA
   const renderTabelaHorarios = (turmaId, isEdicao = false) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
-    const horariosParaUsar = periodo === "manha" ? horariosManha : horariosTarde;
+    const horariosParaUsar =
+      periodo === "manha" ? horariosManha : horariosTarde;
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
 
     // Criar mapa de horários para acesso rápido
@@ -538,7 +593,8 @@ const Horarios = () => {
                     ) : (
                       <div className="materia-professor-view">
                         {(() => {
-                          const h = horariosMap[`${dia.numero}_${horario.numero}`];
+                          const h =
+                            horariosMap[`${dia.numero}_${horario.numero}`];
                           if (!h) {
                             return (
                               <>
@@ -548,17 +604,26 @@ const Horarios = () => {
                             );
                           }
 
-                          // 🔥 CORREÇÃO: Buscar nomes reais das disciplinas e professores
-                          const disciplinaEncontrada = disciplinas.find(d => d.id === h.idDisciplina);
-                          const professorEncontrado = professores.find(p => p.id === h.idProfessor);
+                          // CORREÇÃO: Buscar nomes reais das disciplinas e professores
+                          const disciplinaEncontrada = disciplinas.find(
+                            (d) => d.id === h.idDisciplina
+                          );
+                          const professorEncontrado = professores.find(
+                            (p) => p.id === h.idProfessor
+                          );
 
                           return (
                             <>
                               <span className="materia-nome">
-                                {disciplinaEncontrada?.nome || h.disciplina?.nome || `Disciplina ${h.idDisciplina}`}
+                                {disciplinaEncontrada?.nome ||
+                                  h.disciplina?.nome ||
+                                  `Disciplina ${h.idDisciplina}`}
                               </span>
                               <span className="professor-nome">
-                                {professorEncontrado?.usuario?.nome || professorEncontrado?.nome || h.professor?.usuario?.nome || `Professor ${h.idProfessor}`}
+                                {professorEncontrado?.usuario?.nome ||
+                                  professorEncontrado?.nome ||
+                                  h.professor?.usuario?.nome ||
+                                  `Professor ${h.idProfessor}`}
                               </span>
                             </>
                           );
@@ -620,7 +685,8 @@ const Horarios = () => {
                     onChange={handleSelecionarTurma}
                   >
                     <option value="">Selecione uma turma</option>
-                    {turmas.map((turma) => (
+                    {/* CORREÇÃO: Usar apenas turmasDisponiveis */}
+                    {turmasDisponiveis.map((turma) => (
                       <option key={turma.id} value={turma.id}>
                         {turma.nome} - {turma.turno}
                       </option>
@@ -782,21 +848,6 @@ const Horarios = () => {
           <h3 className="cadastro-horario-section-header-turmas">
             Horários Cadastrados
           </h3>
-          {usingMock && (
-            <button
-              onClick={async () => {
-                const isOnline = await tryReconnect();
-                if (isOnline) {
-                  alert("Backend reconectado!");
-                } else {
-                  alert("Backend ainda offline. Continuando com dados locais.");
-                }
-              }}
-              className="reconnect-button"
-            >
-              🎭 Dados Locais - Tentar Reconectar
-            </button>
-          )}
         </div>
 
         {isLoadingHorarios ? (

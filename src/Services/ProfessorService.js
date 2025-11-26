@@ -1,17 +1,12 @@
-// src/services/ProfessorService.js 
 import { z } from "zod";
 import { API_URL } from "../utils/env.js";
-
-/* --------------------------------------------------------
-   ZOD SCHEMAS
--------------------------------------------------------- */
 
 export const usuarioSchema = z.object({
     id: z.number(),
     nome: z.string(),
     email: z.string().email(),
     tipo_usuario: z.string(),
-    status: z.string().optional() // 🔥 ADICIONAMOS STATUS AQUI
+    status: z.string().optional()
 });
 
 export const professorSchema = z.object({
@@ -48,13 +43,9 @@ export const professorSchema = z.object({
     ).optional()
 });
 
-/* --------------------------------------------------------
-   SERVICE
--------------------------------------------------------- */
-
 class ProfessorService {
 
-    /* GET ALL - FILTRAR POR USUÁRIOS ATIVOS */
+    // GET ALL
     async getAll() {
         const token = localStorage.getItem("token");
 
@@ -69,21 +60,20 @@ class ProfessorService {
 
         const body = await res.json();
         
-        console.log("🔍 TODOS OS PROFESSORES:", body); // DEBUG
+        console.log("🔍 TODOS OS PROFESSORES:", body);
         
-        // 🔥 FILTRAR APENAS PROFESSORES COM USUÁRIOS ATIVOS
+        // FILTRAR APENAS PROFESSORES COM USUÁRIOS ATIVOS
         const professoresAtivos = body.filter(professor => {
-            // Se o usuário não tem status ou status é ativo, mostra
             const statusUsuario = professor.usuario?.status;
             return !statusUsuario || statusUsuario === "ativo";
         });
         
-        console.log("✅ PROFESSORES ATIVOS:", professoresAtivos); // DEBUG
+        console.log("✅ PROFESSORES ATIVOS:", professoresAtivos);
         
         return professoresAtivos.map(professorSchema.parse);
     }
 
-    /* GET BY ID */
+    // GET BY ID
     async getById(id) {
         const token = localStorage.getItem("token");
 
@@ -98,7 +88,7 @@ class ProfessorService {
 
         const body = await res.json();
         
-        // 🔥 VERIFICAR SE O USUÁRIO DO PROFESSOR ESTÁ ATIVO
+        // VERIFICAR SE O USUÁRIO DO PROFESSOR ESTÁ ATIVO
         if (body.usuario?.status === "inativo") {
             throw new Error("Professor inativo não pode ser acessado");
         }
@@ -106,7 +96,7 @@ class ProfessorService {
         return professorSchema.parse(body);
     }
 
-    /* CREATE */
+    // CREATE
     async create(data) {
         const token = localStorage.getItem("token");
 
@@ -116,7 +106,7 @@ class ProfessorService {
                 email: data.usuario.email,
                 senha: data.usuario.senha || "password",
                 tipo_usuario: "professor",
-                status: "ativo" // 🔥 NOVOS USUÁRIOS SÃO ATIVOS
+                status: "ativo"
             } : undefined,
 
             professor: {
@@ -155,7 +145,7 @@ class ProfessorService {
         return professorSchema.parse(body);
     }
 
-    /* UPDATE */
+    // UPDATE
     async update(id, data) {
         const token = localStorage.getItem("token");
 
@@ -202,7 +192,7 @@ class ProfessorService {
         return professorSchema.parse(body);
     }
 
-    /* DELETE */
+    // DELETE
     async delete(id) {
         const token = localStorage.getItem("token");
 
@@ -216,6 +206,8 @@ class ProfessorService {
 
         if (!res.ok) throw new Error("Failed to delete professor");
     }
+
+    
 }
 
 export default new ProfessorService();

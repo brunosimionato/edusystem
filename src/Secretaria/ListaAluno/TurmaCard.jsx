@@ -65,7 +65,6 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
     }
   };
 
-  // 🔥 IMPRESSÃO COM CONTADOR DE PÁGINA CORRIGIDO
   const handlePrint = (e) => {
     e.stopPropagation();
 
@@ -109,9 +108,7 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
         frameDoc.print();
       }, 150);
     };
-    
   };
-  
 
   return (
     <div className={`turma-card ${statusTurma}`}>

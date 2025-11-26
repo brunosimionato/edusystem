@@ -1,4 +1,3 @@
-// src/components/UserRegistration/UserRegistration.jsx
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, User, Mail, Lock, Loader2, CheckCircle } from 'lucide-react';
 import { useCreateUser } from '../../hooks/useCreateUser';
@@ -25,10 +24,9 @@ export default function UserRegistration() {
         nome: '',
         email: '',
         senha: '',
-        tipo_usuario: 'secretaria' // Default para admin
+        tipo_usuario: 'secretaria'
     });
 
-    // Redirecionar se for aluno tentando acessar
     useEffect(() => {
         if (authToken && userRole === 'aluno') {
             navigate('/professor/dashboard');

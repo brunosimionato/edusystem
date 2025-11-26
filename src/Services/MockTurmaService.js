@@ -1,9 +1,7 @@
-// src/services/MockTurmaService.js
 class MockTurmaService {
     async getAll() {
       console.log('🎭 Usando dados mockados de turmas');
       
-      // Simular delay de rede
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       return [

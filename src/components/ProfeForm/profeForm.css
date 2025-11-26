@@ -309,7 +309,6 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Botão de salvar (modo edição) */
 .btn-save {
   background: #10b981;
   color: #fff;
@@ -318,7 +317,6 @@
   transition: all 0.2s ease;
 }
 
-/* Hover / focus */
 .btn-save:hover,
 .btn-save:focus {
   background: #0e9e73;
@@ -327,7 +325,6 @@
   outline: none;
 }
 
-/* ===== ANIMAÇÕES ===== */
 @keyframes slideUp {
   from {
     opacity: 0;

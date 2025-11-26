@@ -1,4 +1,3 @@
-// src/hooks/useFaltas.js - NOVO
 import { useState, useEffect, useCallback } from 'react';
 import FaltaService from '../Services/FaltaService';
 

@@ -62,7 +62,6 @@ export function gerarRelatorioProfessor({
             margin-top: 20px;
             font-size: 15px;
             font-weight: bold;
-            border-bottom: 1px solid #aaa;
             padding-bottom: 4px;
         }
 

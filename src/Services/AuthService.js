@@ -1,4 +1,3 @@
-// src/Services/AuthService.js
 import { z } from 'zod';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -41,7 +40,7 @@ async login(payload) {
                 error: 'Erro ao processar login'
             }));
 
-            throw new Error(errorData.error); // <-- aqui volta para o LoginForm como error.message
+            throw new Error(errorData.error);
         }
 
         const body = await res.json();
@@ -54,13 +53,10 @@ async login(payload) {
             throw new Error('Dados de login inválidos');
         }
 
-        // Repassa mensagem correta para o LoginForm
         throw new Error(error.message || "Erro ao fazer login");
     }
 }
 
-
-    // MÉTODO PÚBLICO - Cria usuário sem necessidade de autenticação
     async createUserPublic(userData) {
         try {
             const data = userRegistrationSchema.parse(userData);

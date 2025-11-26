@@ -1,4 +1,3 @@
-// src/services/TestService.js
 import { API_URL } from '../utils/env.js';
 
 class TestService {

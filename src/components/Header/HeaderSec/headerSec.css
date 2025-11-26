@@ -9,7 +9,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Header Left - Alinhado com a Sidebar */
 .header-left {
   display: flex;
   align-items: center;
@@ -57,7 +56,6 @@
   line-height: 1;
 }
 
-/* Header Right - FORÇANDO ALINHAMENTO À ESQUERDA */
 .header-right {
   flex: 1;
   display: flex;
@@ -79,8 +77,8 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  position: absolute; /* POSICIONAMENTO ABSOLUTO */
-  left: 32px; /* FORÇA À ESQUERDA */
+  position: absolute;
+  left: 32px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -109,13 +107,12 @@
   align-items: center;
   gap: 16px;
   flex-shrink: 0;
-  position: absolute; /* POSICIONAMENTO ABSOLUTO */
-  right: 32px; /* FORÇA À DIREITA */
+  position: absolute;
+  right: 32px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* Barra de Pesquisa */
 .search-container {
   position: relative;
 }
@@ -149,7 +146,6 @@
   pointer-events: none;
 }
 
-/* Botão de Notificações */
 .notification-btn {
   position: relative;
   padding: 10px;
@@ -224,7 +220,7 @@
   .header-title {
     width: 100%;
     align-items: flex-start;
-    position: static; /* REMOVE POSICIONAMENTO ABSOLUTO EM MOBILE */
+    position: static;
     transform: none;
   }
   
@@ -241,7 +237,7 @@
   .header-actions {
     width: 100%;
     justify-content: flex-start;
-    position: static; /* REMOVE POSICIONAMENTO ABSOLUTO EM MOBILE */
+    position: static;
     transform: none;
   }
   

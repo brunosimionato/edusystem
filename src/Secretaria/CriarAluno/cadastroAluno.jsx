@@ -1,4 +1,3 @@
-// src/pages/CadastroAluno/CadastroAlunoPage.jsx
 import { useState } from "react";
 
 import AlunoForm from "../../components/AlunoForm/alunoForm";
@@ -22,14 +21,14 @@ const handleCreate = async (payload) => {
 
     const msg = error?.message?.toLowerCase() || "";
 
-    // 🔥 Verifica se o backend enviou erro de CPF duplicado
+    // Verifica se o backend enviou erro de CPF duplicado
     if (msg.includes("cpf") || msg.includes("unique") || msg.includes("duplic")) {
       alert("Já existe um aluno cadastrado com esse CPF.");
     } else {
       alert("Erro ao cadastrar aluno: " + error.message);
     }
 
-    // 🔥 Impede o cadastro e evita limpar o formulário
+    // Impede o cadastro e evita limpar o formulário
     throw error;
   }
 };

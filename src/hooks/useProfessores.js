@@ -1,4 +1,3 @@
-// src/hooks/useProfessores.js
 import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '../utils/env.js';
 

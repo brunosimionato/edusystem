@@ -1,4 +1,3 @@
-// src/hooks/useSecretarias.js - NOVO
 import { useState, useEffect, useCallback } from 'react';
 import SecretariaService from '../Services/SecretariaService';
 

@@ -18,66 +18,68 @@ const CriarTurma = () => {
     const turma = turmas.find((t) => t.id === id);
 
     if (turma && turma.alunosMatriculados > 0) {
-      const confirmar = window.confirm(
-        `A turma "${turma.nome}" possui ${turma.alunosMatriculados} alunos matriculados. Deseja realmente removê-la?`
+      alert(
+        `Não é possível remover a turma "${turma.nome}"\n\n` +
+          `Para remover a turma, primeiro transfira ou remova todos os alunos vinculados.`
       );
-      if (!confirmar) return;
-    } else {
-      const confirmar = window.confirm(
-        `Deseja realmente remover a turma "${turma.nome}"?`
-      );
-      if (!confirmar) return;
+      return;
     }
+
+    const confirmar = window.confirm(
+      `Deseja realmente remover a turma "${turma.nome}"?`
+    );
+
+    if (!confirmar) return;
 
     try {
       await remove(id);
       await refetch();
+      alert(`Turma "${turma.nome}" removida com sucesso!`);
     } catch (err) {
       alert(err.message || "Erro ao remover turma");
     }
   };
 
-const handlePrintTurmas = (e) => {
-  e?.stopPropagation?.();
+  const handlePrintTurmas = (e) => {
+    e?.stopPropagation?.();
 
-  const dataHoraAgora = new Date().toLocaleString("pt-BR");
+    const dataHoraAgora = new Date().toLocaleString("pt-BR");
 
-  const html = gerarRelatorioTurmas({
-    turmas,
-    dataHoraAgora,
-  });
+    const html = gerarRelatorioTurmas({
+      turmas,
+      dataHoraAgora,
+    });
 
-  // Remove iframe anterior caso exista
-  const oldFrame = document.getElementById("print-frame");
-  if (oldFrame) oldFrame.remove();
+    const oldFrame = document.getElementById("print-frame");
+    if (oldFrame) oldFrame.remove();
 
-  // Cria o iframe oculto
-  const iframe = document.createElement("iframe");
-  iframe.id = "print-frame";
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
-  document.body.appendChild(iframe);
+    // Cria o iframe oculto
+    const iframe = document.createElement("iframe");
+    iframe.id = "print-frame";
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
 
-  const frameWindow = iframe.contentWindow;
-  const frameDoc = frameWindow.document;
+    const frameWindow = iframe.contentWindow;
+    const frameDoc = frameWindow.document;
 
-  // Escreve o conteúdo do relatório no iframe
-  frameDoc.open();
-  frameDoc.write(html);
-  frameDoc.close();
+    // Escreve o conteúdo do relatório no iframe
+    frameDoc.open();
+    frameDoc.write(html);
+    frameDoc.close();
 
-  // Aguarda o conteúdo carregar antes de imprimir
-  iframe.onload = () => {
-    setTimeout(() => {
-      frameWindow.focus();
-      frameWindow.print();
-    }, 150);
+    // Aguarda o conteúdo carregar antes de imprimir
+    iframe.onload = () => {
+      setTimeout(() => {
+        frameWindow.focus();
+        frameWindow.print();
+      }, 150);
+    };
   };
-};
 
   return (
     <div className="cadastro-turma-form-container">

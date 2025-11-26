@@ -6,8 +6,8 @@ export const novoHistoricoEscolarSchema = z.object({
     idDisciplina: z.number().nullish(),
     nomeEscola: z.string(),
     serieConcluida: z.string(),
-    nota: z.coerce.number().nullable().optional(),  // ✅ permite vazio
-    anoConclusao: z.coerce.number().int()           // ✅ aceita string e converte
+    nota: z.coerce.number().nullable().optional(), 
+    anoConclusao: z.coerce.number().int()           
 });
 
 export const historicoEscolarSchema = z.object({

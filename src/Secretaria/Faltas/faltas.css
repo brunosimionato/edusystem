@@ -1,4 +1,3 @@
-
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -37,13 +36,12 @@
 
 /* Seções do formulário */
 .faltas-form-section {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .faltas-form-section:hover {
@@ -52,10 +50,10 @@
 
 /* Cabeçalho das seções */
 .faltas-section-header {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #1e293b;
-  padding: 20px 24px;
+  padding: 20px 30px;
   border-bottom: 1px solid #e2e8f0;
   background: #f8fafc;
   display: flex;
@@ -63,31 +61,27 @@
   align-items: center;
 }
 
-.faltas-counter {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
 /* Grid do formulário */
 .faltas-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 20px;
-  padding: 24px;
+  gap: 15px;
+  padding: 24px 30px;
 }
 
-/* Grupos de formulário */
 .faltas-form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   position: relative;
 }
 
 .faltas-form-group.faltas-full-width { grid-column: span 12; }
 .faltas-form-group.faltas-half-width { grid-column: span 6; }
 .faltas-form-group.faltas-third-width { grid-column: span 4; }
+.faltas-form-group.faltas-ano-width { grid-column: span 2; }
+.faltas-form-group.faltas-data-width { grid-column: span 3; }
+.faltas-form-group.faltas-busca-width { grid-column: span 7; }
 
 .faltas-form-group label {
   position: absolute;
@@ -104,37 +98,35 @@
   pointer-events: none;
 }
 
-/* Wrapper do input com ícone */
 .faltas-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
-/* Ícone dentro do input */
 .faltas-input-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   color: #94a3b8;
   pointer-events: none;
   z-index: 1;
-  font-size: 18px;
 }
 
 /* Inputs e selects - Design consistente */
 .faltas-input,
 .faltas-select {
   width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  background: #ffffff;
+  background: white;
   color: #1e293b;
   box-sizing: border-box;
   height: 48px;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 
 .faltas-search-input {
@@ -156,6 +148,56 @@
 .faltas-input:hover:not(:focus),
 .faltas-select:hover:not(:focus) {
   border-color: #cbd5e1;
+}
+
+/* Navegação de Data */
+.faltas-data-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faltas-data-input {
+  text-align: center;
+  flex: 1;
+}
+
+.faltas-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 48px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.faltas-nav-button:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.faltas-nav-button:disabled {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.faltas-data-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+  padding-left: 4px;
 }
 
 /* Select customizado */
@@ -283,7 +325,7 @@
   text-align: center;
 }
 
-.faltas-turno-manhã {
+.faltas-turno-manha {
   background: #dbeafe;
   color: #1d4ed8;
 }
@@ -301,6 +343,11 @@
 .faltas-turno-integral {
   background: #d1fae5;
   color: #059669;
+}
+
+.faltas-turno-padrao {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 /* Actions container */
@@ -614,6 +661,8 @@
 .faltas-table-actions {
   display: flex;
   justify-content: flex-end;
+  padding: 16px 20px;
+  padding-right: 0; 
 }
 
 /* Estado vazio */
@@ -675,6 +724,16 @@
   animation: spin 1s linear infinite;
 }
 
+/* Mensagem de carregamento de faltas */
+.faltas-carregando-faltas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
 /* Scrollbar personalizada */
 .faltas-table-container::-webkit-scrollbar {
   height: 8px;
@@ -719,11 +778,32 @@
   cursor: pointer;
 }
 
+/* Coluna de resumo de cada aluno */
+.faltas-resumo-aluno {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #334155;
+  padding: 6px 8px;
+  border-left: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 6px;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 1200px) {
+  .faltas-form-grid {
+    grid-template-columns: 1fr;
+  }
+
   .faltas-form-group.faltas-full-width,
   .faltas-form-group.faltas-half-width,
-  .faltas-form-group.faltas-third-width {
+  .faltas-form-group.faltas-third-width,
+  .faltas-form-group.faltas-ano-width,
+  .faltas-form-group.faltas-data-width,
+  .faltas-form-group.faltas-busca-width {
     grid-column: span 1;
   }
 
@@ -874,18 +954,4 @@
   .faltas-table-actions {
     padding: 12px 16px 0;
   }
-}
-
-/* Coluna de resumo de cada aluno */
-.faltas-resumo-aluno {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #334155;
-  padding: 6px 8px;
-  border-left: 1px solid #e2e8f0;
-  background-color: #f8fafc;
-  border-radius: 6px;
 }

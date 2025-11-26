@@ -78,7 +78,6 @@ const AlunoForm = ({
 
   const [historicoEscolar, setHistoricoEscolar] = useState([]);
 
-  // ✅ CORRIGIDO: Popula initialData corretamente
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -115,7 +114,6 @@ const AlunoForm = ({
         alunoOutraEscola: (initialData.historicoEscolar?.length ?? 0) > 0,
       });
 
-      // ✅ Normalização para evitar erro do trim()
       setHistoricoEscolar(
         (initialData.historicoEscolar ?? []).map((ano) => ({
           ...ano,
@@ -130,28 +128,26 @@ const AlunoForm = ({
     }
   }, [initialData]);
 
-  // ✅ CORRIGIDO: Campos obrigatórios com nomes corretos
   const camposObrigatoriosPrincipais = [
     "nome",
     "cpf",
     "nascimento",
     "genero",
     "telefone",
-    "logradouro", // ✅ era "rua"
+    "logradouro",
     "numero",
     "bairro",
     "cep",
     "cidade",
     "estado",
-    "responsavel1Nome", // ✅ era "nomeR1"
+    "responsavel1Nome",
     "responsavel1Cpf",
-    "responsavel1Telefone", // ✅ era "telefoneR1"
-    "responsavel1Parentesco", // ✅ era "parentescoR1"
+    "responsavel1Telefone",
+    "responsavel1Parentesco", 
     "anoLetivo",
     "turma",
   ];
 
-  // ✅ CORRIGIDO: handleInputChange completo
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     let formattedValue = value;
@@ -170,7 +166,6 @@ const AlunoForm = ({
       }
     }
 
-    // ✅ Checkbox de aluno de outra escola
     if (name === "alunoOutraEscola") {
       if (checked) {
         if (historicoEscolar.length === 0) {
@@ -200,7 +195,6 @@ const AlunoForm = ({
       return;
     }
 
-    // ✅ Para todos os outros inputs
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : formattedValue,
@@ -296,7 +290,6 @@ const AlunoForm = ({
 
     setCamposInvalidos([]);
 
-    // ✅ Monta o payload final
     const historicoToSend =
       !formData.alunoOutraEscola || historicoEscolar.length === 0
         ? null
@@ -329,7 +322,6 @@ const AlunoForm = ({
     }
   };
 
-  // ✅ CORRIGIDO: handleLimpar com os nomes corretos
   const handleLimpar = (confirmar = true) => {
     if (confirmar) {
       if (!window.confirm("Tem certeza que deseja limpar todos os campos?")) {
@@ -368,12 +360,10 @@ const AlunoForm = ({
     setCamposInvalidos([]);
   };
 
-  // ✅ CORRIGIDO: Suporta `notas.xxx` no histórico
   const handleHistoricoChange = (index, e) => {
     const { name, value } = e.target;
     const novosHistoricos = [...historicoEscolar];
 
-    // ✅ Trata notas.xxx
     if (name.startsWith("notas.")) {
       const materia = name.split(".")[1];
       novosHistoricos[index].notas[materia] = value;

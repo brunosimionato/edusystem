@@ -1,4 +1,3 @@
-// src/services/HorarioService.js - VERSÃO COM FALLBACK
 import { z } from 'zod';
 import { API_URL } from '../utils/env.js';
 
@@ -56,7 +55,7 @@ class HorarioService {
                 console.error('❌ Erro ao carregar dados do localStorage:', error);
             }
         }
-        
+
         // Se não há dados salvos, inicia vazio
         this.mockData = [];
         this.saveToLocalStorage();
@@ -80,7 +79,7 @@ class HorarioService {
                     'Authorization': `Bearer ${token}`,
                 },
             });
-            
+
             this.useMock = !response.ok;
             console.log(`🔍 Backend de horários: ${this.useMock ? 'Usando mock' : 'Online'}`);
             return !this.useMock;
@@ -107,7 +106,7 @@ class HorarioService {
         try {
             const token = localStorage.getItem('token');
             const queryParams = new URLSearchParams();
-            
+
             Object.entries(filters).forEach(([key, value]) => {
                 if (value !== undefined && value !== null) {
                     queryParams.append(key, value.toString());
@@ -203,22 +202,21 @@ class HorarioService {
     createMock(horarioData) {
         console.log('🎭 Criando horário mock:', horarioData);
         const novoHorario = {
-            id: Date.now() + Math.random(), // ID único
+            id: Date.now() + Math.random(),
             ...horarioData,
             sala: horarioData.sala || "Sala padrão",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            // Dados mockados para relações
             turma: { id: horarioData.idTurma, nome: `Turma ${horarioData.idTurma}` },
-            professor: { 
-                id: horarioData.idProfessor, 
-                usuario: { nome: `Professor ${horarioData.idProfessor}` } 
+            professor: {
+                id: horarioData.idProfessor,
+                usuario: { nome: `Professor ${horarioData.idProfessor}` }
             },
             disciplina: { id: horarioData.idDisciplina, nome: `Disciplina ${horarioData.idDisciplina}` }
         };
 
         this.mockData.push(novoHorario);
-        this.saveToLocalStorage(); // Persiste no localStorage
+        this.saveToLocalStorage();
         return horarioSchema.parse(novoHorario);
     }
 
@@ -271,7 +269,7 @@ class HorarioService {
             updatedAt: new Date().toISOString()
         };
 
-        this.saveToLocalStorage(); // Persiste no localStorage
+        this.saveToLocalStorage();
         return horarioSchema.parse(this.mockData[index]);
     }
 
@@ -313,7 +311,7 @@ class HorarioService {
             throw new Error('Horario not found');
         }
         this.mockData.splice(index, 1);
-        this.saveToLocalStorage(); // Persiste no localStorage
+        this.saveToLocalStorage();
     }
 
     async getByTurma(turmaId) {
@@ -330,7 +328,7 @@ class HorarioService {
 
     async getGradeHorarios(turmaId) {
         const horarios = await this.getByTurma(turmaId);
-        
+
         const grade = {
             1: {}, // Segunda
             2: {}, // Terça
@@ -350,18 +348,17 @@ class HorarioService {
     }
 
     async hasConflito(horarioData) {
-        // Em ambiente mock, não verificamos conflitos
         if (this.useMock) {
             return false;
         }
 
         try {
             const { idProfessor, diaSemana, periodo, id } = horarioData;
-            
-            const horarios = await this.getAll({ 
-                idProfessor, 
-                diaSemana, 
-                periodo 
+
+            const horarios = await this.getAll({
+                idProfessor,
+                diaSemana,
+                periodo
             });
 
             return horarios.some(h => h.id !== id);
@@ -371,7 +368,7 @@ class HorarioService {
         }
     }
 
-   
+
 }
 
 export default new HorarioService();

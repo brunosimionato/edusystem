@@ -9,22 +9,25 @@ import {
   Users,
   Loader,
   AlertCircle,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
 } from "lucide-react";
 import "./faltas.css";
 import { useTurmasComAlunosFaltas } from "../../hooks/useTurmasComAlunosFaltas";
 import FaltaService from "../../Services/FaltaService";
+import { gerarRelatorioFaltas } from "../../Relatorios/faltas";
 
 const Faltas = () => {
   const [filtro, setFiltro] = useState("");
   const [turmasExpandidas, setTurmasExpandidas] = useState(new Set());
   const [turmasEditaveis, setTurmasEditaveis] = useState(new Set());
-  const [anoLetivo, setAnoLetivo] = useState("2024");
+  const [anoLetivo, setAnoLetivo] = useState("2025");
   const [dataSelecionada, setDataSelecionada] = useState(
     new Date().toISOString().split("T")[0]
   );
   const [faltas, setFaltas] = useState({});
-  const [errosValidacao, setErrosValidacao] = useState(new Set());
   const [salvando, setSalvando] = useState({});
+  const [carregandoFaltas, setCarregandoFaltas] = useState(false);
 
   // Carregar turmas e alunos
   const {
@@ -43,62 +46,104 @@ const Faltas = () => {
     5: "5º Período",
   };
 
-  // Carregar faltas existentes quando a data mudar
+  // Determinar se a turma é Fundamental I (1-5) ou II (6-9)
+  const getTipoTurma = (turmaNome) => {
+    const match = turmaNome.match(/(\d+)/);
+    if (match) {
+      const serie = parseInt(match[1]);
+      return serie <= 5 ? "fundamental1" : "fundamental2";
+    }
+    return "fundamental1";
+  };
+
   useEffect(() => {
-    if (dataSelecionada) {
-      carregarFaltasExistentes();
+    console.log("🔄 Data mudou para:", dataSelecionada);
+
+    // 1. ZERA COMPLETAMENTE as faltas no frontend
+    setFaltas({});
+    setTurmasExpandidas(new Set());
+    setTurmasEditaveis(new Set());
+
+    // 2. Carrega as faltas do banco para a nova data
+    if (dataSelecionada && turmasData && turmasData.length > 0) {
+      carregarFaltasDoBanco();
     }
   }, [dataSelecionada, turmasData]);
 
-  const carregarFaltasExistentes = async () => {
-    console.log("🔄 Carregando faltas existentes para:", dataSelecionada);
+  const carregarFaltasDoBanco = async () => {
+    if (!dataSelecionada || !turmasData || turmasData.length === 0) return;
 
-    const faltasCarregadas = {};
+    console.log("📋 Buscando faltas no banco para:", dataSelecionada);
+    setCarregandoFaltas(true);
 
     try {
-      // Para cada turma, carrega as faltas da data selecionada
-      for (const turma of turmasData) {
-        try {
-          const faltasTurma = await FaltaService.getByTurma(
-            turma.id,
-            dataSelecionada
-          );
-          console.log(
-            `✅ Faltas da turma ${turma.id} em ${dataSelecionada}:`,
-            faltasTurma
-          );
+      const faltasDoBanco = await FaltaService.getAll({
+        data_inicio: dataSelecionada,
+        data_fim: dataSelecionada,
+      });
 
-          // Processa as faltas carregadas
-          faltasTurma.forEach((falta) => {
-            if (turma.tipo === "fundamental1") {
-              // Fundamental I - falta por dia
-              const chave = `${falta.idAluno}-${dataSelecionada}`;
-              faltasCarregadas[chave] = true;
-            } else {
-              // Fundamental II - falta por período
-              const chave = `${falta.idAluno}-${dataSelecionada}-${falta.periodo}`;
-              faltasCarregadas[chave] = true;
-            }
-          });
-        } catch (error) {
-          console.warn(
-            `⚠️  Não foi possível carregar faltas da turma ${turma.id}:`,
-            error
-          );
+      console.log("✅ Faltas encontradas no banco:", faltasDoBanco);
+
+      // Criar mapa de faltas VAZIO para esta data
+      const novoEstadoFaltas = {};
+
+      // Preencher apenas com as faltas que existem no banco para ESTA data
+      faltasDoBanco.forEach((falta) => {
+        if (falta.periodo !== null && falta.periodo !== undefined) {
+          // Fundamental II - falta por período
+          const chave = `${falta.idAluno}-${falta.periodo}`;
+          novoEstadoFaltas[chave] = true;
+        } else {
+          // Fundamental I - falta geral
+          const chave = `${falta.idAluno}`;
+          novoEstadoFaltas[chave] = true;
         }
-      }
+      });
 
-      setFaltas(faltasCarregadas);
-      console.log("✅ Faltas carregadas:", faltasCarregadas);
+      console.log("🗺️ Estado de faltas carregado:", novoEstadoFaltas);
+      setFaltas(novoEstadoFaltas);
     } catch (error) {
       console.error("❌ Erro ao carregar faltas:", error);
+      alert("Erro ao carregar faltas do banco de dados");
+    } finally {
+      setCarregandoFaltas(false);
     }
   };
 
-  // Filtrar turmas baseado no termo de busca
+  const avancarData = () => {
+    const dataAtual = new Date(dataSelecionada);
+    dataAtual.setDate(dataAtual.getDate() + 1);
+    const novaData = dataAtual.toISOString().split("T")[0];
+
+    if (!isDataFutura(novaData)) {
+      setDataSelecionada(novaData);
+    }
+  };
+
+  const retrocederData = () => {
+    const dataAtual = new Date(dataSelecionada);
+    dataAtual.setDate(dataAtual.getDate() - 1);
+    const novaData = dataAtual.toISOString().split("T")[0];
+    setDataSelecionada(novaData);
+  };
+
+  const handleDataChange = (novaData) => {
+    if (!isDataFutura(novaData)) {
+      setDataSelecionada(novaData);
+    }
+  };
+
+  const isDataFutura = (data) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataComparar = new Date(data + "T00:00:00");
+    return dataComparar > hoje;
+  };
+
+  // Filtrar turmas
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return turmasData;
-    return turmasData
+    if (!filtro) return turmasData || [];
+    return (turmasData || [])
       .filter((turma) => {
         const turmaNomeMatch = turma.nome
           .toLowerCase()
@@ -124,7 +169,6 @@ const Faltas = () => {
       const novaSet = new Set(prev);
       if (novaSet.has(turmaId)) {
         novaSet.delete(turmaId);
-        // Quando fecha a turma, também remove do modo edição
         setTurmasEditaveis((prevEdit) => {
           const novaEditSet = new Set(prevEdit);
           novaEditSet.delete(turmaId);
@@ -150,39 +194,45 @@ const Faltas = () => {
   };
 
   const getTurnoClass = (turno) => {
-    const classes = {
-      manhã: "faltas-turno-manhã",
-      tarde: "faltas-turno-tarde",
-    };
-    return classes[turno] || "";
+    const turnoLower = turno?.toLowerCase() || "";
+    if (turnoLower.includes("manhã") || turnoLower.includes("manha"))
+      return "faltas-turno-manha";
+    if (turnoLower.includes("tarde")) return "faltas-turno-tarde";
+    return "faltas-turno-padrao";
   };
 
   const handleFaltaChange = (alunoId, faltou, periodo = null) => {
     let chave;
-    if (periodo) {
-      // Para Fundamental II - falta por período
-      chave = `${alunoId}-${dataSelecionada}-${periodo}`;
+    if (periodo !== null) {
+      chave = `${alunoId}-${periodo}`;
     } else {
-      // Para Fundamental I - falta por dia
-      chave = `${alunoId}-${dataSelecionada}`;
+      chave = `${alunoId}`;
     }
 
-    setFaltas((prev) => ({
-      ...prev,
-      [chave]: faltou,
-    }));
+    console.log(`✏️ Alterando falta: ${chave} = ${faltou}`);
+
+    setFaltas((prev) => {
+      const novoEstado = { ...prev };
+
+      if (faltou) {
+        novoEstado[chave] = true;
+      } else {
+        delete novoEstado[chave];
+      }
+
+      return novoEstado;
+    });
   };
 
   const getFaltaAluno = (alunoId, periodo = null) => {
     let chave;
-    if (periodo) {
-      // Para Fundamental II - falta por período
-      chave = `${alunoId}-${dataSelecionada}-${periodo}`;
+    if (periodo !== null) {
+      chave = `${alunoId}-${periodo}`;
     } else {
-      // Para Fundamental I - falta por dia
-      chave = `${alunoId}-${dataSelecionada}`;
+      chave = `${alunoId}`;
     }
-    return faltas[chave] || false;
+
+    return !!faltas[chave];
   };
 
   const formatarData = (data) => {
@@ -200,151 +250,223 @@ const Faltas = () => {
 
     try {
       const turma = turmasData.find((t) => t.id === turmaId);
-      const faltasParaSalvar = [];
+      const tipoTurma = getTipoTurma(turma.nome);
 
-      console.log(
-        `💾 Salvando faltas da turma ${turmaId} para ${dataSelecionada}`
+      console.log(`💾 Salvando turma ${turma.nome} para ${dataSelecionada}`);
+
+      // Buscar faltas existentes no banco para ESTA DATA
+      const faltasExistentes = await FaltaService.getAll({
+        data_inicio: dataSelecionada,
+        data_fim: dataSelecionada,
+      });
+
+      const alunosTurmaIds = new Set(turma.alunos.map((aluno) => aluno.id));
+      const faltasExistentesTurma = faltasExistentes.filter((falta) =>
+        alunosTurmaIds.has(falta.idAluno)
       );
 
-      // Coletar todas as faltas da turma para salvar
-      turma.alunos.forEach((aluno) => {
-        if (turma.tipo === "fundamental1") {
-          // Fundamental I - falta por dia
-          const faltou = getFaltaAluno(aluno.id);
-          if (faltou) {
-            faltasParaSalvar.push({
-              idAluno: aluno.id,
-              idTurma: turmaId,
-              data: dataSelecionada,
-              periodo: null,
-              justificada: false,
-              observacao: "Falta registrada no sistema",
+      console.log(
+        `📊 Banco: ${faltasExistentesTurma.length} faltas existentes`
+      );
+
+      const operacoes = [];
+
+      if (tipoTurma === "fundamental1") {
+        // Fundamental I
+        turma.alunos.forEach((aluno) => {
+          const faltaNoFrontend = getFaltaAluno(aluno.id);
+          const faltaNoBanco = faltasExistentesTurma.find(
+            (f) => f.idAluno === aluno.id && f.periodo === null
+          );
+
+          console.log(
+            `👦 ${
+              aluno.nome
+            }: Frontend=${faltaNoFrontend}, Banco=${!!faltaNoBanco}`
+          );
+
+          if (faltaNoFrontend && !faltaNoBanco) {
+            // Criar falta
+            operacoes.push({
+              tipo: "criar",
+              dados: {
+                idAluno: aluno.id,
+                data: dataSelecionada,
+                periodo: null,
+              },
+            });
+          } else if (!faltaNoFrontend && faltaNoBanco) {
+            // Remover falta
+            operacoes.push({
+              tipo: "deletar",
+              id: faltaNoBanco.id,
             });
           }
-        } else {
-          // Fundamental II - faltas por período
+        });
+      } else {
+        // Fundamental II
+        turma.alunos.forEach((aluno) => {
           Object.keys(periodos).forEach((periodo) => {
-            const faltou = getFaltaAluno(aluno.id, periodo);
-            if (faltou) {
-              faltasParaSalvar.push({
-                idAluno: aluno.id,
-                idTurma: turmaId,
-                data: dataSelecionada,
-                periodo: parseInt(periodo),
-                justificada: false,
-                observacao: `Falta no ${periodos[periodo]}`,
+            const periodoNum = parseInt(periodo);
+            const faltaNoFrontend = getFaltaAluno(aluno.id, periodoNum);
+            const faltaNoBanco = faltasExistentesTurma.find(
+              (f) => f.idAluno === aluno.id && f.periodo === periodoNum
+            );
+
+            console.log(
+              `👦 ${
+                aluno.nome
+              } (P${periodoNum}): Frontend=${faltaNoFrontend}, Banco=${!!faltaNoBanco}`
+            );
+
+            if (faltaNoFrontend && !faltaNoBanco) {
+              operacoes.push({
+                tipo: "criar",
+                dados: {
+                  idAluno: aluno.id,
+                  data: dataSelecionada,
+                  periodo: periodoNum,
+                },
+              });
+            } else if (!faltaNoFrontend && faltaNoBanco) {
+              operacoes.push({
+                tipo: "deletar",
+                id: faltaNoBanco.id,
               });
             }
           });
-        }
-      });
-
-      console.log("📤 Faltas para salvar:", faltasParaSalvar);
-
-      // Salvar cada falta
-      if (faltasParaSalvar.length > 0) {
-        await FaltaService.createMultiple(faltasParaSalvar);
-        console.log(`✅ ${faltasParaSalvar.length} faltas salvas com sucesso`);
+        });
       }
 
-      // Remove do modo edição após salvar
+      console.log(`🔄 Executando ${operacoes.length} operações`);
+
+      // Executar operações
+      let criadas = 0;
+      let removidas = 0;
+
+      // Primeiro remover
+      for (const op of operacoes.filter((o) => o.tipo === "deletar")) {
+        await FaltaService.delete(op.id);
+        removidas++;
+      }
+
+      // Depois criar
+      for (const op of operacoes.filter((o) => o.tipo === "criar")) {
+        await FaltaService.create(op.dados);
+        criadas++;
+      }
+
+      // Mostrar resultado
+      if (criadas > 0 || removidas > 0) {
+        alert(
+          `Faltas salvas!\n• ${criadas} falta(s) registrada(s)\n• ${removidas} falta(s) removida(s)`
+        );
+      } else {
+        alert("Nenhuma falta alterada.");
+      }
+
+      // Sair do modo edição
       setTurmasEditaveis((prev) => {
-        const novaSet = new Set(prev);
-        novaSet.delete(turmaId);
-        return novaSet;
+        const novo = new Set(prev);
+        novo.delete(turmaId);
+        return novo;
       });
 
-      alert(
-        `Faltas salvas com sucesso! ${faltasParaSalvar.length} falta(s) registrada(s).`
-      );
+      // Recarregar do banco para sincronizar
+      await carregarFaltasDoBanco();
     } catch (error) {
-      console.error("❌ Erro ao salvar faltas:", error);
+      console.error("❌ Erro ao salvar:", error);
       alert(`Erro ao salvar faltas: ${error.message}`);
     } finally {
       setSalvando((prev) => ({ ...prev, [turmaId]: false }));
     }
   };
 
-  const handleGerarRelatorio = (turmaId, turmaNome) => {
+  const handleGerarRelatorioPDF = (turmaId, turmaNome) => {
     const turma = turmasData.find((t) => t.id === turmaId);
+    const tipoTurma = getTipoTurma(turma.nome);
 
-    let alunosComFalta = [];
-    let alunosPresentes = [];
-    let totalFaltas = 0;
-    let detalheFaltas = {};
-
-    if (turma.tipo === "fundamental1") {
-      // Fundamental I - uma falta por dia
-      alunosComFalta = turma.alunos.filter((aluno) => getFaltaAluno(aluno.id));
-      alunosPresentes = turma.alunos.filter(
-        (aluno) => !getFaltaAluno(aluno.id)
-      );
-      totalFaltas = alunosComFalta.length;
-    } else {
-      // Fundamental II - faltas por período
-      turma.alunos.forEach((aluno) => {
-        const faltasPorPeriodo = Object.keys(periodos).filter((periodo) =>
-          getFaltaAluno(aluno.id, periodo)
-        );
-        if (faltasPorPeriodo.length > 0) {
-          detalheFaltas[aluno.nome] = faltasPorPeriodo.map((p) => periodos[p]);
-          totalFaltas += faltasPorPeriodo.length;
-        }
-      });
-
-      alunosComFalta = Object.keys(detalheFaltas);
-      alunosPresentes = turma.alunos.filter(
-        (aluno) => !detalheFaltas[aluno.nome]
-      );
-    }
-
-    console.log("Gerando relatório de faltas da turma:", turmaId, turmaNome);
-    console.log("Data:", dataSelecionada);
-    console.log("Alunos faltosos:", alunosComFalta);
-    console.log(
-      "Alunos presentes:",
-      alunosPresentes.map((a) => a.nome)
-    );
-
-    let mensagem =
-      `Relatório de Frequência - ${turmaNome}\n\n` +
-      `Data: ${formatarData(dataSelecionada)}\n\n` +
-      `Total de alunos: ${turma.alunos.length}\n`;
-
-    if (turma.tipo === "fundamental1") {
-      mensagem +=
-        `Presentes: ${alunosPresentes.length}\n` +
-        `Faltas: ${alunosComFalta.length}\n\n` +
-        (alunosComFalta.length > 0
-          ? `Alunos faltosos:\n${alunosComFalta
-              .map((a) => `• ${a.nome}`)
-              .join("\n")}`
-          : "Todos os alunos presentes!");
-    } else {
-      mensagem +=
-        `Alunos totalmente presentes: ${alunosPresentes.length}\n` +
-        `Total de faltas por período: ${totalFaltas}\n` +
-        `Alunos com faltas: ${alunosComFalta.length}\n\n`;
-
-      if (alunosComFalta.length > 0) {
-        mensagem += `Detalhes das faltas:\n`;
-        Object.keys(detalheFaltas).forEach((aluno) => {
-          mensagem += `• ${aluno}: ${detalheFaltas[aluno].join(", ")}\n`;
-        });
+    // Preparar dados dos alunos com faltas
+    const alunosComFaltas = turma.alunos.map((aluno) => {
+      if (tipoTurma === "fundamental1") {
+        const faltou = getFaltaAluno(aluno.id);
+        return {
+          nome: aluno.nome,
+          faltou: faltou,
+          totalFaltas: faltou ? 1 : 0,
+          faltasPeriodos: {},
+        };
       } else {
-        mensagem += "Todos os alunos presentes em todos os períodos!";
-      }
-    }
+        const faltasPeriodos = {};
+        let totalFaltas = 0;
 
-    alert(mensagem);
+        Object.keys(periodos).forEach((periodoKey) => {
+          const faltouPeriodo = getFaltaAluno(aluno.id, parseInt(periodoKey));
+          faltasPeriodos[periodoKey] = faltouPeriodo;
+          if (faltouPeriodo) totalFaltas++;
+        });
+
+        return {
+          nome: aluno.nome,
+          faltou: totalFaltas > 0,
+          totalFaltas: totalFaltas,
+          faltasPeriodos: faltasPeriodos,
+        };
+      }
+    });
+
+    const dataHoraAgora = new Date().toLocaleString("pt-BR");
+
+    // GERAR HTML COMPLETO (igual aos boletins)
+    const relatorioHTML = gerarRelatorioFaltas({
+      turma: {
+        ...turma,
+        tipo: tipoTurma,
+      },
+      alunosComFaltas,
+      dataSelecionada,
+      periodos,
+      dataHoraAgora,
+      formatarData,
+    });
+
+    // CRIAR IFRAME INVISÍVEL (igual aos boletins)
+    const oldFrame = document.getElementById("print-faltas-frame");
+    if (oldFrame) oldFrame.remove();
+
+    const iframe = document.createElement("iframe");
+    iframe.id = "print-faltas-frame";
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const frameDoc = iframe.contentWindow || iframe.contentDocument;
+    const doc = frameDoc.document || frameDoc;
+
+    // ESCREVER RELATÓRIO DENTRO DO IFRAME
+    doc.open();
+    doc.write(relatorioHTML);
+    doc.close();
+
+    // APÓS CARREGAR, IMPRIME
+    iframe.onload = () => {
+      setTimeout(() => {
+        frameDoc.focus();
+        frameDoc.print();
+      }, 200);
+    };
   };
 
-  // Calcular estatísticas de presença para uma turma
+  // Calcular estatísticas
   const getEstatisticasTurma = (turma) => {
     const totalAlunos = turma.alunos.length;
+    const tipoTurma = getTipoTurma(turma.nome);
 
-    if (turma.tipo === "fundamental1") {
-      // Fundamental I - uma falta por dia
+    if (tipoTurma === "fundamental1") {
       const alunosFaltosos = turma.alunos.filter((aluno) =>
         getFaltaAluno(aluno.id)
       ).length;
@@ -359,18 +481,16 @@ const Faltas = () => {
         presentes: alunosPresentes,
         faltosos: alunosFaltosos,
         percentual: percentualPresenca,
-        tipo: "dia",
+        tipo: "fundamental1",
       };
     } else {
-      // Fundamental II - faltas por período
       let totalFaltas = 0;
       let alunosComFalta = 0;
 
       turma.alunos.forEach((aluno) => {
         const faltasPorPeriodo = Object.keys(periodos).filter((periodo) =>
-          getFaltaAluno(aluno.id, periodo)
+          getFaltaAluno(aluno.id, parseInt(periodo))
         ).length;
-
         if (faltasPorPeriodo > 0) {
           alunosComFalta++;
           totalFaltas += faltasPorPeriodo;
@@ -389,7 +509,7 @@ const Faltas = () => {
         faltosos: alunosComFalta,
         totalFaltasPeriodo: totalFaltas,
         percentual: percentualPresenca,
-        tipo: "periodo",
+        tipo: "fundamental2",
       };
     }
   };
@@ -426,9 +546,15 @@ const Faltas = () => {
       <div className="faltas-form-section">
         <div className="faltas-section-header">
           <span>Filtros e Configurações</span>
+          {carregandoFaltas && (
+            <div className="faltas-carregando-faltas">
+              <Loader size={16} className="faltas-spinner" />
+              <span>Carregando faltas para {dataSelecionada}...</span>
+            </div>
+          )}
         </div>
         <div className="faltas-form-grid">
-          <div className="faltas-form-group faltas-third-width">
+          <div className="faltas-form-group faltas-ano-width">
             <label htmlFor="anoLetivo">Ano Letivo</label>
             <select
               id="anoLetivo"
@@ -436,24 +562,46 @@ const Faltas = () => {
               value={anoLetivo}
               onChange={(e) => setAnoLetivo(e.target.value)}
             >
-              <option value="2024">2024</option>
-              <option value="2023">2023</option>
-              <option value="2022">2022</option>
+              <option value="2025">2025</option>
             </select>
           </div>
 
-          <div className="faltas-form-group faltas-third-width">
+          <div className="faltas-form-group faltas-data-width">
             <label htmlFor="dataAula">Data da Aula</label>
-            <input
-              id="dataAula"
-              type="date"
-              className="faltas-input"
-              value={dataSelecionada}
-              onChange={(e) => setDataSelecionada(e.target.value)}
-            />
+            <div className="faltas-data-navigation">
+              <button
+                className="faltas-nav-button"
+                onClick={retrocederData}
+                title="Dia anterior"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <input
+                id="dataAula"
+                type="date"
+                className="faltas-input faltas-data-input"
+                value={dataSelecionada}
+                onChange={(e) => handleDataChange(e.target.value)}
+                max={new Date().toISOString().split("T")[0]}
+              />
+
+              <button
+                className="faltas-nav-button"
+                onClick={avancarData}
+                disabled={isDataFutura(dataSelecionada)}
+                title={
+                  isDataFutura(dataSelecionada)
+                    ? "Não é possível registrar faltas para datas futuras"
+                    : "Próximo dia"
+                }
+              >
+                <ChevronRightIcon size={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="faltas-form-group faltas-third-width">
+          <div className="faltas-form-group faltas-busca-width">
             <label htmlFor="filtroBusca">Buscar por turma ou aluno</label>
             <div className="faltas-input-wrapper">
               <Search className="faltas-input-icon" size={18} />
@@ -501,6 +649,7 @@ const Faltas = () => {
               const isEditavel = turmasEditaveis.has(turma.id);
               const isSalvando = salvando[turma.id];
               const stats = getEstatisticasTurma(turma);
+              const tipoTurma = getTipoTurma(turma.nome);
 
               return (
                 <div key={turma.id} className="faltas-turma-card">
@@ -523,24 +672,19 @@ const Faltas = () => {
                         >
                           {turma.turno}
                         </span>
-                        <span className="faltas-stats">
-                          {stats.presentes}/{stats.total} presentes (
-                          {stats.percentual}%)
-                        </span>
                       </div>
 
-                      {/* Botão para gerar relatório apenas desta turma */}
                       <div className="faltas-actions">
                         <button
                           className="faltas-relatorio-button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleGerarRelatorio(turma.id, turma.nome);
+                            handleGerarRelatorioPDF(turma.id, turma.nome);
                           }}
                           title={`Gerar relatório de frequência da turma ${turma.nome}`}
                         >
                           <Calendar size={16} />
-                          Relatório
+                          Relatório PDF
                         </button>
                       </div>
                     </div>
@@ -549,8 +693,8 @@ const Faltas = () => {
                     {isExpandida && (
                       <>
                         <div className="faltas-table-container">
-                          {/* Fundamental I - Uma falta por dia */}
-                          {turma.tipo === "fundamental1" && (
+                          {/* Fundamental I (1º-5º) - Uma falta por dia */}
+                          {tipoTurma === "fundamental1" && (
                             <>
                               <div className="faltas-table-header faltas-globalizada">
                                 <span>Nome do Aluno</span>
@@ -571,7 +715,7 @@ const Faltas = () => {
                                       <label className="faltas-checkbox-wrapper">
                                         <input
                                           type="radio"
-                                          name={`presenca-${aluno.id}`}
+                                          name={`presenca-${aluno.id}-${dataSelecionada}`}
                                           className="faltas-radio-input"
                                           checked={!faltou}
                                           onChange={() =>
@@ -586,7 +730,7 @@ const Faltas = () => {
                                       <label className="faltas-checkbox-wrapper">
                                         <input
                                           type="radio"
-                                          name={`presenca-${aluno.id}`}
+                                          name={`presenca-${aluno.id}-${dataSelecionada}`}
                                           className="faltas-radio-input"
                                           checked={faltou}
                                           onChange={() =>
@@ -603,8 +747,8 @@ const Faltas = () => {
                             </>
                           )}
 
-                          {/* Fundamental II - Faltas por período */}
-                          {turma.tipo === "fundamental2" && (
+                          {/* Fundamental II (6º-9º) - Faltas por período */}
+                          {tipoTurma === "fundamental2" && (
                             <>
                               <div className="faltas-table-header faltas-periodos">
                                 <span>Nome do Aluno</span>
@@ -633,19 +777,19 @@ const Faltas = () => {
                                           <label className="faltas-checkbox-wrapper faltas-mini">
                                             <input
                                               type="radio"
-                                              name={`presenca-${aluno.id}-${periodoKey}`}
+                                              name={`presenca-${aluno.id}-${dataSelecionada}-${periodoKey}`}
                                               className="faltas-radio-input"
                                               checked={
                                                 !getFaltaAluno(
                                                   aluno.id,
-                                                  periodoKey
+                                                  parseInt(periodoKey)
                                                 )
                                               }
                                               onChange={() =>
                                                 handleFaltaChange(
                                                   aluno.id,
                                                   false,
-                                                  periodoKey
+                                                  parseInt(periodoKey)
                                                 )
                                               }
                                               disabled={
@@ -657,17 +801,17 @@ const Faltas = () => {
                                           <label className="faltas-checkbox-wrapper faltas-mini">
                                             <input
                                               type="radio"
-                                              name={`presenca-${aluno.id}-${periodoKey}`}
+                                              name={`presenca-${aluno.id}-${dataSelecionada}-${periodoKey}`}
                                               className="faltas-radio-input"
                                               checked={getFaltaAluno(
                                                 aluno.id,
-                                                periodoKey
+                                                parseInt(periodoKey)
                                               )}
                                               onChange={() =>
                                                 handleFaltaChange(
                                                   aluno.id,
                                                   true,
-                                                  periodoKey
+                                                  parseInt(periodoKey)
                                                 )
                                               }
                                               disabled={

@@ -1,12 +1,9 @@
-// src/services/AlunoService.js
 import { z } from "zod";
 import { API_URL } from "../utils/env.js";
 
-/*
-|--------------------------------------------------------------------------
-| MAPA DE DISCIPLINAS (ID → CHAVE INTERNA DO FORM)
-|--------------------------------------------------------------------------
-*/
+
+// MAPA DE DISCIPLINAS (ID → CHAVE INTERNA DO FORM)
+
 const disciplinaMapFront = {
   1: "matematica",
   2: "ensinoGlobalizado",
@@ -24,12 +21,8 @@ const disciplinaMapFrontRev = Object.fromEntries(
   Object.entries(disciplinaMapFront).map(([id, nome]) => [nome, Number(id)])
 );
 
+// CONVERTENDO HISTÓRICO DO BACK PARA O FORMULÁRIO
 
-/*
-|--------------------------------------------------------------------------
-| CONVERTENDO HISTÓRICO DO BACK PARA O FORMULÁRIO
-|--------------------------------------------------------------------------
-*/
 function converterHistoricoBackendParaFront(historico) {
   if (!Array.isArray(historico)) return [];
 
@@ -68,11 +61,9 @@ function converterHistoricoBackendParaFront(historico) {
   );
 }
 
-/*
-|--------------------------------------------------------------------------
-| SCHEMA DE ALUNO (sem histórico — histórico fica livre)
-|--------------------------------------------------------------------------
-*/
+
+// SCHEMA DE ALUNO (sem histórico — histórico fica livre)
+
 export const alunoSchema = z.object({
   id: z.number(),
   nome: z.string(),
@@ -99,15 +90,12 @@ export const alunoSchema = z.object({
   createdAt: z.union([z.string(), z.date()]).optional(),
   updatedAt: z.union([z.string(), z.date()]).optional(),
 
-  // ❗ histórico NÃO é validado aqui porque muda de estrutura
   historicoEscolar: z.any().optional()
 });
 
-/*
-|--------------------------------------------------------------------------
-| SCHEMA PARA ENVIO AO BACKEND (sem validação de histórico)
-|--------------------------------------------------------------------------
-*/
+
+// SCHEMA PARA ENVIO AO BACKEND (sem validação de histórico)
+
 export const novoAlunoSchema = z.object({
   nome: z.string(),
   cpf: z.string(),
@@ -132,15 +120,9 @@ export const novoAlunoSchema = z.object({
   responsavel2Parentesco: z.string().nullable().optional(),
   turma: z.number().nullable().optional(),
 
-  // ❗ Histórico NÃO é checado pelo Zod — backend aceita estrutura solta
   historicoEscolar: z.any().nullable().optional()
 });
 
-/*
-|--------------------------------------------------------------------------
-| SERVIÇO PRINCIPAL
-|--------------------------------------------------------------------------
-*/
 class AlunoService {
 
   async getAll() {
@@ -156,11 +138,9 @@ class AlunoService {
     return body.map(alunoSchema.parse);
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | GET BY ID — normaliza histórico e devolve no formato do formulário
-  |--------------------------------------------------------------------------
-  */
+
+  // GET BY ID 
+
   async getById(id) {
     const token = localStorage.getItem("token");
 
@@ -204,11 +184,8 @@ class AlunoService {
     return await res.json();
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | CREATE
-  |--------------------------------------------------------------------------
-  */
+
+  // CREATE
 async create(alunoData) {
   const token = localStorage.getItem("token");
 
@@ -216,25 +193,20 @@ async create(alunoData) {
     nome: alunoData.nome,
     cpf: alunoData.cpf,
     cns: alunoData.cns || null,
-    nascimento: alunoData.nascimento, // ✔ corrigido
+    nascimento: alunoData.nascimento,
     genero: alunoData.genero,
     religiao: alunoData.religiao || null,
     telefone: alunoData.telefone,
-
-    // ✔ corrigido — agora pega do nome correto do formulário
     logradouro: alunoData.logradouro,
     numero: alunoData.numero,
     bairro: alunoData.bairro,
     cep: alunoData.cep,
     cidade: alunoData.cidade,
     estado: alunoData.estado,
-
-    // ✔ corrigido — agora pega do nome correto do formulário
     responsavel1Nome: alunoData.responsavel1Nome,
     responsavel1Cpf: alunoData.responsavel1Cpf,
     responsavel1Telefone: alunoData.responsavel1Telefone,
     responsavel1Parentesco: alunoData.responsavel1Parentesco,
-
     responsavel2Nome: alunoData.responsavel2Nome || null,
     responsavel2Cpf: alunoData.responsavel2Cpf || null,
     responsavel2Telefone: alunoData.responsavel2Telefone || null,
@@ -270,15 +242,10 @@ async create(alunoData) {
 }
 
 
-  /*
-  |--------------------------------------------------------------------------
-  | UPDATE
-  |--------------------------------------------------------------------------
-  */
+// UPDATE
 async update(id, updateData) {
     const token = localStorage.getItem("token");
 
-    // 🔥 Converter o histórico DO FORM para o formato que o backend espera
     let historicoConvertido = null;
 
     if (Array.isArray(updateData.historicoEscolar)) {
@@ -330,7 +297,6 @@ async update(id, updateData) {
 
         turma: Number(updateData.turma) || null,
 
-        // 🔥 Histórico convertido corretamente
         historicoEscolar: historicoConvertido
     };
 
