@@ -1,4 +1,3 @@
-// src/hooks/useTurmasParaHorarios.js
 import { useState, useEffect, useCallback } from 'react';
 import TurmaService from '../Services/TurmaService';
 
@@ -11,7 +10,6 @@ export const useTurmasParaHorarios = () => {
         setIsLoading(true);
         setError(null);
         try {
-            // Usa o método list que existe no TurmaService
             const turmasData = await TurmaService.list({ withAlunos: false });
             console.log('✅ Turmas carregadas para horários:', turmasData);
             setTurmas(turmasData);

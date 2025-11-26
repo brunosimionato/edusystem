@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute/ProtectedRoute.jsx
 export default function ProtectedRoute({ children, requiredRole }) {
     const { isAuthenticated, userRole, isLoading } = useAuth();
   

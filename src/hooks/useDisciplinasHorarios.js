@@ -1,4 +1,3 @@
-// src/hooks/useDisciplinas.js
 import { useState, useEffect, useCallback } from 'react';
 import DisciplinaService from '../Services/DisciplinaService';
 

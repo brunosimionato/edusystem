@@ -20,7 +20,7 @@ const Usuarios = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipoUsuario] = useState("secretaria"); // ✅ Fixado
+  const [tipoUsuario] = useState("secretaria");
 
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioExpandido, setUsuarioExpandido] = useState({});
@@ -41,7 +41,6 @@ const Usuarios = () => {
 
   const [abaSelecionada, setAbaSelecionada] = useState("secretaria");
 
-  // ✅ Buscar TODOS os usuários
   useEffect(() => {
     async function fetchUsuarios() {
       try {
@@ -79,7 +78,6 @@ const Usuarios = () => {
 
   const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // ✅ Cadastro de novo usuário
   const handleSubmit = async () => {
     const novosErros = {
       nome: !nome.trim(),
@@ -103,7 +101,7 @@ const Usuarios = () => {
           nome,
           email,
           senha,
-          tipo_usuario: "secretaria", // ✅ Fixado
+          tipo_usuario: "secretaria",
         }),
       });
 
@@ -141,7 +139,6 @@ const Usuarios = () => {
     setErros({});
   };
 
-  // ✅ Ativar / Inativar
   const toggleAtivo = async (usuario) => {
     const endpoint = usuario.ativo ? "" : "/ativar";
     const metodo = usuario.ativo ? "DELETE" : "PUT";
@@ -205,13 +202,11 @@ const Usuarios = () => {
 
       const resultado = await response.json();
 
-      // 🚨 Se o backend retornou erro, exibe alerta e NÃO prossegue
       if (!response.ok) {
         alert(resultado.error || "Erro ao salvar alterações.");
         return;
       }
 
-      // ✅ Atualizar lista local
       setUsuarios((prev) =>
         prev.map((usuario) =>
           usuario.id === id
@@ -314,7 +309,6 @@ const Usuarios = () => {
         </div>
       </div>
 
-      {/* ✅ Abas */}
       <div className="usuario-tabs">
         <button
           className={`usuario-tab ${

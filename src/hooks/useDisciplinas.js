@@ -1,4 +1,3 @@
-// src/hooks/useDisciplinas.js
 import { useState, useEffect } from 'react';
 import { apiClient } from '../api/api';
 

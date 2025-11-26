@@ -311,7 +311,7 @@ textarea.input-error:hover {
 .turma-header {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* joga nome+turno para esquerda, botão lixo à direita */
+  justify-content: space-between;
   gap: 12px;
 }
 

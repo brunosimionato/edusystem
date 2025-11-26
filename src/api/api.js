@@ -1,14 +1,5 @@
-// src/api/api.js
-
-// Usa a URL do ambiente ou um fallback.
-// Preferi o fallback do segundo código que inclui '/api', o que é mais comum.
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
 
-
-/**
- * Cliente API centralizado para todas as requisições.
- * Inclui lógica de autenticação (token) e tratamento de erros (401).
- */
 class ApiClient {
     constructor() {
         this.baseURL = API_BASE_URL;
@@ -17,9 +8,9 @@ class ApiClient {
     /**
      * Método base para todas as requisições HTTP.
      * Adiciona automaticamente o token de autenticação e trata o body.
-     * @param {string} endpoint - O caminho da API (ex: '/usuarios').
-     * @param {Object} options - Opções do `fetch` (method, headers, body, etc.).
-     * @returns {Promise<any>} O corpo da resposta (JSON ou texto).
+     * @param {string} endpoint
+     * @param {Object} options 
+     * @returns {Promise<any>}
      */
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
@@ -28,7 +19,7 @@ class ApiClient {
         const token = localStorage.getItem('token');
         const headers = {
             'Content-Type': 'application/json',
-            ...options.headers, // Permite sobrescrever o Content-Type
+            ...options.headers,
         };
 
         if (token) {
@@ -106,7 +97,6 @@ class ApiClient {
     }
 }
 
-// Instância única do cliente API (Singleton)
 export const apiClient = new ApiClient();
 
 // -------------------------------------------------------------------
@@ -134,44 +124,17 @@ export const usuarioApi = {
 
 // Endpoints de alunos (do segundo código)
 export const alunoApi = {
-    /**
-     * Lista todos os alunos.
-     */
     list: () => apiClient.get('/alunos'),
-
-    /**
-     * Busca um aluno pelo ID.
-     */
     getById: (id) => apiClient.get(`/alunos/${id}`),
-
-    /**
-     * Cria um novo aluno.
-     */
     create: (alunoData) => apiClient.post('/alunos', alunoData),
-
-    /**
-     * Atualiza um aluno.
-     */
     update: (id, updateData) => apiClient.put(`/alunos/${id}`, updateData),
-
-    /**
-     * Deleta um aluno.
-     */
     delete: (id) => apiClient.delete(`/alunos/${id}`),
 };
 
 // Endpoints para histórico escolar (do segundo código)
 export const historicoApi = {
-    /**
-     * Cria um registro de histórico escolar.
-     */
     create: (historicoData) => apiClient.post('/historicos', historicoData),
-
-    /**
-     * Busca histórico por aluno.
-     */
     getByAluno: (alunoId) => apiClient.get(`/historicos/aluno/${alunoId}`),
 };
 
-// Exporta a instância única como default também
 export default apiClient;

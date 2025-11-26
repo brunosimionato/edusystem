@@ -27,13 +27,13 @@ const Secretaria = () => {
 
   // Busca os dados do backend assim que o componente for carregado
   useEffect(() => {
-    if (!authToken) return; // evita chamadas sem token
+    if (!authToken) return;
 
     const fetchStats = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/dashboard", {
           headers: {
-            Authorization: `Bearer ${authToken}`, // ✅ ENVIA O TOKEN
+            Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
           },
         });
@@ -49,7 +49,7 @@ const Secretaria = () => {
 
         setStats({
           alunos: data.alunos,
-          professores: data.professores, // já vem filtrado no backend
+          professores: data.professores,
           turmas: data.turmas,
           disciplinas: data.disciplinas,
         });

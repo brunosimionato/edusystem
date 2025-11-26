@@ -1,4 +1,3 @@
-// src/services/SecretariaService.js - NOVO
 import { z } from 'zod';
 import { API_URL } from '../utils/env.js';
 
@@ -173,11 +172,11 @@ class SecretariaService {
     async getByUsuarioId(usuarioId) {
         const secretarias = await this.getAll();
         const secretaria = secretarias.find(s => s.idUsuario === usuarioId);
-        
+
         if (!secretaria) {
             throw new Error('Secretaria not found for this user');
         }
-        
+
         return secretaria;
     }
 }

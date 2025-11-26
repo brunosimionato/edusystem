@@ -1,4 +1,3 @@
-// src/hooks/useHorarios.js - VERSÃO TOLERANTE A ERROS
 import { useState, useEffect, useCallback } from 'react';
 import HorarioService from '../Services/HorarioService';
 

@@ -1,4 +1,3 @@
-// src/services/DebugService.js
 import { API_URL } from '../utils/env.js';
 
 class DebugService {
@@ -36,7 +35,7 @@ class DebugService {
           data = await response.json();
         } else {
           data = await response.text();
-          data = data.substring(0, 200) + '...'; // Limitar tamanho
+          data = data.substring(0, 200) + '...';
         }
 
         results[endpoint] = {

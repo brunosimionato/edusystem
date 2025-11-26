@@ -1,7 +1,7 @@
 /* BARRA DE ROLAGEM (sem setinhas) */
 * {
-  scrollbar-width: thin;        /* Firefox */
-  scrollbar-color: #cbd5e1 #f8fafc; /* Firefox */
+  scrollbar-width: thin;       
+  scrollbar-color: #cbd5e1 #f8fafc;
 }
 
 /* WebKit (Chrome, Edge, Safari) */

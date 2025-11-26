@@ -1,4 +1,3 @@
-// src/services/NotaService.js
 import { API_URL } from '../utils/env.js';
 
 class NotaService {
@@ -69,15 +68,23 @@ class NotaService {
     }
   }
 
-  async create(notaData) {
+   async create(notaData) {
     try {
       const token = localStorage.getItem('token');
-      console.log('📤 Criando nota:', notaData);
+      console.log('📤 Criando nota (ORIGINAL 0-100):', notaData);
       
-      // Valida se todos os campos obrigatórios estão presentes
-      if (!notaData.idTurma) {
-        throw new Error('idTurma é obrigatório para criar uma nota');
+      const notaAjustada = {
+        ...notaData,
+        nota: parseFloat((notaData.nota / 10).toFixed(2))
+      };
+      
+      delete notaAjustada.tipo;
+      
+      if (notaAjustada.idDisciplina === 0) {
+        notaAjustada.idDisciplina = 1;
       }
+
+      console.log('📤 Criando nota (CONVERTIDA 0-10):', notaAjustada);
 
       const response = await fetch(`${API_URL}/notas`, {
         method: 'POST',
@@ -85,40 +92,43 @@ class NotaService {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(notaData),
+        body: JSON.stringify(notaAjustada),
       });
-
-      console.log('📊 Status da criação da nota:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
-      const notaCriada = await response.json();
-      console.log('✅ Nota criada:', notaCriada);
-      return notaCriada;
-
+      return await response.json();
     } catch (error) {
       console.error('❌ Erro no NotaService.create:', error);
       throw error;
     }
   }
-
+  
   async update(id, notaData) {
     try {
       const token = localStorage.getItem('token');
+      
+      const notaAjustada = {
+        ...notaData,
+        nota: notaData.nota !== undefined ? parseFloat((notaData.nota / 10).toFixed(2)) : undefined
+      };
+      delete notaAjustada.tipo;
+      
       const response = await fetch(`${API_URL}/notas/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(notaData),
+        body: JSON.stringify(notaAjustada),
       });
 
       if (!response.ok) {
-        throw new Error(`Erro ao atualizar nota: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
       return await response.json();
@@ -127,6 +137,7 @@ class NotaService {
       throw error;
     }
   }
+
 
   async delete(id) {
     try {
@@ -146,6 +157,72 @@ class NotaService {
       return true;
     } catch (error) {
       console.error('Erro no NotaService.delete:', error);
+      throw error;
+    }
+  }
+
+  async getMediasTrimestrais(alunoId, anoLetivo) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/notas/aluno/${alunoId}/medias?anoLetivo=${anoLetivo}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar médias: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar médias:', error);
+      throw error;
+    }
+  }
+
+  async getSituacaoFinal(alunoId, anoLetivo) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/notas/aluno/${alunoId}/situacao?anoLetivo=${anoLetivo}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar situação: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar situação:', error);
+      throw error;
+    }
+  }
+
+  async getBoletimCompleto(alunoId, anoLetivo) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/notas/aluno/${alunoId}/boletim?anoLetivo=${anoLetivo}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar boletim: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar boletim:', error);
       throw error;
     }
   }

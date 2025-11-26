@@ -1,24 +1,21 @@
-// src/services/FaltaService.js 
 import { z } from 'zod';
 import { API_URL } from '../utils/env.js';
 
 export const novaFaltaSchema = z.object({
-    idAluno: z.number(),
-    idTurma: z.number(),
-    data: z.string(), // ISO string
-    periodo: z.number().min(1).max(5).optional(),
-    justificada: z.boolean().default(false),
-    observacao: z.string().optional()
+    idAluno: z.number().int().positive(),
+    data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    periodo: z.number().min(1).max(5).optional().nullable()
 });
 
 export const faltaSchema = z.object({
     id: z.number(),
     idAluno: z.number(),
-    idTurma: z.number(),
     data: z.string(),
     periodo: z.number().nullable(),
-    justificada: z.boolean(),
-    observacao: z.string().nullable(),
+    aluno: z.object({
+        id: z.number(),
+        nome: z.string()
+    }).optional(),
     createdAt: z.string().optional(),
     updatedAt: z.string().optional()
 });
@@ -32,29 +29,47 @@ class FaltaService {
         const token = localStorage.getItem('token');
         const queryParams = new URLSearchParams();
         
-        Object.entries(filters).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                queryParams.append(key, value.toString());
-            }
-        });
-
-        const res = await fetch(`${API_URL}/faltas?${queryParams}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!res.ok) {
-            throw new Error('Failed to fetch faltas');
-        }
+        console.log("🔍 Filtros recebidos no FaltaService:", filters);
+        
+        if (filters.data_inicio) queryParams.append('data_inicio', filters.data_inicio);
+        if (filters.data_fim) queryParams.append('data_fim', filters.data_fim);
+        if (filters.idAluno) queryParams.append('aluno_id', filters.idAluno);
+        if (filters.page) queryParams.append('page', filters.page);
+        if (filters.limit) queryParams.append('limit', filters.limit);
+        
+        const url = `${API_URL}/faltas?${queryParams}`;
+        console.log("🌐 Fazendo request para:", url);
 
         try {
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log("📡 Response status:", res.status);
+            
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("❌ Erro na resposta:", errorText);
+                throw new Error(`Failed to fetch faltas: ${res.status} ${res.statusText}`);
+            }
+
             const body = await res.json();
+            console.log("📦 Dados recebidos:", body);
+            
+            // Verifique se é um array
+            if (!Array.isArray(body)) {
+                console.error("❌ Resposta não é array:", body);
+                return [];
+            }
+            
             return body.map(faltaSchema.parse);
+            
         } catch (error) {
-            console.error("Error parsing faltas:", error);
+            console.error("❌ Erro no FaltaService.getAll:", error);
             throw error;
         }
     }
@@ -75,19 +90,11 @@ class FaltaService {
         });
 
         if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Falta not found');
-            }
             throw new Error('Failed to fetch falta');
         }
 
-        try {
-            const body = await res.json();
-            return faltaSchema.parse(body);
-        } catch (error) {
-            console.error("Error parsing falta:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return faltaSchema.parse(body);
     }
 
     /**
@@ -96,6 +103,8 @@ class FaltaService {
      */
     async create(faltaData) {
         const token = localStorage.getItem('token');
+        
+        console.log("📝 Criando falta:", faltaData);
         const validatedData = novaFaltaSchema.parse(faltaData);
 
         const res = await fetch(`${API_URL}/faltas`, {
@@ -112,48 +121,8 @@ class FaltaService {
             throw new Error(errorData.error || errorData.message || 'Failed to create falta');
         }
 
-        try {
-            const body = await res.json();
-            return faltaSchema.parse(body);
-        } catch (error) {
-            console.error("Error parsing created falta:", error);
-            throw error;
-        }
-    }
-
-    /**
-     * @param {number} id
-     * @param {Object} updateData
-     * @returns {Promise<Falta>}
-     */
-    async update(id, updateData) {
-        const token = localStorage.getItem('token');
-        const validatedData = novaFaltaSchema.partial().parse(updateData);
-
-        const res = await fetch(`${API_URL}/faltas/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(validatedData)
-        });
-
-        if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Falta not found');
-            }
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to update falta');
-        }
-
-        try {
-            const body = await res.json();
-            return faltaSchema.parse(body);
-        } catch (error) {
-            console.error("Error parsing updated falta:", error);
-            throw error;
-        }
+        const body = await res.json();
+        return faltaSchema.parse(body);
     }
 
     /**
@@ -163,6 +132,8 @@ class FaltaService {
     async delete(id) {
         const token = localStorage.getItem('token');
 
+        console.log("🗑️ Deletando falta ID:", id);
+        
         const res = await fetch(`${API_URL}/faltas/${id}`, {
             method: 'DELETE',
             headers: {
@@ -172,82 +143,10 @@ class FaltaService {
         });
 
         if (!res.ok) {
-            if (res.status === 404) {
-                throw new Error('Falta not found');
-            }
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to delete falta');
+            throw new Error('Failed to delete falta');
         }
     }
 
-    /**
-     * @param {number} alunoId
-     * @param {string} dataInicio
-     * @param {string} dataFim
-     * @returns {Promise<Falta[]>}
-     */
-    async getByAluno(alunoId, dataInicio, dataFim) {
-        const filters = { idAluno: alunoId };
-        if (dataInicio) filters.dataInicio = dataInicio;
-        if (dataFim) filters.dataFim = dataFim;
-        
-        return this.getAll(filters);
-    }
-
-    /**
-     * @param {number} turmaId
-     * @param {string} data
-     * @returns {Promise<Falta[]>}
-     */
-    async getByTurma(turmaId, data) {
-        const filters = { idTurma: turmaId };
-        if (data) filters.data = data;
-        
-        return this.getAll(filters);
-    }
-
-    /**
-     * @param {number} alunoId
-     * @param {string} mes
-     * @param {number} ano
-     * @returns {Promise<number>}
-     */
-    async getTotalFaltasPorMes(alunoId, mes, ano) {
-        const faltas = await this.getByAluno(alunoId, `${ano}-${mes}-01`, `${ano}-${mes}-31`);
-        return faltas.length;
-    }
-
-    /**
-     * Cria múltiplas faltas de uma vez
-     * @param {Array} faltasData
-     * @returns {Promise<Falta[]>}
-     */
-    async createMultiple(faltasData) {
-        const token = localStorage.getItem('token');
-        const validatedData = z.array(novaFaltaSchema).parse(faltasData);
-
-        const res = await fetch(`${API_URL}/faltas/batch`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(validatedData)
-        });
-
-        if (!res.ok) {
-            const errorData = await res.json().catch(() => ({}));
-            throw new Error(errorData.error || errorData.message || 'Failed to create faltas');
-        }
-
-        try {
-            const body = await res.json();
-            return body.map(faltaSchema.parse);
-        } catch (error) {
-            console.error("Error parsing created faltas:", error);
-            throw error;
-        }
-    }
 }
 
 export default new FaltaService();

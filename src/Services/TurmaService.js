@@ -48,7 +48,7 @@ async list({ withAlunos }) {
 
     return schema.array().parse(data).map(t => ({
         ...t,
-        alunosMatriculados: t.alunos ? t.alunos.length : 0   // ✅ mantém alunos e ainda adiciona o contador
+        alunosMatriculados: t.alunos ? t.alunos.length : 0 
     }));
 }
 
