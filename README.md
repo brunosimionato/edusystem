@@ -1,4 +1,4 @@
-🎓 EduSystem — Aplicação Web
+## 🎓 EduSystem — Aplicação Web
 
 **Projeto de Conclusão de Curso — URI Erechim**
 
@@ -6,7 +6,6 @@ Este repositório contém a aplicação web EduSystem, desenvolvida como parte d
 
 A aplicação representa uma contribuição prática e tecnológica para sistemas escolares, buscando modernizar e agilizar a gestão acadêmica por meio de uma plataforma intuitiva, limpa e eficiente. O sistema web complementa a API Escolar (back-end), formando um ambiente completo de gestão escolar digital.
 
----
 
 ## 🧩 Sobre o Projeto
 
@@ -18,7 +17,6 @@ O EduSystem foi desenvolvido com o propósito de facilitar e otimizar diversos p
 - ✅ **Interface visual moderna, limpa e responsiva**
 - ✅ **Comunicação clara entre professores, secretaria e gestão**
 
----
 
 ## 🛠 Tecnologias Utilizadas
 
@@ -34,7 +32,6 @@ O EduSystem foi desenvolvido com o propósito de facilitar e otimizar diversos p
 - **Autenticação JWT**
 - **Controle de perfis** (secretaria, professor, aluno)
 
----
 
 ## 🎯 Funcionalidades Disponíveis 
 
@@ -52,14 +49,12 @@ O EduSystem foi desenvolvido com o propósito de facilitar e otimizar diversos p
 - Gerenciamento de faltas e notas
 - Gestão de usuários
 
----
 
 ## 👨‍💻 Autor
 
 **Bruno Nava Simionato**  
 📧 101061@aluno.uricer.edu.br  
 
----
 
 ## 🎓 Orientador
 
