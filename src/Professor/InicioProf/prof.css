@@ -1,4 +1,3 @@
-/* Layout Professor */
 .dashboard-container-prof {
   display: flex;
   flex-direction: column;
@@ -44,7 +43,7 @@
 /* Stats Grid */
 .stats-grid-prof {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   width: 100%;
 }

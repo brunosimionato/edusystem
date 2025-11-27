@@ -29,14 +29,7 @@ export const useHorarios = (filters = {}) => {
         try {
             console.log('📤 Criando horário:', horarioData);
             
-            // Em ambiente mock, não verificamos conflitos
-            if (!HorarioService.useMock) {
-                const hasConflito = await HorarioService.hasConflito(horarioData);
-                if (hasConflito) {
-                    throw new Error('Conflito de horário detectado. Já existe um horário para este professor no mesmo dia e período.');
-                }
-            }
-
+            // CRIAR DIRETAMENTE sem verificar conflitos
             const novoHorario = await HorarioService.create(horarioData);
             setHorarios(prev => [...prev, novoHorario]);
             setUsingMock(HorarioService.useMock);
@@ -50,17 +43,7 @@ export const useHorarios = (filters = {}) => {
 
     const updateHorario = useCallback(async (id, updateData) => {
         try {
-            // Em ambiente mock, não verificamos conflitos
-            if (!HorarioService.useMock) {
-                const hasConflito = await HorarioService.hasConflito({
-                    ...updateData,
-                    id
-                });
-                if (hasConflito) {
-                    throw new Error('Conflito de horário detectado. Já existe um horário para este professor no mesmo dia e período.');
-                }
-            }
-
+            // ATUALIZAR DIRETAMENTE sem verificar conflitos
             const horarioAtualizado = await HorarioService.update(id, updateData);
             setHorarios(prev => prev.map(horario => 
                 horario.id === id ? horarioAtualizado : horario

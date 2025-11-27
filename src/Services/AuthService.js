@@ -57,31 +57,6 @@ async login(payload) {
     }
 }
 
-    async createUserPublic(userData) {
-        try {
-            const data = userRegistrationSchema.parse(userData);
-
-            const res = await fetch(`${API_URL}/usuarios/public`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ error: 'Erro desconhecido' }));
-                throw new Error(errorData.error || `Falha ao criar usuário: ${res.status}`);
-            }
-
-            return await res.json();
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                throw new Error('Dados de usuário inválidos: ' + error.errors.map(e => e.message).join(', '));
-            }
-            throw error;
-        }
-    }
 
     // Método para criar usuário com autenticação (para uso quando já logado)
     async createUser(userData, authToken) {

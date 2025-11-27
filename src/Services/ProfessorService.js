@@ -43,6 +43,13 @@ export const professorSchema = z.object({
     ).optional()
 });
 
+// Schema para os dados do dashboard
+export const dashboardSchema = z.object({
+    totalAlunos: z.number(),
+    totalTurmas: z.number(),
+    diasLetivos: z.number().optional()
+});
+
 class ProfessorService {
 
     // GET ALL
@@ -59,17 +66,13 @@ class ProfessorService {
         if (!res.ok) throw new Error("Failed to fetch professors");
 
         const body = await res.json();
-        
-        console.log("🔍 TODOS OS PROFESSORES:", body);
-        
+
         // FILTRAR APENAS PROFESSORES COM USUÁRIOS ATIVOS
         const professoresAtivos = body.filter(professor => {
             const statusUsuario = professor.usuario?.status;
             return !statusUsuario || statusUsuario === "ativo";
         });
-        
-        console.log("✅ PROFESSORES ATIVOS:", professoresAtivos);
-        
+
         return professoresAtivos.map(professorSchema.parse);
     }
 
@@ -87,12 +90,12 @@ class ProfessorService {
         if (!res.ok) throw new Error("Professor not found");
 
         const body = await res.json();
-        
+
         // VERIFICAR SE O USUÁRIO DO PROFESSOR ESTÁ ATIVO
         if (body.usuario?.status === "inativo") {
             throw new Error("Professor inativo não pode ser acessado");
         }
-        
+
         return professorSchema.parse(body);
     }
 
@@ -207,7 +210,81 @@ class ProfessorService {
         if (!res.ok) throw new Error("Failed to delete professor");
     }
 
+    // GET BY USER ID
+    async getByUsuarioId(usuarioId) {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(API_URL + `/professores?usuario_id=${usuarioId}`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) throw new Error("Professor not found for this user");
+
+        const body = await res.json();
+
+        // Se a API retornar um array, pega o primeiro item
+        const professor = Array.isArray(body) ? body[0] : body;
+
+        // VERIFICAR SE O USUÁRIO DO PROFESSOR ESTÁ ATIVO
+        if (professor.usuario?.status === "inativo") {
+            throw new Error("Professor inativo não pode ser acessado");
+        }
+
+        return professorSchema.parse(professor);
+    }
+
+    // GET DASHBOARD DATA - VERSÃO LIMPA
+    async getDashboardData(professorId) {
+        const token = localStorage.getItem("token");
+
+        try {
+            const res = await fetch(`${API_URL}/api/professores/${professorId}/dashboard`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error(`Erro ${res.status}: ${res.statusText}`);
+            }
+
+            const data = await res.json();
+            
+            return {
+                totalAlunos: data.totalAlunos,
+                totalTurmas: data.totalTurmas,
+                diasLetivos: 200
+            };
+
+        } catch (error) {
+            console.error('Erro ao buscar dashboard:', error);
+            return {
+                totalAlunos: 0,
+                totalTurmas: 0,
+                diasLetivos: 200
+            };
+        }
+    }
     
+    async getTurmas(professorId) {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(API_URL + `/professores/${professorId}/turmas`, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch professor's turmas");
+
+        const body = await res.json();
+        return Array.isArray(body) ? body : [];
+    }
+
 }
 
 export default new ProfessorService();

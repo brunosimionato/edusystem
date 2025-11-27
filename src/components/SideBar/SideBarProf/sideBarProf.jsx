@@ -13,11 +13,17 @@ import './sideBarProf.css';
 import { useAuth } from '../../../context/AuthContext';
 
 const SideBarProf = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Função para pegar apenas o primeiro nome
+  const getFirstName = (fullName) => {
+    if (!fullName) return 'Professor';
+    return fullName.split(' ')[0];
+  };
 
   const toggleMenu = (menuKey) => {
     setExpandedMenus((prev) => ({
@@ -99,7 +105,9 @@ const SideBarProf = () => {
           <GraduationCap />
         </div>
         <div className="user-info-prof" id="prof-user-info">
-          <h3 className="prof-name">João Santos</h3>
+          <h3 className="prof-name">
+            {getFirstName(user?.nome)}
+          </h3>
           <p className="prof-role">Professor(a)</p>
         </div>
       </div>

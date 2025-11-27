@@ -3,7 +3,6 @@
     opacity: 0;
     transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -188,7 +187,10 @@
 
 .break-row-visualizacao .horario-cell-visualizacao,
 .break-row-visualizacao .horario-cell-visualizacao .horario-info-visualizacao,
-.break-row-visualizacao .horario-cell-visualizacao .horario-info-visualizacao span {
+.break-row-visualizacao
+  .horario-cell-visualizacao
+  .horario-info-visualizacao
+  span {
   color: #ffffff !important;
 }
 
@@ -219,6 +221,10 @@
   transform: translateY(-2px);
 }
 
+.grade-card-visualizacao.professor-animating {
+  transition: all 0.3s ease-in-out;
+}
+
 /* Estrutura da grade */
 .grade-info-visualizacao {
   display: flex;
@@ -238,6 +244,7 @@
 .clickable-visualizacao {
   cursor: pointer;
   user-select: none;
+  transition: all 0.2s ease;
 }
 
 /* Container da info básica + avatar */
@@ -266,6 +273,15 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  flex: 1;
+}
+
+/* Container do nome e período na mesma linha */
+.grade-nome-periodo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .grade-nome-visualizacao {
@@ -275,7 +291,33 @@
   margin: 0;
 }
 
+/* Período da grade - ESTILOS ATUALIZADOS */
 .grade-periodo-visualizacao {
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 70px;
+  text-align: center;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* CORES ESPECÍFICAS PARA MANHÃ E TARDE - IGUAL AO LISTATURMA */
+.grade-periodo-visualizacao.manha {
+  background: #bfdbfe;
+  color: #1e40af;
+}
+
+.grade-periodo-visualizacao.tarde {
+  background: #fed7aa;
+  color: #ea580c;
+}
+
+/* Horário abaixo do nome/periodo */
+.grade-horario-visualizacao {
   font-size: 13px;
   color: #64748b;
   margin: 0;
@@ -316,19 +358,26 @@
   transform: translateY(-1px);
 }
 
-/* Detalhes expandidos */
+/* Container de expansão - ESTILOS CORRIGIDOS */
 .grade-details-container-visualizacao {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.grade-details-container-visualizacao.professor-expanded {
+  max-height: 2000px;
+  opacity: 1;
   padding: 20px;
   border-top: 1px solid #f1f5f9;
-  margin-top: -1px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 /* Conteúdo da grade */
 .grade-content-visualizacao {
   background: white;
+  animation: professorSimpleFade 0.5s ease-in-out;
 }
 
 .grade-content-visualizacao .table-wrapper-visualizacao {
@@ -344,11 +393,19 @@
   border-spacing: 0;
 }
 
-.grade-content-visualizacao .table-wrapper-visualizacao table tr:last-child td:first-child {
+.grade-content-visualizacao
+  .table-wrapper-visualizacao
+  table
+  tr:last-child
+  td:first-child {
   border-bottom-left-radius: 12px;
 }
 
-.grade-content-visualizacao .table-wrapper-visualizacao table tr:last-child td:last-child {
+.grade-content-visualizacao
+  .table-wrapper-visualizacao
+  table
+  tr:last-child
+  td:last-child {
   border-bottom-right-radius: 12px;
 }
 
@@ -358,6 +415,13 @@
   flex-direction: column;
   gap: 25px;
   padding: 24px 30px;
+}
+
+.turmas-count-visualizacao {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
 /* Estado vazio */
@@ -387,6 +451,81 @@
   margin: 0;
   font-size: 14px;
   color: #64748b;
+}
+
+.empty-state-actions {
+  margin-top: 16px;
+}
+
+.empty-state-actions p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* Estados de loading e error */
+.loading-state-visualizacao,
+.error-state-visualizacao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.loading-state-visualizacao h4,
+.error-state-visualizacao h4 {
+  margin: 16px 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.loading-state-visualizacao p,
+.error-state-visualizacao p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retry-button-visualizacao {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retry-button-visualizacao:hover {
+  background: #2563eb;
+}
+
+/* ANIMAÇÕES */
+@keyframes professorSimpleFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsividade */
@@ -447,6 +586,17 @@
     min-width: 80px;
     padding: 8px 4px;
   }
+
+  .grade-nome-periodo-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Animações mobile */
+  .grade-details-container-visualizacao.professor-expanded {
+    max-height: 2000px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -471,5 +621,22 @@
 
   .professor-nome-visualizacao {
     font-size: 10px;
+  }
+
+  .turmas-list-visualizacao {
+    padding: 16px;
+  }
+
+  .grade-header-visualizacao {
+    padding: 16px;
+  }
+
+  .grade-basic-info-container-visualizacao {
+    gap: 12px;
+  }
+
+  .grade-avatar-visualizacao {
+    width: 40px;
+    height: 40px;
   }
 }
