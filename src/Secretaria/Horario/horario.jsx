@@ -12,6 +12,7 @@ import {
   Save,
   Loader,
   AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 
 import "./horario.css";
@@ -33,7 +34,8 @@ const Horarios = () => {
     periodoSelecionado: false,
   });
 
-  // Hooks para dados reais
+  const [isAnimating, setIsAnimating] = useState({});
+  
   const {
     turmas,
     isLoading: isLoadingTurmas,
@@ -80,39 +82,6 @@ const Horarios = () => {
     { nome: "Sexta", numero: 5 },
   ];
 
-  const isHorarioOcupado = (
-    diaNumero,
-    periodoNumero,
-    professorId,
-    disciplinaId,
-    turmaId
-  ) => {
-    // Verificar se já existe um horário com o mesmo professor no mesmo dia e período
-    const horarioExistente = horariosExistentes.find(
-      (horario) =>
-        horario.diaSemana === diaNumero &&
-        horario.periodo === periodoNumero &&
-        horario.idProfessor === parseInt(professorId) &&
-        horario.idTurma !== parseInt(turmaId)
-    );
-
-    // Verificar se já existe um horário com a mesma disciplina no mesmo dia e período
-    const disciplinaExistente = horariosExistentes.find(
-      (horario) =>
-        horario.diaSemana === diaNumero &&
-        horario.periodo === periodoNumero &&
-        horario.idDisciplina === parseInt(disciplinaId) &&
-        horario.idTurma !== parseInt(turmaId)
-    );
-
-    return {
-      professorOcupado: !!horarioExistente,
-      disciplinaOcupada: !!disciplinaExistente,
-      professorConflito: horarioExistente,
-      disciplinaConflito: disciplinaExistente,
-    };
-  };
-
   const handleSelecionarTurma = (e) => {
     setTurmaSelecionada(e.target.value);
     setHorariosInput({});
@@ -121,25 +90,12 @@ const Horarios = () => {
   const handleAdicionarHorario = async (event) => {
     event.preventDefault();
 
-    let temErro = false;
-    const novosErros = {
-      turmaSelecionada: false,
-      periodoSelecionado: false,
-    };
-
-    if (!turmaSelecionada) {
-      novosErros.turmaSelecionada = true;
-      temErro = true;
-    }
-
-    if (!periodoSelecionado) {
-      novosErros.periodoSelecionado = true;
-      temErro = true;
-    }
-
-    setErros(novosErros);
-
-    if (temErro) {
+    // Validações básicas
+    if (!turmaSelecionada || !periodoSelecionado) {
+      setErros({
+        turmaSelecionada: !turmaSelecionada,
+        periodoSelecionado: !periodoSelecionado,
+      });
       alert("Por favor, selecione uma turma e um período.");
       return;
     }
@@ -149,8 +105,7 @@ const Horarios = () => {
       const horariosAtivos =
         periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-      const conflitos = [];
-
+      // Coletar todos os horários preenchidos SEM verificar conflitos
       diasSemana.forEach((dia) => {
         horariosAtivos.forEach((horario) => {
           if (!horario.isBreak) {
@@ -161,78 +116,58 @@ const Horarios = () => {
             const professorId = horariosInput[professorKey];
 
             if (disciplinaId && professorId) {
-              const ocupacao = isHorarioOcupado(
-                dia.numero,
-                horario.numero,
-                professorId,
-                disciplinaId,
-                turmaSelecionada
-              );
-
-              if (ocupacao.professorOcupado) {
-                const professor = professores.find(
-                  (p) => p.id === parseInt(professorId)
-                );
-                const turmaConflito = turmas.find(
-                  (t) => t.id === ocupacao.professorConflito.idTurma
-                );
-                conflitos.push(
-                  `Professor ${
-                    professor?.usuario?.nome || professor?.nome
-                  } já está alocado na ${turmaConflito?.nome} no mesmo horário`
-                );
-              }
-
-              if (ocupacao.disciplinaOcupada) {
-                const disciplina = disciplinas.find(
-                  (d) => d.id === parseInt(disciplinaId)
-                );
-                const turmaConflito = turmas.find(
-                  (t) => t.id === ocupacao.disciplinaConflito.idTurma
-                );
-                conflitos.push(
-                  `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
-                );
-              }
-
-              if (!ocupacao.professorOcupado && !ocupacao.disciplinaOcupada) {
-                horariosParaCriar.push({
-                  idTurma: parseInt(turmaSelecionada),
-                  idProfessor: parseInt(professorId),
-                  idDisciplina: parseInt(disciplinaId),
-                  diaSemana: dia.numero,
-                  periodo: horario.numero,
-                  sala: "Sala padrão",
-                });
-              }
+              horariosParaCriar.push({
+                idTurma: parseInt(turmaSelecionada),
+                idProfessor: parseInt(professorId),
+                idDisciplina: parseInt(disciplinaId),
+                diaSemana: dia.numero,
+                periodo: horario.numero,
+              });
             }
           }
         });
       });
 
-      if (conflitos.length > 0) {
-        alert(
-          `Conflitos encontrados:\n\n${conflitos.join(
-            "\n"
-          )}\n\nAjuste os horários e tente novamente.`
-        );
-        return;
-      }
-
+      // Verificar se há horários para criar
       if (horariosParaCriar.length === 0) {
         alert("Por favor, preencha pelo menos um horário antes de salvar.");
         return;
       }
 
+      // Criar horários individualmente
+      let horariosCriados = 0;
+      let errosCriacao = [];
+
       for (const horarioData of horariosParaCriar) {
-        await createHorario(horarioData);
+        try {
+          await createHorario(horarioData);
+          horariosCriados++;
+        } catch (error) {
+          console.error(`Erro ao criar horário:`, horarioData, error);
+          errosCriacao.push(
+            `Erro no ${horarioData.diaSemana}º dia, ${horarioData.periodo}º período: ${error.message}`
+          );
+        }
       }
 
+      // Feedback ao usuário
+      if (errosCriacao.length > 0) {
+        alert(
+          `Alguns horários foram criados (${horariosCriados}), mas ocorreram erros:\n\n${errosCriacao.join(
+            "\n"
+          )}`
+        );
+      } else {
+        alert(
+          `Grade de horários cadastrada com sucesso! ${horariosCriados} horários criados.`
+        );
+      }
+
+      // Limpar formulário e recarregar dados
       handleClearForm(false);
-      alert("Grade de horários cadastrada com sucesso!");
       refetchHorarios();
     } catch (error) {
-      console.error("Erro ao criar horários:", error);
+      console.error("Erro ao processar horários:", error);
       alert(`Erro ao salvar horários: ${error.message}`);
     }
   };
@@ -270,9 +205,12 @@ const Horarios = () => {
 
     try {
       const horariosDaTurma = horariosPorTurma[turmaId];
+
+      // Deletar horários individualmente
       for (const horario of horariosDaTurma) {
         await deleteHorario(horario.id);
       }
+
       alert("Horários removidos com sucesso!");
       refetchHorarios();
     } catch (error) {
@@ -282,15 +220,22 @@ const Horarios = () => {
   };
 
   const toggleGradeExpansao = (turmaId) => {
+    if (isAnimating[turmaId]) return;
+
+    setIsAnimating(prev => ({ ...prev, [turmaId]: true }));
     setGradeExpandida((prev) => ({
       ...prev,
       [turmaId]: !prev[turmaId],
     }));
+
+    // Remove a classe de animação após a transição
+    setTimeout(() => {
+      setIsAnimating(prev => ({ ...prev, [turmaId]: false }));
+    }, 300);
   };
 
   const iniciarEdicao = (turmaId) => {
     setGradeEditando(turmaId);
-    // Carregar horários atuais para edição
     const horariosDaTurma = horariosPorTurma[turmaId];
     const horariosMap = {};
 
@@ -304,16 +249,13 @@ const Horarios = () => {
 
   const salvarEdicao = async (turmaId) => {
     try {
-      // VERIFICAR CONFLITOS NA EDIÇÃO
       const turma = turmas.find((t) => t.id == turmaId);
-      const periodo =
-        turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
       const horariosAtivos =
-        periodo === "manha" ? horariosManha : horariosTarde;
+        turma?.turno?.toLowerCase() === "manhã" ? horariosManha : horariosTarde;
 
-      const conflitos = [];
       const horariosParaCriar = [];
 
+      // Coletar horários da edição SEM verificar conflitos
       diasSemana.forEach((dia) => {
         horariosAtivos.forEach((horario) => {
           if (!horario.isBreak) {
@@ -324,63 +266,17 @@ const Horarios = () => {
             const professorId = horariosEdicao[professorKey];
 
             if (disciplinaId && professorId) {
-              const ocupacao = isHorarioOcupado(
-                dia.numero,
-                horario.numero,
-                professorId,
-                disciplinaId,
-                turmaId
-              );
-
-              if (ocupacao.professorOcupado) {
-                const professor = professores.find(
-                  (p) => p.id === parseInt(professorId)
-                );
-                const turmaConflito = turmas.find(
-                  (t) => t.id === ocupacao.professorConflito.idTurma
-                );
-                conflitos.push(
-                  `Professor ${
-                    professor?.usuario?.nome || professor?.nome
-                  } já está alocado na ${turmaConflito?.nome} no mesmo horário`
-                );
-              }
-
-              if (ocupacao.disciplinaOcupada) {
-                const disciplina = disciplinas.find(
-                  (d) => d.id === parseInt(disciplinaId)
-                );
-                const turmaConflito = turmas.find(
-                  (t) => t.id === ocupacao.disciplinaConflito.idTurma
-                );
-                conflitos.push(
-                  `Disciplina ${disciplina?.nome} já está alocada na ${turmaConflito?.nome} no mesmo horário`
-                );
-              }
-
-              if (!ocupacao.professorOcupado && !ocupacao.disciplinaOcupada) {
-                horariosParaCriar.push({
-                  idTurma: parseInt(turmaId),
-                  idProfessor: parseInt(professorId),
-                  idDisciplina: parseInt(disciplinaId),
-                  diaSemana: dia.numero,
-                  periodo: horario.numero,
-                  sala: "Sala padrão",
-                });
-              }
+              horariosParaCriar.push({
+                idTurma: parseInt(turmaId),
+                idProfessor: parseInt(professorId),
+                idDisciplina: parseInt(disciplinaId),
+                diaSemana: dia.numero,
+                periodo: horario.numero,
+              });
             }
           }
         });
       });
-
-      if (conflitos.length > 0) {
-        alert(
-          `Conflitos encontrados:\n\n${conflitos.join(
-            "\n"
-          )}\n\nAjuste os horários e tente novamente.`
-        );
-        return;
-      }
 
       // Remover horários antigos
       const horariosAntigos = horariosPorTurma[turmaId];
@@ -415,15 +311,14 @@ const Horarios = () => {
     }
   };
 
-  const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
-    const key = `${diaNumero}_${periodoNumero}_${tipo}`;
-    setHorariosEdicao((prev) => ({
-      ...prev,
-      [key]: valor,
-    }));
-  };
+const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
+  const key = `${diaNumero}_${periodoNumero}_${tipo}`; // CORRIGIDO: dia.numero para diaNumero
+  setHorariosEdicao((prev) => ({
+    ...prev,
+    [key]: valor,
+  }));
+};
 
-  // FUNÇÃO DE IMPRESSÃO
   const handlePrintHorario = (turmaId) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
@@ -483,6 +378,23 @@ const Horarios = () => {
     };
   };
 
+  const handleReconectar = async () => {
+    try {
+      const reconectado = await tryReconnect();
+      if (reconectado) {
+        alert("Conexão com o servidor restaurada!");
+        refetchHorarios();
+      } else {
+        alert(
+          "Não foi possível conectar com o servidor. Verifique sua conexão."
+        );
+      }
+    } catch (error) {
+      console.error("Erro ao reconectar:", error);
+      alert("Erro ao tentar reconectar com o servidor.");
+    }
+  };
+
   const horariosAtivos =
     periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
@@ -500,7 +412,6 @@ const Horarios = () => {
     (turma) => !horariosPorTurma[turma.id]
   );
 
-  // Função para renderizar tabela de horários - CORRIGIDA
   const renderTabelaHorarios = (turmaId, isEdicao = false) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
@@ -599,12 +510,11 @@ const Horarios = () => {
                             return (
                               <>
                                 <span className="materia-nome">-</span>
-                                <span className="professor-nome"></span>
+                                <span className="professor-nome-visualizacao"></span>
                               </>
                             );
                           }
 
-                          // CORREÇÃO: Buscar nomes reais das disciplinas e professores
                           const disciplinaEncontrada = disciplinas.find(
                             (d) => d.id === h.idDisciplina
                           );
@@ -619,7 +529,7 @@ const Horarios = () => {
                                   h.disciplina?.nome ||
                                   `Disciplina ${h.idDisciplina}`}
                               </span>
-                              <span className="professor-nome">
+                              <span className="professor-nome-visualizacao">
                                 {professorEncontrado?.usuario?.nome ||
                                   professorEncontrado?.nome ||
                                   h.professor?.usuario?.nome ||
@@ -667,9 +577,24 @@ const Horarios = () => {
 
   return (
     <div className="cadastro-horario-form-container">
+      {/* Status de conexão */}
+      {usingMock && (
+        <div className="connection-status">
+          <div className="connection-warning">
+            <AlertCircle size={16} />
+            <span>Modo offline - usando dados locais</span>
+            <button onClick={handleReconectar} className="reconnect-btn">
+              <RefreshCw size={14} />
+              Reconectar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* FORMULÁRIO DE NOVO HORÁRIO */}
       <div className="cadastro-horario-form-section">
         <h3 className="cadastro-horario-section-header">Novo Horário</h3>
+
         <div className="form-fields-container">
           <form onSubmit={handleAdicionarHorario}>
             <div className="cadastro-horario-form-grid">
@@ -685,7 +610,6 @@ const Horarios = () => {
                     onChange={handleSelecionarTurma}
                   >
                     <option value="">Selecione uma turma</option>
-                    {/* CORREÇÃO: Usar apenas turmasDisponiveis */}
                     {turmasDisponiveis.map((turma) => (
                       <option key={turma.id} value={turma.id}>
                         {turma.nome} - {turma.turno}
@@ -871,7 +795,10 @@ const Horarios = () => {
                 const isExpandido = gradeExpandida[turmaId];
 
                 return (
-                  <div key={turmaId} className="grade-card">
+                  <div 
+                    key={turmaId} 
+                    className={`grade-card ${isAnimating[turmaId] ? 'professor-animating' : ''}`}
+                  >
                     <div className="grade-info">
                       <div className="grade-header">
                         <div
@@ -942,7 +869,11 @@ const Horarios = () => {
                       </div>
 
                       {isExpandido && (
-                        <div className="grade-details-container">
+                        <div 
+                          className={`grade-details-container professor-expanded ${
+                            isAnimating[turmaId] ? 'professor-animating' : ''
+                          }`}
+                        >
                           <div className="grade-content">
                             {renderTabelaHorarios(
                               turmaId,
