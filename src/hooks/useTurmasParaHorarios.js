@@ -11,7 +11,6 @@ export const useTurmasParaHorarios = () => {
         setError(null);
         try {
             const turmasData = await TurmaService.list({ withAlunos: false });
-            console.log('✅ Turmas carregadas para horários:', turmasData);
             setTurmas(turmasData);
         } catch (err) {
             setError(err.message);

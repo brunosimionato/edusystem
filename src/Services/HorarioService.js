@@ -68,8 +68,6 @@ class HorarioService {
                 }
             });
 
-            console.log(`🔍 Buscando horários no backend: ${API_URL}/horarios?${queryParams}`);
-
             const res = await fetch(`${API_URL}/horarios?${queryParams}`, {
                 method: 'GET',
                 headers: {
@@ -83,7 +81,6 @@ class HorarioService {
             }
 
             const body = await res.json();
-            console.log('✅ Horários recebidos do backend:', body);
             return body.map(horarioSchema.parse);
 
         } catch (error) {
@@ -114,7 +111,6 @@ class HorarioService {
             }
 
             const body = await res.json();
-            console.log('✅ Horário criado no backend:', body);
             return horarioSchema.parse(body);
 
         } catch (error) {
@@ -178,8 +174,6 @@ class HorarioService {
                 throw new Error(`Erro ${res.status}: ${errorText}`);
             }
 
-            console.log('✅ Horário deletado com sucesso');
-
         } catch (error) {
             console.error('❌ Erro ao deletar horário:', error);
             throw new Error(`Falha ao deletar horário: ${error.message}`);
@@ -228,7 +222,6 @@ class HorarioService {
         try {
             const isOnline = await this.checkBackendStatus();
             if (isOnline) {
-                console.log('✅ Conexão com backend restaurada');
             }
             return isOnline;
         } catch (error) {

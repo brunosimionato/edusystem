@@ -14,15 +14,12 @@ export const useTurmasComAlunosFaltas = () => {
             
             // Usa o método list() que existe no TurmaService
             const turmasBasicas = await TurmaService.list({ withAlunos: false });
-            console.log('✅ Turmas básicas para faltas:', turmasBasicas);
 
             // Para cada turma, busca os alunos
             const turmasCompletas = await Promise.all(
                 turmasBasicas.map(async (turma) => {
                     try {
-                        console.log(`🔄 Buscando alunos da turma ${turma.id} para faltas...`);
                         const alunos = await AlunoService.getByTurma(turma.id);
-                        console.log(`✅ Alunos da turma ${turma.id} para faltas:`, alunos);
                         
                         return {
                             id: turma.id,
@@ -48,7 +45,6 @@ export const useTurmasComAlunosFaltas = () => {
                 })
             );
 
-            console.log('✅ Todas as turmas com alunos para faltas:', turmasCompletas);
             setTurmas(turmasCompletas);
         } catch (error) {
             console.error('❌ Erro ao buscar turmas para faltas:', error);

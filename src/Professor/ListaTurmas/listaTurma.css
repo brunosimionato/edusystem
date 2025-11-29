@@ -9,7 +9,6 @@
   }
 }
 
-/* Container principal */
 .professor-container {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,6 @@
   animation: professorSlideUp 0.5s ease-out;
 }
 
-/* Seções */
 .professor-section {
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -34,7 +32,6 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Cabeçalho das seções */
 .professor-section-header {
   font-size: 15px;
   font-weight: 600;
@@ -47,7 +44,6 @@
   align-items: center;
 }
 
-/* Grid do formulário */
 .professor-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -55,7 +51,6 @@
   padding: 24px 30px;
 }
 
-/* Grupos */
 .professor-form-group {
   display: flex;
   flex-direction: column;
@@ -63,7 +58,6 @@
   position: relative;
 }
 
-/* Colunas */
 .professor-form-group.professor-full-width { grid-column: span 12; }
 .professor-form-group.professor-half-width { grid-column: span 6; }
 .professor-form-group.professor-third-width { grid-column: span 4; }
@@ -84,7 +78,6 @@
   pointer-events: none;
 }
 
-/* Botão de imprimir */
 .professor-print-button {
   background: #6b7280;
   color: #fff;
@@ -108,14 +101,12 @@
   transform: translateY(-1px);
 }
 
-/* Wrapper do input com ícone */
 .professor-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-/* Ícone dentro do input */
 .professor-input-icon {
   position: absolute;
   left: 14px;
@@ -125,7 +116,6 @@
   font-size: 18px;
 }
 
-/* Inputs */
 .professor-input {
   width: 100%;
   padding: 15px 18px;
@@ -163,7 +153,6 @@
   transform: translateY(-1px);
 }
 
-/* Lista de turmas */
 .professor-turmas-list {
   display: flex;
   flex-direction: column;
@@ -171,7 +160,6 @@
   padding: 24px 30px;
 }
 
-/* Card da turma */
 .professor-turma-card {
   display: flex;
   justify-content: space-between;
@@ -200,7 +188,6 @@
   background: #fef2f2;
 }
 
-/* Info da turma */
 .professor-turma-info {
   flex: 1;
   display: flex;
@@ -274,7 +261,6 @@
   color: #15803d;
 }
 
-/* Detalhes da turma */
 .professor-turma-details {
   display: flex;
   flex-direction: column;
@@ -301,7 +287,6 @@
   transition: all 0.3s ease;
 }
 
-/* Container de alunos (expansível) */
 .professor-alunos-container {
   overflow: hidden;
   transition: all 0.3s ease;
@@ -317,7 +302,6 @@
   opacity: 1;
 }
 
-/* Animação simples de fade */
 @keyframes professorSimpleFade {
   from {
     opacity: 0;
@@ -335,7 +319,6 @@
   animation: professorSimpleFade 0.3s ease;
 }
 
-/* Cabeçalho da tabela de alunos */
 .professor-alunos-table-header {
   display: grid;
   grid-template-columns: 3fr 1.5fr 1fr;
@@ -358,13 +341,11 @@
   justify-self: center;
 }
 
-/* Lista de alunos */
 .professor-alunos-list {
   display: flex;
   flex-direction: column;
 }
 
-/* Linha do aluno */
 .professor-aluno-row {
   display: grid;
   grid-template-columns: 3fr 1.5fr 1fr;
@@ -401,7 +382,6 @@
   color: #64748b;
 }
 
-/* Mensagem de alunos vazios */
 .professor-empty-alunos-message {
   animation: professorSimpleFade 0.4s ease;
   text-align: center;
@@ -410,7 +390,6 @@
   font-style: italic;
 }
 
-/* Estado vazio */
 .professor-empty-state {
   display: flex;
   flex-direction: column;
@@ -445,7 +424,6 @@
   margin: 0;
 }
 
-/* Botão de retry */
 .professor-retry-button {
   display: flex;
   align-items: center;
@@ -465,7 +443,6 @@
   background-color: #2563eb;
 }
 
-/* Estados de loading e erro */
 .professor-loading-state, 
 .professor-error-state {
   display: flex;
@@ -479,7 +456,6 @@
   border: 1px solid #e2e8f0;
 }
 
-/* Responsividade - Tablets */
 @media (max-width: 992px) {
   .professor-alunos-table-header,
   .professor-aluno-row {
@@ -487,7 +463,6 @@
   }
 }
 
-/* Responsividade - Mobile */
 @media (max-width: 768px) {
   .professor-container {
     padding: 16px;
@@ -529,7 +504,6 @@
     justify-content: center;
   }
 
-  /* Tabela de alunos responsiva */
   .professor-alunos-table-header {
     display: none;
   }
@@ -552,7 +526,6 @@
     font-size: 13px;
   }
 
-  /* Animações mobile */
   .professor-alunos-container.professor-expanded {
     max-height: 2000px;
   }

@@ -1,7 +1,8 @@
-@keyframes slideUp {
+/* ANIMAÇÕES */
+@keyframes ntSlideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -9,7 +10,16 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes ntSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ntSimpleFade {
   from {
     opacity: 0;
   }
@@ -18,81 +28,161 @@
   }
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Efeito de esmaecimento ultra suave */
+@keyframes ntSmoothFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  40% {
+    opacity: 0.4;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ntGentleFadeIn {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes ntSoftFadeIn {
+  0% {
+    opacity: 0;
+    filter: blur(0.5px);
+  }
+  50% {
+    opacity: 0.6;
+    filter: blur(0.2px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Aplicar animação suave */
+.nt-section-header.nt-smooth-fade,
+.nt-turmas-list.nt-smooth-fade,
+.nt-empty-state.nt-smooth-fade,
+.nt-turma-card.nt-smooth-fade {
+  animation: ntGentleFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Efeito de entrada suave para os cards individuais com delay progressivo */
+.nt-turma-card.nt-smooth-fade {
+  animation: ntSmoothFadeIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.nt-turma-card.nt-smooth-fade:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.nt-turma-card.nt-smooth-fade:nth-child(8) {
+  animation-delay: 0.4s;
 }
 
 /* Container principal */
-.notas-container {
+.nt-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  animation: slideUp 0.8s ease-out;
+  animation: ntSlideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* Seções do formulário */
-.notas-form-section {
-  background: #ffffff;
+/* Seções */
+.nt-section {
+  background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.notas-form-section:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* Cabeçalho das seções */
-.notas-section-header {
-  font-size: 16px;
+.nt-section-header {
+  font-size: 15px;
   font-weight: 600;
   color: #1e293b;
-  padding: 20px 24px;
+  padding: 20px 30px;
   border-bottom: 1px solid #e2e8f0;
   background: #f8fafc;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.notas-counter {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 /* Grid do formulário */
-.notas-form-grid {
+.nt-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 20px;
-  padding: 24px;
+  padding: 24px 30px;
 }
 
-/* Grupos de formulário */
-.notas-form-group {
+/* Grupos */
+.nt-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   position: relative;
 }
 
-.notas-form-group.notas-full-width { grid-column: span 12; }
-.notas-form-group.notas-half-width { grid-column: span 6; }
-.notas-form-group.notas-third-width { grid-column: span 4; }
+.nt-form-group.nt-full-width {
+  grid-column: span 12;
+}
+.nt-form-group.nt-half-width {
+  grid-column: span 6;
+}
+.nt-form-group.nt-third-width {
+  grid-column: span 4;
+}
 
-.notas-form-group label {
+.nt-form-group label {
   position: absolute;
   top: -10px;
-  left: 12px;
-  background: #ffffff;
+  left: 15px;
+  background: white;
   padding: 0 8px;
   font-size: 12px;
   font-weight: 600;
@@ -104,61 +194,71 @@
 }
 
 /* Wrapper do input com ícone */
-.notas-input-wrapper {
+.nt-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
 /* Ícone dentro do input */
-.notas-input-icon {
+.nt-input-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   color: #94a3b8;
   pointer-events: none;
   z-index: 1;
   font-size: 18px;
+  transition: color 0.3s ease;
 }
 
-/* Inputs e selects - Design consistente */
-.notas-input,
-.notas-select {
+/* Inputs e selects */
+.nt-input,
+.nt-select {
   width: 100%;
-  padding: 12px 16px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
-  background: #ffffff;
+  background: white;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   color: #1e293b;
   box-sizing: border-box;
   height: 48px;
-  transition: all 0.2s ease;
 }
 
-.notas-search-input {
-  padding-left: 42px;
+.nt-search-input {
+  text-indent: 20px;
 }
 
-.notas-input::placeholder {
+.nt-search-input:focus {
+  border-color: #10b981;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.nt-input::placeholder {
   color: #94a3b8;
   font-weight: 400;
+  transition: color 0.3s ease;
 }
 
-.notas-input:focus,
-.notas-select:focus {
+.nt-input:focus,
+.nt-select:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  transform: translateY(-1px);
 }
 
-.notas-input:hover:not(:focus),
-.notas-select:hover:not(:focus) {
-  border-color: #cbd5e1;
+.nt-input:focus + .nt-input-icon {
+  color: #10b981;
 }
 
 /* Select customizado */
-.notas-select {
+.nt-select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -168,198 +268,233 @@
   background-size: 16px;
   padding-right: 40px;
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nt-select:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
 }
 
 /* Lista de turmas */
-.notas-turmas-list {
+.nt-turmas-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px;
+  padding: 24px 30px;
 }
 
-.notas-turma-card {
+/* Card da turma */
+.nt-turma-card {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 20px;
-  border: 1.5px solid #e2e8f0;
+  border: 1px solid #cbd5e1;
   border-radius: 12px;
-  background: #ffffff;
-  transition: all 0.2s ease;
+  background: white;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-.notas-turma-card:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.nt-turma-card:hover {
+  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.12);
+  transform: translateY(-3px);
 }
 
-.notas-turma-info {
+.nt-turma-card.nt-animating {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Info da turma */
+.nt-turma-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
   width: 100%;
 }
 
-/* Header da turma */
-.notas-turma-header {
+.nt-turma-header-wrapper {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 100%;
+  align-items: center;
   gap: 16px;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
-.notas-turma-header-left {
+.nt-turma-header {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
+  min-width: 0;
+}
+
+.nt-turma-header.nt-clickable {
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.notas-turma-nome {
-  font-size: 16px;
-  font-weight: 600;
+.nt-turma-nome {
+  font-size: 15px;
+  font-weight: 700;
   color: #1e293b;
   margin: 0;
-  transition: color 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
 }
 
-/* Tags de tipo e turno */
-.notas-tipo-ensino {
-  padding: 6px 12px;
+.nt-turma-turno {
+  padding: 4px 16px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #e0f2fe;
-  color: #0369a1;
-}
-
-.notas-turno {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  min-width: 80px;
+  min-width: 70px;
   text-align: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-.notas-turno-manha {
-  background: #dbeafe;
-  color: #1d4ed8;
+.nt-turno-manha {
+  background: #bfdbfe;
+  color: #1e40af;
 }
 
-.notas-turno-tarde {
+.nt-turno-tarde {
   background: #fed7aa;
   color: #ea580c;
 }
 
-.notas-turno-noite {
-  background: #e0e7ff;
+.nt-turno-noite {
+  background: #ddd6fe;
   color: #5b21b6;
 }
 
-.notas-turno-integral {
-  background: #d1fae5;
-  color: #059669;
+.nt-turno-integral {
+  background: #bbf7d0;
+  color: #15803d;
 }
 
-/* Actions container */
-.notas-actions {
+/* Detalhes da turma */
+.nt-turma-details {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
-  margin-left: auto;
 }
 
-/* Botões - Design consistente */
-.notas-editar-button,
-.notas-salvar-button,
-.notas-boletins-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
+.nt-alunos-count {
+  font-size: 14px;
+  color: #64748b;
+  transition: color 0.3s ease;
+}
+
+/* Container de alunos (expansível) */
+.nt-alunos-container {
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nt-alunos-container.nt-collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.nt-alunos-container.nt-expanded {
+  max-height: 2000px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Conteúdo da turma */
+.nt-turma-content {
+  margin-top: 16px;
+  animation: ntSimpleFade 0.4s ease;
+}
+
+/* Ações da turma */
+.nt-turma-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px;
+}
+
+/* Botões */
+.nt-editar-button {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.2s ease;
-  min-width: 150px;
-  height: 40px;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.notas-editar-button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 140px;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
   background: #f59e0b;
   color: #fff;
 }
 
-.notas-editar-button:hover {
-  background: #d97706; /* Laranja mais escuro no hover */
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+.nt-editar-button:hover {
+  background: #d97706;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.4);
+  transform: translateY(-1px);
 }
 
-.notas-salvar-button {
+.nt-salvar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 150px;
+  transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
   background: #10b981;
   color: #ffffff;
 }
 
-.notas-salvar-button:hover {
+.nt-salvar-button:hover {
   background: #059669;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
-.notas-boletins-button {
-  background: #3b82f6;
-  color: #ffffff;
-}
-
-.notas-boletins-button:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-}
-
-.notas-editar-button:active,
-.notas-salvar-button:active,
-.notas-boletins-button:active {
-  transform: translateY(0);
-}
-
-/* Tabela de notas expandida */
-.notas-table-container {
-  margin-top: 16px;
-  border: 1.5px solid #e2e8f0;
+/* Tabela de notas */
+.nt-table-container {
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   overflow: hidden;
-  overflow-x: auto;
   background: #ffffff;
+  transition: all 0.3s ease;
 }
 
-/* Cabeçalho da tabela para turmas globalizadas */
-.notas-table-header.notas-globalizada {
+.nt-table-container:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Cabeçalho da tabela */
+.nt-table-header.nt-globalizada {
   display: grid;
   grid-template-columns: 3fr 200px;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background: #f8fafc;
-  border-bottom: 1.5px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   font-size: 12px;
   font-weight: 600;
   color: #64748b;
@@ -368,14 +503,18 @@
   align-items: center;
 }
 
-/* Cabeçalho da tabela para turmas por disciplinas */
-.notas-table-header.notas-disciplinas {
+.nt-table-header.nt-globalizada > :last-child {
+  justify-self: right;
+  transform: translateX(-8px);
+}
+
+.nt-table-header.nt-disciplinas {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2.5fr repeat(8, 1fr);
   gap: 12px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background: #f8fafc;
-  border-bottom: 1.5px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   font-size: 12px;
   font-weight: 600;
   color: #64748b;
@@ -385,186 +524,199 @@
   min-width: 900px;
 }
 
-.notas-table-header > :not(:first-child) {
+.nt-table-header.nt-disciplinas > * {
   justify-self: center;
   text-align: center;
 }
 
-/* Linhas dos alunos para turmas globalizadas */
-.notas-aluno-row.notas-globalizada {
+.nt-table-header.nt-disciplinas > *:first-child {
+  justify-self: start;
+  text-align: left;
+}
+
+/* Lista de alunos */
+.nt-alunos-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Linhas dos alunos */
+.nt-aluno-row.nt-globalizada {
   display: grid;
   grid-template-columns: 3fr 200px;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
+  transition: all 0.25s ease;
+  animation: ntSimpleFade 0.5s ease;
 }
 
-.notas-aluno-row.notas-globalizada:hover {
+.nt-aluno-row.nt-globalizada:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-globalizada:last-child {
+.nt-aluno-row.nt-globalizada:last-child {
   border-bottom: none;
 }
 
-/* Linhas dos alunos para turmas por disciplinas */
-.notas-aluno-row.notas-disciplinas {
+.nt-aluno-row.nt-globalizada > :last-child {
+  justify-self: center;
+}
+
+.nt-aluno-row.nt-disciplinas {
   display: grid;
-  grid-template-columns: 2fr repeat(9, 1fr);
+  grid-template-columns: 2.5fr repeat(8, 1fr);
   gap: 12px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
-  font-size: 14px;
-  transition: background-color 0.15s ease;
+  font-size: 15px;
+  transition: all 0.25s ease;
   min-width: 900px;
 }
 
-.notas-aluno-row.notas-disciplinas:hover {
+.nt-aluno-row.nt-disciplinas:hover {
   background-color: #f8fafc;
 }
 
-.notas-aluno-row.notas-disciplinas:last-child {
+.nt-aluno-row.nt-disciplinas:last-child {
   border-bottom: none;
 }
 
-.notas-aluno-nome {
-  font-weight: 600;
+.nt-aluno-row.nt-disciplinas > * {
+  justify-self: center;
+  text-align: center;
+}
+
+.nt-aluno-row.nt-disciplinas > *:first-child {
+  justify-self: start;
+  text-align: left;
+}
+
+.nt-aluno-nome {
+  font-weight: 500;
   color: #1e293b;
-  padding-right: 12px;
+  transition: color 0.3s ease;
 }
 
 /* Container dos inputs de nota */
-.notas-nota-input {
+.nt-nota-input {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
-/* Inputs de nota - Design consistente */
-.notas-input-nota {
+.nt-nota-input-global {
+  display: flex;
+  justify-content: right;
+  align-items: right;
   width: 100%;
+}
+
+/* Inputs de nota */
+.nt-input-nota {
+  width: 100%;
+  max-width: 100px;
   padding: 8px 10px;
-  border: 1.5px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
   text-align: center;
   background: #ffffff;
   color: #1e293b;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
 }
 
-/* Remove as setas do input number */
-.notas-input-nota::-webkit-outer-spin-button,
-.notas-input-nota::-webkit-inner-spin-button {
+.nt-input-nota::-webkit-outer-spin-button,
+.nt-input-nota::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.notas-input-nota[type=number] {
+.nt-input-nota[type="number"] {
   -moz-appearance: textfield;
 }
 
-.notas-input-nota::placeholder {
+.nt-input-nota::placeholder {
   color: #94a3b8;
-  text-align: center;
+  transition: color 0.3s ease;
 }
 
-.notas-input-nota:focus {
+.nt-input-nota:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  transform: scale(1.05);
+}
+
+.nt-input-nota:hover:not(:focus):not(:disabled) {
+  border-color: #cbd5e1;
   transform: scale(1.02);
 }
 
-.notas-input-nota:hover:not(:focus):not(:disabled) {
-  border-color: #cbd5e1;
-}
-
 /* Classes para colorir os inputs baseado na nota */
-.notas-input-nota.nota-aprovado {
+.nt-input-nota.nt-nota-aprovado {
   border-color: #22c55e;
   background-color: #f0fdf4;
   color: #15803d;
 }
 
-.notas-input-nota.nota-aprovado:focus {
+.nt-input-nota.nt-nota-aprovado:focus {
   border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
 }
 
-.notas-input-nota.nota-reprovado {
+.nt-input-nota.nt-nota-reprovado {
   border-color: #ef4444;
   background-color: #fef2f2;
   color: #dc2626;
 }
 
-.notas-input-nota.nota-reprovado:focus {
+.nt-input-nota.nt-nota-reprovado:focus {
   border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.notas-input-nota.nota-recuperacao {
-  border-color: #f59e0b;
-  background-color: #fffbeb;
-  color: #d97706;
-}
-
-.notas-input-nota.nota-recuperacao:focus {
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
 }
 
 /* Inputs desabilitados */
-.notas-input-nota:disabled {
+.nt-input-nota:disabled {
   background-color: #f8fafc;
   border-color: #e2e8f0;
   color: #64748b;
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
-.notas-input-nota:disabled:hover {
+.nt-input-nota:disabled:hover {
   border-color: #e2e8f0;
   transform: none;
 }
 
-/* Inputs desabilitados com notas ainda mantêm as cores, mas mais suaves */
-.notas-input-nota:disabled.nota-aprovado {
-  background-color: #f0fdf4;
-  border-color: #22c55e;
-  color: #15803d;
-  opacity: 0.7;
-}
-
-.notas-input-nota:disabled.nota-reprovado {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
-  opacity: 0.7;
-}
-
-/* Área de ações da tabela */
-.notas-table-actions {
-  display: flex;
-  justify-content: flex-end;
+/* Mensagem de alunos vazios */
+.nt-empty-alunos-message {
+  animation: ntSimpleFade 0.5s ease;
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+  font-style: italic;
 }
 
 /* Estado vazio */
-.notas-empty-state {
+.nt-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 24px;
+  padding: 60px 20px;
   text-align: center;
   color: #64748b;
-  animation: fadeIn 0.4s ease-out;
+  transition: all 0.3s ease;
 }
 
-.notas-empty-icon {
+.nt-empty-icon {
   width: 80px;
   height: 80px;
   background: #f1f5f9;
@@ -572,204 +724,146 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
   color: #94a3b8;
-  font-size: 32px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
 }
 
-.notas-empty-state h4 {
+.nt-empty-state h4 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1e293b;
   margin: 0 0 8px 0;
+  transition: color 0.3s ease;
 }
 
-.notas-empty-state p {
+.nt-empty-state p {
   font-size: 14px;
   color: #64748b;
   margin: 0;
-  max-width: 400px;
-  line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+/* Botão de refresh */
+.nt-refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nt-refresh-button:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 /* Loading state */
-.notas-loading {
+.nt-loading-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px;
-  color: #64748b;
-  font-size: 14px;
-  gap: 8px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  animation: ntGentleFadeIn 0.8s ease;
 }
 
-.notas-loading-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #e2e8f0;
-  border-top: 2px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* Scrollbar personalizada */
-.notas-table-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.notas-table-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 4px;
-}
-
-.notas-table-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.notas-table-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+.nt-spinner {
+  animation: ntSpin 1s linear infinite;
 }
 
 /* Estados adicionais */
-.notas-disabled {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.notas-saving {
-  opacity: 0.8;
-}
-
-.notas-error {
+.nt-error {
   border-color: #ef4444 !important;
   background-color: #fef2f2 !important;
 }
 
-.notas-success {
-  border-color: #10b981 !important;
-  background-color: #f0fdf4 !important;
-}
-
-/* RESPONSIVIDADE */
-@media (max-width: 1200px) {
-  .notas-container {
-    padding: 20px;
-  }
-  
-  .notas-table-header.notas-disciplinas,
-  .notas-aluno-row.notas-disciplinas {
-    grid-template-columns: 2fr repeat(4, 1fr);
-    gap: 8px;
-    min-width: 700px;
-  }
-  
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
+/* Responsividade - Tablets */
+@media (max-width: 992px) {
+  .nt-table-header.nt-disciplinas,
+  .nt-aluno-row.nt-disciplinas {
+    grid-template-columns: 2fr repeat(8, 1fr);
   }
 }
 
-@media (max-width: 900px) {
-  .notas-form-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .notas-form-group.notas-third-width:last-child {
-    grid-column: span 2;
-  }
-}
-
+/* Responsividade - Mobile */
 @media (max-width: 768px) {
-  .notas-container {
+  .nt-container {
     padding: 16px;
     gap: 20px;
   }
 
-  .notas-form-grid {
+  .nt-form-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 20px;
     padding: 20px;
   }
-  
-  .notas-form-group.notas-full-width,
-  .notas-form-group.notas-half-width,
-  .notas-form-group.notas-third-width {
+
+  .nt-form-group.nt-full-width,
+  .nt-form-group.nt-half-width,
+  .nt-form-group.nt-third-width {
     grid-column: span 1;
   }
 
-  .notas-section-header {
+  .nt-section-header {
     padding: 16px 20px;
     font-size: 15px;
+  }
+
+  .nt-turma-card {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: stretch;
+    gap: 16px;
   }
 
-  .notas-turmas-list {
-    padding: 20px;
-  }
-
-  .notas-turma-card {
-    padding: 16px;
-  }
-
-  .notas-turma-header {
+  .nt-turma-header-wrapper {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
 
-  .notas-turma-header-left {
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  .notas-actions {
-    flex-direction: row;
-    justify-content: stretch;
-    margin-left: 0;
-    gap: 8px;
-  }
-
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
-    flex: 1;
-    min-width: 140px;
-  }
-
-  /* Tabelas responsivas - Globalizada */
-  .notas-table-header.notas-globalizada {
+  /* Tabelas responsivas */
+  .nt-table-header.nt-globalizada,
+  .nt-table-header.nt-disciplinas {
     display: none;
   }
 
-  .notas-aluno-row.notas-globalizada {
+  .nt-aluno-row.nt-globalizada,
+  .nt-aluno-row.nt-disciplinas {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     padding: 16px;
-    gap: 12px;
-    border-left: 3px solid #3b82f6;
+    gap: 8px;
   }
 
-  .notas-aluno-nome {
-    font-size: 15px;
+  .nt-aluno-nome {
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 8px;
-    padding-right: 0;
   }
 
-  .notas-nota-input {
+  .nt-nota-input,
+  .nt-nota-input-global {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
   }
 
-  .notas-nota-input::before {
+  .nt-nota-input::before,
+  .nt-nota-input-global::before {
     content: "NOTA";
     font-size: 11px;
     font-weight: 600;
@@ -779,125 +873,51 @@
     min-width: 60px;
   }
 
-  /* Tabelas responsivas - Por Disciplinas */
-  .notas-table-header.notas-disciplinas {
-    display: none;
-  }
-
-  .notas-aluno-row.notas-disciplinas {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    padding: 16px;
-    gap: 10px;
-    border-left: 3px solid #8b5cf6;
-    min-width: auto;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-aluno-nome {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e2e8f0;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-nota-input {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
+  .nt-aluno-row.nt-disciplinas .nt-nota-input::before {
     content: attr(data-label);
-    font-size: 11px;
-    font-weight: 600;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
     min-width: 90px;
   }
 
-  .notas-aluno-row.notas-disciplinas .notas-input-nota {
-    width: 80px;
-    margin-left: 0;
+  /* Animações mobile */
+  .nt-alunos-container.nt-expanded {
+    max-height: 3000px;
   }
 
-  .notas-table-actions {
-    padding: 12px 16px 0;
+  .nt-turma-actions {
+    justify-content: center;
+  }
+
+  .nt-editar-button,
+  .nt-salvar-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
-  .notas-container {
+  .nt-container {
     padding: 12px;
+    gap: 16px;
   }
 
-  .notas-form-grid {
+  .nt-form-grid {
     padding: 16px;
   }
 
-  .notas-section-header {
+  .nt-section-header {
     padding: 12px 16px;
     font-size: 14px;
   }
 
-  .notas-turmas-list {
+  .nt-turmas-list {
     padding: 16px;
   }
 
-  .notas-turma-card {
-    padding: 12px;
+  .nt-turma-card {
+    padding: 16px;
   }
 
-  .notas-turma-nome {
-    font-size: 14px;
-  }
-
-  .notas-input-nota {
-    width: 70px;
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-
-  .notas-aluno-row.notas-globalizada,
-  .notas-aluno-row.notas-disciplinas {
-    padding: 12px;
-  }
-
-  .notas-aluno-nome {
-    font-size: 14px;
-  }
-
-  .notas-nota-input::before {
-    font-size: 10px;
-    min-width: 50px;
-  }
-
-  .notas-aluno-row.notas-disciplinas .notas-nota-input::before {
-    min-width: 70px;
-  }
-
-  .notas-actions {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .notas-editar-button,
-  .notas-salvar-button,
-  .notas-boletins-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .notas-empty-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .notas-empty-state {
-    padding: 40px 16px;
+  .nt-turma-nome {
+    font-size: 15px;
   }
 }

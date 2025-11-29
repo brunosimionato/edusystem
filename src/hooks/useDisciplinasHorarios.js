@@ -11,7 +11,6 @@ export const useDisciplinas = () => {
         setError(null);
         try {
             const disciplinasData = await DisciplinaService.getAll();
-            console.log('✅ Disciplinas carregadas:', disciplinasData);
             setDisciplinas(disciplinasData);
         } catch (err) {
             setError(err.message);
