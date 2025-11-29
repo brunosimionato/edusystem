@@ -63,7 +63,6 @@ export function gerarRelatorioHorarioProfessor({
             background: #f8fafc;
             border-radius: 50%;
             border: 3px solid #64748B;
-            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
         }
 
         .school-info-container {
@@ -134,7 +133,6 @@ export function gerarRelatorioHorarioProfessor({
             border: 1px solid #e5e7eb;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -148,13 +146,14 @@ export function gerarRelatorioHorarioProfessor({
         }
 
         th {
-            padding: 12px 16px;
+            padding: 14px 16px; /* Aumentado de 12px para 14px */
             font-weight: 600;
             color: white;
             text-align: center;
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            height: 50px; /* Altura fixa para o cabeçalho */
         }
 
         /* HORÁRIO CENTRALIZADO */
@@ -164,11 +163,12 @@ export function gerarRelatorioHorarioProfessor({
         }
 
         td {
-            padding: 8px 16px;
+            padding: 12px 16px; /* Aumentado de 8px para 12px */
             border-bottom: 1px solid #f3f4f6;
             color: #374151;
             text-align: center;
             vertical-align: middle;
+            height: 55px; /* Altura fixa para as células */
         }
 
         tbody tr:nth-child(even) {
@@ -189,6 +189,7 @@ export function gerarRelatorioHorarioProfessor({
             text-align: center;
             font-weight: 500;
             font-style: italic;
+            height: 40px; /* Altura menor para as linhas de intervalo */
         }
 
         .materia-cell {
@@ -202,8 +203,18 @@ export function gerarRelatorioHorarioProfessor({
             font-weight: 600;
             display: block;
             font-size: 13px;
-            line-height: 1.2;
+            line-height: 1.3; /* Aumentado de 1.2 para 1.3 */
             text-align: center;
+            margin-bottom: 2px; /* Espaço entre matéria e professor */
+        }
+
+        .professor-nome {
+            font-size: 9px;
+            color: #6b7280;
+            display: block;
+            line-height: 1.2; /* Aumentado de 1.1 para 1.2 */
+            text-align: center;
+            font-weight: 500;
         }
 
         .turma-nome {
@@ -334,7 +345,7 @@ export function gerarRelatorioHorarioProfessor({
     </div>
 
     <!-- TÍTULO PRINCIPAL -->
-    <div class="main-title">HORÁRIO DO PROFESSOR - ${professor.usuario?.nome || professor.nome}</div>
+    <div class="main-title">RELATÓRIO DE HORÁRIO SEMANAL</div>
 
 
     ${turmasComHorarios.map(turma => `
@@ -366,9 +377,12 @@ export function gerarRelatorioHorarioProfessor({
                                     }
 
                                     const disciplinaNome = dia.disciplina?.nome || `Disciplina ${dia.idDisciplina}`;
+                                    const professorNome = dia.professor?.usuario?.nome || dia.professor?.nome || professor.usuario?.nome || professor.nome;
+                                    
                                     return `
                                         <td class="materia-cell">
                                             <span class="materia-nome">${disciplinaNome}</span>
+                                            <span class="professor-nome">${professorNome}</span>
                                         </td>
                                     `;
                                 }).join('')}

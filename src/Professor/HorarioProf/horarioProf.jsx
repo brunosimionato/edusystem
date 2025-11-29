@@ -7,32 +7,29 @@ import {
   Clock,
   Loader,
   AlertCircle,
-  User,
 } from "lucide-react";
-import { useHorariosPorProfessor } from "../../hooks/useHorarios";
 import { useTurmas } from "../../hooks/useTurmas";
 import { useDisciplinas } from "../../hooks/useDisciplinasHorarios";
 import { useProfessores } from "../../hooks/useProfessores";
+import { useHorarios } from "../../hooks/useHorarios";
 import { gerarRelatorioHorarioProfessor } from "../../Relatorios/horariosProf";
 import "./horarioProf.css";
 
 const HorariosProfe = () => {
-  const [horariosGrades, setHorariosGrades] = useState([]);
   const [gradeExpandida, setGradeExpandida] = useState({});
+  const [isAnimating, setIsAnimating] = useState({});
   const [professorLogadoId, setProfessorLogadoId] = useState(null);
 
+  const { turmas, isLoading: isLoadingTurmas } = useTurmas();
   const { professores, isLoading: isLoadingProfessores } = useProfessores();
+  const { disciplinas, isLoading: isLoadingDisciplinas } = useDisciplinas();
   const {
     horarios: horariosExistentes,
     isLoading: isLoadingHorarios,
-    error: errorHorarios,
     usingMock,
-  } = useHorariosPorProfessor(professorLogadoId);
+  } = useHorarios();
 
-  const { turmas, isLoading: isLoadingTurmas } = useTurmas();
-  const { disciplinas, isLoading: isLoadingDisciplinas } = useDisciplinas();
-
-  const horariosManhã = [
+  const horariosManha = [
     { inicio: "07:30", fim: "08:15", periodo: "1º Período", numero: 1 },
     { inicio: "08:15", fim: "09:00", periodo: "2º Período", numero: 2 },
     { inicio: "09:00", fim: "09:45", periodo: "3º Período", numero: 3 },
@@ -60,161 +57,113 @@ const HorariosProfe = () => {
     { nome: "Sexta", numero: 5 },
   ];
 
+  // Encontrar o professor logado
   useEffect(() => {
     if (professores.length > 0 && !professorLogadoId) {
-      setProfessorLogadoId(professores[0].id);
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const professorEncontrado = professores.find(
+        (prof) => prof.idUsuario === user.id || prof.usuario?.id === user.id
+      );
+
+      if (professorEncontrado) {
+        console.log("👨‍🏫 Professor logado encontrado:", professorEncontrado);
+        setProfessorLogadoId(professorEncontrado.id);
+      } else if (professores[0]) {
+        setProfessorLogadoId(professores[0].id);
+      }
     }
   }, [professores, professorLogadoId]);
 
-  // Processar horários do professor logado
-  useEffect(() => {
-    if (
-      !professorLogadoId ||
-      !horariosExistentes.length ||
-      !turmas.length ||
-      !disciplinas.length
-    ) {
-      setHorariosGrades([]);
+  // Agrupar horários por turma
+  const horariosPorTurma = horariosExistentes.reduce((acc, horario) => {
+    if (!acc[horario.idTurma]) {
+      acc[horario.idTurma] = [];
+    }
+    acc[horario.idTurma].push(horario);
+    return acc;
+  }, {});
+
+  const toggleGradeExpansao = (turmaId) => {
+    if (isAnimating[turmaId]) return;
+
+    setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
+    setGradeExpandida((prev) => ({
+      ...prev,
+      [turmaId]: !prev[turmaId],
+    }));
+
+    setTimeout(() => {
+      setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
+    }, 300);
+  };
+
+  const handlePrintHorario = (turmaId) => {
+    const professorLogado = professores.find((p) => p.id === professorLogadoId);
+    const turma = turmas.find((t) => t.id == turmaId);
+    const horariosDaTurma = horariosPorTurma[turmaId] || [];
+
+    if (!professorLogado) {
+      alert("Professor não encontrado");
       return;
     }
 
-    // Agrupar horários por turma
-    const horariosPorTurma = horariosExistentes.reduce((acc, horario) => {
-      if (!acc[horario.idTurma]) {
-        acc[horario.idTurma] = [];
-      }
-      acc[horario.idTurma].push(horario);
-      return acc;
-    }, {});
+    // Organizar os dados para o relatório
+    const horariosProcessados = [];
 
-    // Criar estrutura de grades para exibição
-    const gradesFormatadas = Object.entries(horariosPorTurma).map(
-      ([turmaId, horariosDaTurma]) => {
-        const turma = turmas.find((t) => t.id == turmaId);
-
-        // Criar objeto de horários no formato esperado pelo componente
-        const horariosFormatados = {};
-
-        horariosDaTurma.forEach((horario) => {
-          const disciplina = disciplinas.find(
-            (d) => d.id === horario.idDisciplina
-          );
-          const professor = professores.find(
-            (p) => p.id === horario.idProfessor
-          );
-
-          const materiaNome =
-            disciplina?.nome ||
-            horario.disciplina?.nome ||
-            `Disciplina ${horario.idDisciplina}`;
-          const professorNome =
-            professor?.usuario?.nome ||
-            professor?.nome ||
-            horario.professor?.usuario?.nome ||
-            `Professor ${horario.idProfessor}`;
-
-          horariosFormatados[
-            `${horario.diaSemana}_${horario.periodo}_materia`
-          ] = materiaNome;
-          horariosFormatados[
-            `${horario.diaSemana}_${horario.periodo}_professor`
-          ] = professorNome;
-        });
-
-        return {
-          id: parseInt(turmaId),
-          turmaId: parseInt(turmaId),
-          turma: turma?.nome || `Turma ${turmaId}`,
-          periodo: turma?.turno?.toLowerCase().includes("tarde")
-            ? "tarde"
-            : "manhã",
-          horarios: horariosFormatados,
-        };
-      }
-    );
-
-    setHorariosGrades(gradesFormatadas);
-  }, [horariosExistentes, turmas, disciplinas, professores, professorLogadoId]);
-
-  // Função para obter classes CSS da grade expandida
-  const getGradeDetailsClasses = (id) => {
-    const baseClasses = "grade-details-container-visualizacao";
-    const isExpanded = gradeExpandida[id];
-
-    return `${baseClasses} ${isExpanded ? "professor-expanded" : ""}`;
-  };
-
-  const getGradeCardClasses = (id) => {
-    const baseClasses = "grade-card-visualizacao";
-    return `${baseClasses} ${gradeExpandida[id] ? "professor-animating" : ""}`;
-  };
-
-  // Função para imprimir horário individual de uma turma
-  const handlePrintHorarioTurma = (grade) => {
-    const professorLogado = professores.find((p) => p.id === professorLogadoId);
-    if (!professorLogado) return;
-
-    const turma = turmas.find((t) => t.id === grade.turmaId);
-
-    // Processar horários para esta turma específica
     const horariosBase =
-      grade.periodo === "manhã" ? horariosManhã : horariosTarde;
-    const horariosProcessados = horariosBase.map((h) => {
-      return {
+      turma?.turno === "Manhã" ? horariosManha : horariosTarde;
+
+    horariosBase.forEach((h) => {
+      horariosProcessados.push({
         label: `${h.inicio} - ${h.fim}`,
         periodo: h.periodo,
         isBreak: !!h.isBreak,
         dias: diasSemana.map((dia) => {
-          if (h.isBreak) return null;
+          const encontrado = horariosDaTurma.find(
+            (x) => x.diaSemana === dia.numero && x.periodo === h.numero
+          );
 
-          const materia = grade.horarios[`${dia.numero}_${h.numero}_materia`];
-          if (!materia || materia === "-") return null;
+          if (!encontrado || h.isBreak) {
+            return h.isBreak ? { isBreak: true } : null;
+          }
 
-          // Encontrar a disciplina correspondente
-          const disciplina = disciplinas.find((d) => d.nome === materia);
+          const disciplinaEncontrada = disciplinas.find(
+            (d) => d.id === encontrado.idDisciplina
+          );
+          const professorEncontrado = professores.find(
+            (p) => p.id === encontrado.idProfessor
+          );
 
           return {
-            idDisciplina: disciplina?.id,
-            disciplina: disciplina,
-            materiaNome: materia,
+            idDisciplina: encontrado.idDisciplina,
+            disciplina: disciplinaEncontrada,
+            professor: professorEncontrado,
           };
         }),
-      };
+      });
     });
 
-    const turmaComHorarios = [
+    const turmasComHorarios = [
       {
-        id: grade.id,
-        nome: grade.turma,
-        turno: turma?.turno || (grade.periodo === "manhã" ? "Manhã" : "Tarde"),
-        disciplinas: [
-          ...new Set(
-            Object.values(grade.horarios).filter(
-              (val, index, arr) =>
-                typeof val === "string" &&
-                !val.includes("_professor") &&
-                val !== "-" &&
-                arr.indexOf(val) === index
-            )
-          ),
-        ],
+        id: turmaId,
+        nome: turma?.nome,
+        turno: turma?.turno,
         horariosProcessados,
       },
     ];
 
     const dataHoraAgora = new Date().toLocaleString("pt-BR");
 
-    // Usar sua função de relatório existente
+    // Usar a função importada do arquivo externo
     const html = gerarRelatorioHorarioProfessor({
       professor: professorLogado,
-      turmasComHorarios: turmaComHorarios,
+      turmasComHorarios,
       disciplinas,
       dataHoraAgora,
     });
 
-    // Criar iframe para impressão
-    const oldIframe = document.getElementById("print-frame-turma");
-    if (oldIframe) oldIframe.remove();
+    const old = document.getElementById("print-frame-turma");
+    if (old) old.remove();
 
     const iframe = document.createElement("iframe");
     iframe.id = "print-frame-turma";
@@ -233,20 +182,22 @@ const HorariosProfe = () => {
     iframe.onload = () => {
       setTimeout(() => {
         doc.defaultView.print();
-      }, 600);
+      }, 300);
     };
   };
 
-  const toggleGradeExpansao = (id) => {
-    setGradeExpandida((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const renderTabelaHorarios = (horarios, periodo) => {
+  const renderTabelaHorarios = (turmaId) => {
+    const turma = turmas.find((t) => t.id == turmaId);
+    const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
     const horariosParaUsar =
-      periodo === "manhã" ? horariosManhã : horariosTarde;
+      periodo === "manha" ? horariosManha : horariosTarde;
+    const horariosDaTurma = horariosPorTurma[turmaId] || [];
+
+    const horariosMap = {};
+    horariosDaTurma.forEach((h) => {
+      const key = `${h.diaSemana}_${h.periodo}`;
+      horariosMap[key] = h;
+    });
 
     return (
       <div className="table-wrapper-visualizacao">
@@ -283,16 +234,43 @@ const HorariosProfe = () => {
                       </span>
                     ) : (
                       <div className="materia-professor-view-visualizacao">
-                        <span className="materia-nome-visualizacao">
-                          {horarios[
-                            `${dia.numero}_${horario.numero}_materia`
-                          ] || "-"}
-                        </span>
-                        <span className="professor-nome-visualizacao">
-                          {horarios[
-                            `${dia.numero}_${horario.numero}_professor`
-                          ] || ""}
-                        </span>
+                        {(() => {
+                          const h =
+                            horariosMap[`${dia.numero}_${horario.numero}`];
+                          if (!h) {
+                            return (
+                              <>
+                                <span className="materia-nome-visualizacao">
+                                  -
+                                </span>
+                                <span className="professor-nome-visualizacao"></span>
+                              </>
+                            );
+                          }
+
+                          const disciplinaEncontrada = disciplinas.find(
+                            (d) => d.id === h.idDisciplina
+                          );
+                          const professorEncontrado = professores.find(
+                            (p) => p.id === h.idProfessor
+                          );
+
+                          return (
+                            <>
+                              <span className="materia-nome-visualizacao">
+                                {disciplinaEncontrada?.nome ||
+                                  h.disciplina?.nome ||
+                                  `Disciplina ${h.idDisciplina}`}
+                              </span>
+                              <span className="professor-nome-visualizacao">
+                                {professorEncontrado?.usuario?.nome ||
+                                  professorEncontrado?.nome ||
+                                  h.professor?.usuario?.nome ||
+                                  `Professor ${h.idProfessor}`}
+                              </span>
+                            </>
+                          );
+                        })()}
                       </div>
                     )}
                   </td>
@@ -305,7 +283,23 @@ const HorariosProfe = () => {
     );
   };
 
-  // Estados de loading
+  const getGradeDetailsClasses = (id) => {
+    const baseClasses = "grade-details-container-visualizacao";
+    const isExpanded = gradeExpandida[id];
+    const isAnimatingClass = isAnimating[id] ? "professor-animating" : "";
+
+    return `${baseClasses} ${
+      isExpanded ? "professor-expanded" : ""
+    } ${isAnimatingClass}`;
+  };
+
+  const getGradeCardClasses = (id) => {
+    const baseClasses = "grade-card-visualizacao";
+    const isAnimatingClass = isAnimating[id] ? "professor-animating" : "";
+
+    return `${baseClasses} ${isAnimatingClass}`;
+  };
+
   const isLoading =
     isLoadingHorarios ||
     isLoadingTurmas ||
@@ -318,71 +312,59 @@ const HorariosProfe = () => {
         <div className="loading-state-visualizacao">
           <Loader size={48} className="spinner" />
           <h4>Carregando horários...</h4>
-          <p>Aguarde enquanto buscamos seus horários.</p>
+          <p>Aguarde enquanto buscamos os horários das turmas.</p>
         </div>
       </div>
     );
   }
 
-  if (errorHorarios) {
-    return (
-      <div className="visualizacao-horario-container">
-        <div className="error-state-visualizacao">
-          <AlertCircle size={48} />
-          <h4>Erro ao carregar horários</h4>
-          <p>Não foi possível carregar seus horários. Tente novamente.</p>
-          <button
-            className="retry-button-visualizacao"
-            onClick={() => window.location.reload()}
-          >
-            Tentar Novamente
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const professorLogado = professores.find((p) => p.id === professorLogadoId);
+  const turmasComHorarios = turmas.filter(
+    (turma) =>
+      horariosPorTurma[turma.id] && horariosPorTurma[turma.id].length > 0
+  );
 
   return (
     <div className="visualizacao-horario-container">
+      {/* Header com informações gerais */}
+      <div className="professor-header-visualizacao">
+        {usingMock && (
+          <div className="connection-warning-visualizacao">
+            <AlertCircle size={16} />
+            <span>Modo offline - usando dados locais</span>
+          </div>
+        )}
+      </div>
+
       <div className="visualizacao-horario-section">
-        {horariosGrades.length === 0 ? (
+        {turmasComHorarios.length === 0 ? (
           <div className="empty-state-visualizacao">
             <div className="empty-icon-visualizacao">
               <Calendar size={48} />
             </div>
             <h4>Nenhum horário encontrado</h4>
-            <p>
-              {professorLogadoId
-                ? "Você não possui horários cadastrados para nenhuma turma no momento."
-                : "Carregando informações do professor..."}
-            </p>
-            {professorLogadoId && (
-              <div className="empty-state-actions">
-                <p>
-                  Entre em contato com a secretaria para cadastrar seus
-                  horários.
-                </p>
-              </div>
-            )}
+            <p>Não há horários cadastrados para nenhuma turma no momento.</p>
+            <div className="empty-state-actions">
+              <p>
+                Entre em contato com a secretaria para cadastrar os horários.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="turmas-list-visualizacao">
             <div className="turmas-count-visualizacao">
-              {horariosGrades.length} turma(s) com horários cadastrados
+              {turmasComHorarios.length} turma(s) com horários cadastrados
             </div>
 
-            {horariosGrades.map((grade) => {
-              const isExpandido = gradeExpandida[grade.id];
+            {turmasComHorarios.map((turma) => {
+              const isExpandido = gradeExpandida[turma.id];
 
               return (
-                <div key={grade.id} className={getGradeCardClasses(grade.id)}>
+                <div key={turma.id} className={getGradeCardClasses(turma.id)}>
                   <div className="grade-info-visualizacao">
                     <div className="grade-header-visualizacao">
                       <div
                         className="grade-basic-info-container-visualizacao clickable-visualizacao"
-                        onClick={() => toggleGradeExpansao(grade.id)}
+                        onClick={() => toggleGradeExpansao(turma.id)}
                       >
                         {isExpandido ? (
                           <ChevronDown size={20} />
@@ -395,18 +377,18 @@ const HorariosProfe = () => {
                         <div className="grade-basic-info-visualizacao">
                           <div className="grade-nome-periodo-container">
                             <h3 className="grade-nome-visualizacao">
-                              {grade.turma}
+                              {turma.nome}
                             </h3>
                             <span
                               className={`grade-periodo-visualizacao ${
-                                grade.periodo === "manhã" ? "manha" : "tarde"
+                                turma.turno === "Manhã" ? "manha" : "tarde"
                               }`}
                             >
-                              {grade.periodo === "manhã" ? "Manhã" : "Tarde"}
+                              {turma.turno}
                             </span>
                           </div>
                           <p className="grade-horario-visualizacao">
-                            {grade.periodo === "manhã"
+                            {turma.turno === "Manhã"
                               ? "07:30 - 11:15"
                               : "13:00 - 17:00"}
                           </p>
@@ -418,7 +400,7 @@ const HorariosProfe = () => {
                           className="action-button-visualizacao print-button-visualizacao"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handlePrintHorarioTurma(grade);
+                            handlePrintHorario(turma.id);
                           }}
                         >
                           <Printer size={16} /> Imprimir
@@ -426,9 +408,9 @@ const HorariosProfe = () => {
                       </div>
                     </div>
 
-                    <div className={getGradeDetailsClasses(grade.id)}>
+                    <div className={getGradeDetailsClasses(turma.id)}>
                       <div className="grade-content-visualizacao">
-                        {renderTabelaHorarios(grade.horarios, grade.periodo)}
+                        {renderTabelaHorarios(turma.id)}
                       </div>
                     </div>
                   </div>

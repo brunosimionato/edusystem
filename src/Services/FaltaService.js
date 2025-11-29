@@ -28,9 +28,7 @@ class FaltaService {
     async getAll(filters = {}) {
         const token = localStorage.getItem('token');
         const queryParams = new URLSearchParams();
-        
-        console.log("🔍 Filtros recebidos no FaltaService:", filters);
-        
+                
         if (filters.data_inicio) queryParams.append('data_inicio', filters.data_inicio);
         if (filters.data_fim) queryParams.append('data_fim', filters.data_fim);
         if (filters.idAluno) queryParams.append('aluno_id', filters.idAluno);
@@ -38,7 +36,6 @@ class FaltaService {
         if (filters.limit) queryParams.append('limit', filters.limit);
         
         const url = `${API_URL}/faltas?${queryParams}`;
-        console.log("🌐 Fazendo request para:", url);
 
         try {
             const res = await fetch(url, {
@@ -48,8 +45,6 @@ class FaltaService {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
-            console.log("📡 Response status:", res.status);
             
             if (!res.ok) {
                 const errorText = await res.text();
@@ -58,7 +53,6 @@ class FaltaService {
             }
 
             const body = await res.json();
-            console.log("📦 Dados recebidos:", body);
             
             // Verifique se é um array
             if (!Array.isArray(body)) {

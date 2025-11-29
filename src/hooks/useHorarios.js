@@ -11,11 +11,9 @@ export const useHorarios = (filters = {}) => {
         setIsLoading(true);
         setError(null);
         try {
-            console.log('🔄 Buscando horários...');
             const data = await HorarioService.getAll(filters);
             setHorarios(data);
             setUsingMock(HorarioService.useMock);
-            console.log(`✅ ${data.length} horários carregados (${HorarioService.useMock ? 'mock' : 'backend'})`);
         } catch (err) {
             setError(err.message);
             setUsingMock(HorarioService.useMock);

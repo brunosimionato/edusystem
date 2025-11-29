@@ -247,7 +247,6 @@
   transition: all 0.2s ease;
 }
 
-/* Container da info básica + avatar */
 .grade-basic-info-container-visualizacao {
   display: flex;
   align-items: center;
@@ -291,7 +290,6 @@
   margin: 0;
 }
 
-/* Período da grade - ESTILOS ATUALIZADOS */
 .grade-periodo-visualizacao {
   padding: 4px 16px;
   border-radius: 20px;
@@ -305,7 +303,6 @@
   display: inline-block;
 }
 
-/* CORES ESPECÍFICAS PARA MANHÃ E TARDE - IGUAL AO LISTATURMA */
 .grade-periodo-visualizacao.manha {
   background: #bfdbfe;
   color: #1e40af;
@@ -324,7 +321,6 @@
   font-weight: 500;
 }
 
-/* Container de ações do header */
 .grade-header-actions-visualizacao {
   display: flex;
   gap: 12px;
@@ -358,7 +354,6 @@
   transform: translateY(-1px);
 }
 
-/* Container de expansão - ESTILOS CORRIGIDOS */
 .grade-details-container-visualizacao {
   max-height: 0;
   opacity: 0;
@@ -374,7 +369,6 @@
   border-top: 1px solid #f1f5f9;
 }
 
-/* Conteúdo da grade */
 .grade-content-visualizacao {
   background: white;
   animation: professorSimpleFade 0.5s ease-in-out;
@@ -409,7 +403,7 @@
   border-bottom-right-radius: 12px;
 }
 
-/* Lista de turmas */
+
 .turmas-list-visualizacao {
   display: flex;
   flex-direction: column;
@@ -421,7 +415,6 @@
   font-size: 14px;
   color: #64748b;
   font-weight: 500;
-  margin-bottom: 10px;
 }
 
 /* Estado vazio */
@@ -593,7 +586,6 @@
     gap: 8px;
   }
 
-  /* Animações mobile */
   .grade-details-container-visualizacao.professor-expanded {
     max-height: 2000px;
   }

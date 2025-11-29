@@ -24,7 +24,6 @@ export const useProfessores = () => {
             }
 
             const professoresData = await response.json();
-            console.log('✅ Professores carregados:', professoresData);
             setProfessores(professoresData);
         } catch (err) {
             setError(err.message);

@@ -10,10 +10,8 @@ const ListaTurmas = () => {
   const [filtro, setFiltro] = useState("");
   const { user } = useAuth();
 
-  // Use o hook específico para professor
   const { turmas, refetch, hasError, isLoading } = useTurmasProfessor();
 
-  // Função para calcular idade
   const calcularIdade = (dataNascimento) => {
     if (!dataNascimento) return "-";
 
@@ -53,7 +51,6 @@ const ListaTurmas = () => {
 
   // Função para obter a data de nascimento do aluno (tenta diferentes campos)
   const obterDataNascimento = (aluno) => {
-    // Tenta diferentes nomes de campos possíveis
     return (
       aluno.dataNascimento ||
       aluno.data_nascimento ||
@@ -65,7 +62,6 @@ const ListaTurmas = () => {
 
   // Função para obter a capacidade da turma (tenta diferentes campos)
   const obterCapacidade = (turma) => {
-    // Tenta diferentes nomes de campos possíveis para capacidade
     return (
       turma.capacidade ||
       turma.capacity ||
@@ -74,10 +70,9 @@ const ListaTurmas = () => {
       turma.max_alunos ||
       turma.maxAlunos ||
       30
-    ); // Valor padrão caso não encontre
+    );
   };
 
-  // Função para gerar relatório (usando iframe como no exemplo)
   const handlePrint = (turma, e) => {
     if (e) e.stopPropagation();
 
@@ -96,11 +91,9 @@ const ListaTurmas = () => {
       formatarData: formatarData,
     });
 
-    // Remove iframe anterior caso exista
     const oldFrame = document.getElementById("print-frame");
     if (oldFrame) oldFrame.remove();
 
-    // Cria o iframe oculto
     const iframe = document.createElement("iframe");
     iframe.id = "print-frame";
     iframe.style.position = "fixed";
@@ -114,12 +107,10 @@ const ListaTurmas = () => {
     const frameDoc = iframe.contentWindow || iframe.contentDocument;
     const doc = frameDoc.document || frameDoc;
 
-    // Escreve o conteúdo do relatório
     doc.open();
     doc.write(html);
     doc.close();
 
-    // Aguarda o conteúdo carregar antes de imprimir
     iframe.onload = () => {
       setTimeout(() => {
         frameDoc.focus();
@@ -128,7 +119,6 @@ const ListaTurmas = () => {
     };
   };
 
-  // Filtrar turmas baseado no termo de busca
   const turmasFiltradas = useMemo(() => {
     if (!filtro) return turmas;
 
@@ -153,12 +143,10 @@ const ListaTurmas = () => {
       }));
   }, [filtro, turmas]);
 
-  // Componente TurmaCard interno para o modo professor
   const TurmaCardProfessor = ({ turma }) => {
     const [expanded, setExpanded] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    // Obtém a capacidade dinamicamente
     const capacidade = obterCapacidade(turma);
     const alunosCount = turma.alunos?.length || 0;
     const percentualOcupacao =
@@ -186,7 +174,6 @@ const ListaTurmas = () => {
       setIsAnimating(true);
       setExpanded(!expanded);
 
-      // Remove a classe de animação após a transição
       setTimeout(() => {
         setIsAnimating(false);
       }, 300);

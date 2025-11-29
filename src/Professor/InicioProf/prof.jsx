@@ -2,7 +2,6 @@ import React from "react";
 import {
   Users,
   Backpack,
-  Clock,
   ClipboardList,
   CheckCircle,
   AlarmClock,
@@ -10,28 +9,55 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProfessorDashboard } from "../../hooks/useProfessorDashboard";
+import { useTurmasProfessor } from "../../hooks/useTurmasProfessor";
 import "./prof.css";
 
 const Professor = () => {
   const navigate = useNavigate();
-  const { dashboardData, loading, error } = useProfessorDashboard();
+  const {
+    dashboardData,
+    loading: dashboardLoading,
+    error: dashboardError,
+  } = useProfessorDashboard();
+  const {
+    turmas,
+    isLoading: turmasLoading,
+    hasError: turmasError,
+  } = useTurmasProfessor();
+
+  const calcularTotalAlunosAtivos = () => {
+    if (!turmas || turmas.length === 0) {
+      return 0;
+    }
+
+    const totalAlunos = turmas.reduce((soma, turma) => {
+      const alunosCount = turma.alunosMatriculados || 0;
+      return soma + alunosCount;
+    }, 0);
+
+    return totalAlunos;
+  };
 
   const dashboardStats = [
     {
       label: "Meus Alunos",
-      value: loading ? "..." : dashboardData.totalAlunos.toString(),
+      value:
+        dashboardLoading || turmasLoading
+          ? "..."
+          : calcularTotalAlunosAtivos().toString(),
       icon: Users,
       color: "blue",
     },
     {
       label: "Minhas Turmas",
-      value: loading ? "..." : dashboardData.totalTurmas.toString(),
+      value:
+        dashboardLoading || turmasLoading ? "..." : turmas.length.toString(),
       icon: Backpack,
       color: "green",
     },
     {
       label: "Dias Letivos - 2025",
-      value: loading ? "..." : dashboardData.diasLetivos.toString(),
+      value: dashboardLoading ? "..." : dashboardData.diasLetivos.toString(),
       icon: Calendar,
       color: "purple",
     },
@@ -58,7 +84,10 @@ const Professor = () => {
     },
   ];
 
-  if (error && !loading) {
+  const hasError = dashboardError || turmasError;
+  const isLoading = dashboardLoading || turmasLoading;
+
+  if (hasError && !isLoading) {
     return (
       <div className="dashboard-content-prof">
         <div className="error-state-prof">
@@ -71,7 +100,6 @@ const Professor = () => {
           </button>
         </div>
 
-        {/* Mostra ações rápidas mesmo com erro */}
         <div className="section-card-prof">
           <div className="section-header-prof">
             <h3 className="section-title-prof">Ações Rápidas</h3>
@@ -102,7 +130,7 @@ const Professor = () => {
         {dashboardStats.map((stat, index) => (
           <div
             key={index}
-            className={`stat-card-prof ${loading ? "loading" : ""}`}
+            className={`stat-card-prof ${isLoading ? "loading" : ""}`}
           >
             <div className="stat-card-content-prof">
               <div className="stat-info-prof">

@@ -11,8 +11,6 @@ class NotaService {
         url.searchParams.append('trimestre', trimestre);
       }
 
-      console.log(`🔍 Buscando notas do aluno ${alunoId}:`, url.toString());
-
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -21,15 +19,12 @@ class NotaService {
         },
       });
 
-      console.log(`📊 Status das notas do aluno ${alunoId}:`, response.status);
-
       if (!response.ok) {
         console.warn(`⚠️  Não foi possível carregar notas do aluno ${alunoId}: ${response.status}`);
         return [];
       }
 
       const notas = await response.json();
-      console.log(`✅ Notas do aluno ${alunoId}:`, notas);
       return notas;
 
     } catch (error) {
