@@ -1,0 +1,1014 @@
+/* ANIMAÇÕES - UNIFICADAS COM FALTAS MAS MANTENDO ANIMAÇÃO DE TROCA DE TRIMESTRE */
+@keyframes cn-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cn-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes cn-fade {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes cn-simpleFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ANIMAÇÃO ESPECÍFICA PARA TROCA DE TRIMESTRE - MANTIDA DO CÓDIGO ORIGINAL */
+@keyframes cn-smoothFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  40% {
+    opacity: 0.4;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cn-gentleFadeIn {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.7;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ANIMAÇÕES APLICADAS */
+.cn-section-header.cn-fading,
+.cn-turmas-list.cn-fading {
+  animation: cn-fade 0.5s ease-in-out;
+}
+
+/* ANIMAÇÃO DE TROCA DE TRIMESTRE - APENAS QUANDO EXPLICITAMENTE ADICIONADA */
+.cn-section-header.cn-trimestre-change,
+.cn-turmas-list.cn-trimestre-change,
+.cn-empty-state.cn-trimestre-change {
+  animation: cn-gentleFadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.cn-turma-card.cn-trimestre-change {
+  animation: cn-smoothFadeIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Container principal */
+.cn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  animation: cn-slideUp 0.5s ease-out;
+}
+
+/* Seções */
+.cn-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  transition: box-shadow 0.2s ease;
+}
+
+.cn-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Cabeçalho das seções */
+.cn-section-header {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  padding: 20px 30px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Grid do formulário */
+.cn-form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 24px 30px;
+}
+
+/* Grupos */
+.cn-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.cn-form-group.cn-full-width {
+  grid-column: span 12;
+}
+.cn-form-group.cn-half-width {
+  grid-column: span 6;
+}
+.cn-form-group.cn-third-width {
+  grid-column: span 4;
+}
+
+.cn-form-group label {
+  position: absolute;
+  top: -10px;
+  left: 15px;
+  background: white;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  transition: all 0.15s ease;
+  pointer-events: none;
+}
+
+/* Wrapper do input com ícone */
+.cn-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Ícone dentro do input */
+.cn-input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+/* INPUTS PADRÃO */
+.cn-input,
+.cn-select,
+.cn-search-input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #1e293b;
+  box-sizing: border-box;
+  height: 48px;
+}
+
+.cn-search-input {
+  padding-left: 44px;
+}
+
+.cn-input::placeholder,
+.cn-select::placeholder,
+.cn-search-input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+/* EFEITOS HOVER UNIFICADOS */
+.cn-input:hover,
+.cn-select:hover,
+.cn-search-input:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* EFEITOS FOCUS UNIFICADOS */
+.cn-input:focus,
+.cn-select:focus,
+.cn-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  transform: translateY(-1px);
+}
+
+.cn-input:focus ~ .cn-input-icon,
+.cn-search-input:focus ~ .cn-input-icon {
+  color: #3b82f6;
+}
+
+/* SELECT CUSTOMIZADO */
+.cn-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+/* Lista de turmas */
+.cn-turmas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px 30px;
+}
+
+/* Card da turma */
+.cn-turma-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cn-turma-card:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.cn-turma-card.cn-animating {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Info da turma */
+.cn-turma-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.cn-turma-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.cn-turma-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cn-turma-header.cn-clickable {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.cn-turma-nome {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cn-turma-turno {
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 70px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.cn-turno-manha {
+  background: #bfdbfe;
+  color: #1e40af;
+}
+
+.cn-turno-tarde {
+  background: #fed7aa;
+  color: #ea580c;
+}
+
+.cn-turno-noite {
+  background: #ddd6fe;
+  color: #5b21b6;
+}
+
+.cn-turno-integral {
+  background: #bbf7d0;
+  color: #15803d;
+}
+
+/* Detalhes da turma */
+.cn-turma-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cn-alunos-count {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Container de alunos (expansível) */
+.cn-alunos-container {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cn-alunos-container.cn-collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.cn-alunos-container.cn-expanded {
+  max-height: 2000px;
+  opacity: 1;
+}
+
+/* Conteúdo da turma */
+.cn-turma-content {
+  margin-top: 16px;
+  animation: cn-simpleFade 0.3s ease;
+}
+
+/* Ações da turma */
+.cn-turma-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px;
+  padding-right: 0px;
+}
+
+/* Botões */
+.cn-editar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 140px;
+  transition: all 0.2s ease;
+  background: #f59e0b;
+  color: #fff;
+}
+
+.cn-editar-button:hover {
+  background: #d97706;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+  transform: translateY(-1px);
+}
+
+.cn-salvar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 150px;
+  transition: all 0.2s ease;
+  background: #10b981;
+  color: #ffffff;
+}
+
+.cn-salvar-button:hover {
+  background: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  transform: translateY(-1px);
+}
+
+.cn-boletins-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 150px;
+  transition: all 0.2s ease;
+  background: #3b82f6;
+  color: white;
+}
+
+.cn-boletins-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.cn-spinner {
+  animation: cn-spin 1s linear infinite;
+}
+
+/* Tabela de notas */
+.cn-table-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  overflow-x: auto;
+  background: #ffffff;
+  animation: cn-simpleFade 0.3s ease;
+}
+
+.cn-table-container:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Cabeçalho da tabela */
+.cn-table-header.cn-globalizada {
+  display: grid;
+  grid-template-columns: 2fr 200px;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-items: center;
+}
+
+.cn-table-header.cn-globalizada > :last-child {
+  justify-self: center;
+}
+
+.cn-table-header.cn-disciplinas {
+  display: grid;
+  grid-template-columns: 2.5fr repeat(7, 1fr) 120px;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  align-items: center;
+  min-width: 900px;
+}
+
+.cn-table-header.cn-disciplinas > * {
+  justify-self: center;
+  text-align: center;
+}
+
+.cn-table-header.cn-disciplinas > *:first-child {
+  justify-self: start;
+  text-align: left;
+}
+
+.cn-table-header.cn-disciplinas > *:last-child {
+  justify-self: center;
+}
+
+/* Lista de alunos */
+.cn-alunos-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Linhas dos alunos */
+.cn-aluno-row.cn-globalizada {
+  display: grid;
+  grid-template-columns: 2fr 200px;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
+  animation: cn-simpleFade 0.4s ease;
+}
+
+.cn-aluno-row.cn-globalizada:hover {
+  background-color: #f8fafc;
+}
+
+.cn-aluno-row.cn-globalizada:last-child {
+  border-bottom: none;
+}
+
+.cn-aluno-row.cn-globalizada > :nth-child(2) {
+  justify-self: center;
+}
+
+.cn-aluno-row.cn-globalizada > :last-child {
+  justify-self: center;
+}
+
+.cn-aluno-row.cn-disciplinas {
+  display: grid;
+  grid-template-columns: 2.5fr repeat(7, 1fr) 120px;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  align-items: center;
+  font-size: 15px;
+  transition: background-color 0.2s ease;
+  animation: cn-simpleFade 0.4s ease;
+  min-width: 900px;
+}
+
+.cn-aluno-row.cn-disciplinas:hover {
+  background-color: #f8fafc;
+}
+
+.cn-aluno-row.cn-disciplinas:last-child {
+  border-bottom: none;
+}
+
+.cn-aluno-row.cn-disciplinas > * {
+  justify-self: center;
+  text-align: center;
+}
+
+.cn-aluno-row.cn-disciplinas > *:first-child {
+  justify-self: start;
+  text-align: left;
+}
+
+.cn-aluno-row.cn-disciplinas > *:last-child {
+  justify-self: center;
+}
+
+.cn-aluno-nome {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+/* Container dos inputs de nota */
+.cn-nota-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.cn-nota-input-global {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Inputs de nota */
+.cn-input-nota {
+  width: 100%;
+  max-width: 100px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  background: #ffffff;
+  color: #1e293b;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.cn-input-nota::-webkit-outer-spin-button,
+.cn-input-nota::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cn-input-nota[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.cn-input-nota::placeholder {
+  color: #94a3b8;
+  transition: color 0.3s ease;
+}
+
+.cn-input-nota:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  transform: scale(1.05);
+}
+
+.cn-input-nota:hover:not(:focus):not(:disabled) {
+  border-color: #cbd5e1;
+  transform: scale(1.02);
+}
+
+/* Classes para colorir os inputs baseado na nota */
+.cn-input-nota.cn-nota-aprovado {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.cn-input-nota.cn-nota-aprovado:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+
+.cn-input-nota.cn-nota-reprovado {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.cn-input-nota.cn-nota-reprovado:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Inputs desabilitados */
+.cn-input:disabled,
+.cn-select:disabled,
+.cn-search-input:disabled,
+.cn-input-nota:disabled {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cn-input:disabled:hover,
+.cn-select:disabled:hover,
+.cn-search-input:disabled:hover,
+.cn-input-nota:disabled:hover {
+  border-color: #e2e8f0;
+  background-color: #f8fafc;
+  transform: none;
+}
+
+/* Ações do aluno */
+.cn-aluno-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cn-boletim-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #3b82f6;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cn-boletim-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Mensagem de alunos vazios */
+.cn-empty-alunos-message {
+  animation: cn-simpleFade 0.5s ease;
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Estado vazio */
+.cn-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
+
+.cn-empty-icon {
+  width: 80px;
+  height: 80px;
+  background: #f1f5f9;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+.cn-empty-state h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.cn-empty-state p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Botão de refresh */
+.cn-refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.cn-refresh-button:hover {
+  background-color: #2563eb;
+}
+
+/* Loading state */
+.cn-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Estados adicionais */
+.cn-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+/* Scrollbar customizada */
+.cn-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cn-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.cn-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.cn-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsividade - Tablets */
+@media (max-width: 992px) {
+  .cn-table-header.cn-disciplinas,
+  .cn-aluno-row.cn-disciplinas {
+    grid-template-columns: 2fr repeat(8, 1fr) 120px;
+  }
+}
+
+/* Responsividade - Mobile */
+@media (max-width: 768px) {
+  .cn-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .cn-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .cn-form-group.cn-full-width,
+  .cn-form-group.cn-half-width,
+  .cn-form-group.cn-third-width {
+    grid-column: span 1;
+  }
+
+  .cn-section-header {
+    padding: 16px 20px;
+    font-size: 15px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cn-turma-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .cn-turma-header-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .cn-table-header.cn-globalizada,
+  .cn-table-header.cn-disciplinas {
+    display: none;
+  }
+
+  .cn-aluno-row.cn-globalizada,
+  .cn-aluno-row.cn-disciplinas {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+    border-left: 3px solid #3b82f6;
+  }
+
+  .cn-aluno-row.cn-globalizada .cn-aluno-nome,
+  .cn-aluno-row.cn-disciplinas .cn-aluno-nome {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-right: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .cn-aluno-row.cn-globalizada .cn-nota-input-global {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+
+  .cn-aluno-row.cn-globalizada .cn-nota-input-global::before {
+    content: "NOTA GLOBAL";
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 100px;
+  }
+
+  .cn-aluno-row.cn-disciplinas .cn-nota-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+  }
+
+  .cn-aluno-row.cn-disciplinas .cn-nota-input::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 90px;
+  }
+
+  .cn-aluno-actions {
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .cn-boletim-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .cn-alunos-container.cn-expanded {
+    max-height: 3000px;
+  }
+
+  .cn-turma-actions {
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cn-editar-button,
+  .cn-salvar-button,
+  .cn-boletins-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .cn-container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .cn-form-grid {
+    padding: 16px;
+  }
+
+  .cn-section-header {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .cn-turmas-list {
+    padding: 16px;
+  }
+
+  .cn-turma-card {
+    padding: 16px;
+  }
+
+  .cn-turma-nome {
+    font-size: 15px;
+  }
+}

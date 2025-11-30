@@ -9,6 +9,7 @@ import {
   UserX,
   Mail,
   UserCheck,
+  Save,
 } from "lucide-react";
 
 import "./usuarios.css";
@@ -25,6 +26,7 @@ const Usuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioExpandido, setUsuarioExpandido] = useState({});
   const [usuarioEditando, setUsuarioEditando] = useState(null);
+  const [animacaoSaindo, setAnimacaoSaindo] = useState({});
 
   const [dadosEdicao, setDadosEdicao] = useState({
     nome: "",
@@ -223,8 +225,17 @@ const Usuarios = () => {
     }
   };
 
-  const toggleUsuarioExpansao = (id) =>
-    setUsuarioExpandido((prev) => ({ ...prev, [id]: !prev[id] }));
+  const toggleUsuarioExpansao = (id) => {
+    if (usuarioExpandido[id]) {
+      setAnimacaoSaindo((prev) => ({ ...prev, [id]: true }));
+      setTimeout(() => {
+        setUsuarioExpandido((prev) => ({ ...prev, [id]: false }));
+        setAnimacaoSaindo((prev) => ({ ...prev, [id]: false }));
+      }, 300);
+    } else {
+      setUsuarioExpandido((prev) => ({ ...prev, [id]: true }));
+    }
+  };
 
   return (
     <div className="cadastro-usuario-form-container">
@@ -382,46 +393,77 @@ const Usuarios = () => {
                       </div>
 
                       <div className="usuario-header-actions">
-                        <button
-                          className="action-button-usuario edit-button-usuario"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            iniciarEdicao(usuario);
-                            setUsuarioExpandido((prev) => ({
-                              ...prev,
-                              [usuario.id]: true,
-                            }));
-                          }}
-                        >
-                          <Edit size={16} /> Editar
-                        </button>
+                        {usuarioEditando === usuario.id ? (
+                          <>
+                            <button
+                              className="action-button-usuario save-button-usuario"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                salvarEdicao(usuario.id);
+                              }}
+                            >
+                              <Save size={16} /> Salvar
+                            </button>
 
-                        {usuario.ativo ? (
-                          <button
-                            className="action-button-usuario deactivate-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleAtivo(usuario);
-                            }}
-                          >
-                            <UserX size={16} /> Inativar
-                          </button>
+                            <button
+                              className="action-button-usuario remove-button-usuario"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelarEdicao();
+                              }}
+                            >
+                              <XCircle size={16} /> Cancelar
+                            </button>
+                          </>
                         ) : (
-                          <button
-                            className="action-button-usuario activate-button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleAtivo(usuario);
-                            }}
-                          >
-                            <UserCheck size={16} /> Ativar
-                          </button>
+                          <>
+                            <button
+                              className="action-button-usuario edit-button-usuario"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                iniciarEdicao(usuario);
+                                setUsuarioExpandido((prev) => ({
+                                  ...prev,
+                                  [usuario.id]: true,
+                                }));
+                              }}
+                            >
+                              <Edit size={16} /> Editar
+                            </button>
+
+                            {usuario.ativo ? (
+                              <button
+                                className="action-button-usuario deactivate-button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleAtivo(usuario);
+                                }}
+                              >
+                                <UserX size={16} /> Inativar
+                              </button>
+                            ) : (
+                              <button
+                                className="action-button-usuario activate-button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleAtivo(usuario);
+                                }}
+                              >
+                                <UserCheck size={16} /> Ativar
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
 
-                    {usuarioExpandido[usuario.id] && (
-                      <div className="usuario-details-container">
+                    {(usuarioExpandido[usuario.id] ||
+                      animacaoSaindo[usuario.id]) && (
+                      <div
+                        className={`usuario-details-container ${
+                          animacaoSaindo[usuario.id] ? "closing" : ""
+                        }`}
+                      >
                         {usuarioEditando === usuario.id ? (
                           <div className="usuario-edicao-form">
                             <div className="cadastro-usuario-form-grid">
@@ -481,21 +523,6 @@ const Usuarios = () => {
                                   <option value="secretaria">Secretaria</option>
                                 </select>
                               </div>
-                            </div>
-
-                            <div className="usuario-edicao-actions">
-                              <button
-                                className="usuario-cancelar-button"
-                                onClick={cancelarEdicao}
-                              >
-                                <XCircle size={16} /> Cancelar
-                              </button>
-                              <button
-                                className="usuario-salvar-button"
-                                onClick={() => salvarEdicao(usuario.id)}
-                              >
-                                <Plus size={16} /> Salvar
-                              </button>
                             </div>
                           </div>
                         ) : (

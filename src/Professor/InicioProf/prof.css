@@ -1,7 +1,7 @@
 @keyframes professorSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -59,7 +59,7 @@
   flex-direction: column;
   gap: 32px;
   width: 100%;
-  animation: professorFadeIn 0.3s ease-out;
+  animation: professorFadeIn 0.2s ease-out;
 }
 
 .stats-grid-prof {
@@ -74,21 +74,21 @@
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 24px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   opacity: 0;
-  animation: professorSlideUp 0.5s ease-out forwards;
+  animation: professorSlideUp 0.3s ease-out forwards;
 }
 
 .stat-card-prof:nth-child(1) {
-  animation-delay: 0.1s;
+  animation-delay: 0.05s;
 }
 
 .stat-card-prof:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 0.1s;
 }
 
 .stat-card-prof:nth-child(3) {
-  animation-delay: 0.3s;
+  animation-delay: 0.15s;
 }
 
 .stat-card-prof:hover {
@@ -143,7 +143,7 @@
   height: 20px;
 }
 
-/* Section Card com animação */
+/* Section Card com animação mais rápida */
 .section-card-prof {
   background: white;
   border: 1px solid #e2e8f0;
@@ -151,7 +151,7 @@
   overflow: hidden;
   width: 100%;
   opacity: 0;
-  animation: professorSlideUp 0.5s ease-out 0.4s forwards;
+  animation: professorSlideUp 0.3s ease-out 0.2s forwards;
 }
 
 .section-header-prof {
@@ -180,7 +180,7 @@
   text-decoration: underline;
 }
 
-/* Quick Actions com animação escalonada */
+/* Quick Actions com animação escalonada mais rápida */
 .quick-actions-grid-prof {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -198,21 +198,21 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   opacity: 0;
-  animation: professorSlideUp 0.4s ease-out forwards;
+  animation: professorSlideUp 0.25s ease-out forwards;
 }
 
 .action-button-prof:nth-child(1) {
-  animation-delay: 0.5s;
+  animation-delay: 0.25s;
 }
 
 .action-button-prof:nth-child(2) {
-  animation-delay: 0.6s;
+  animation-delay: 0.3s;
 }
 
 .action-button-prof:nth-child(3) {
-  animation-delay: 0.7s;
+  animation-delay: 0.35s;
 }
 
 .action-button-prof:hover {
@@ -343,7 +343,7 @@
   line-height: 1.6;
 }
 
-/* Error State com animação */
+/* Error State com animação mais rápida */
 .error-state-prof {
   display: flex;
   flex-direction: column;
@@ -355,7 +355,7 @@
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   opacity: 0;
-  animation: professorSlideUp 0.5s ease-out forwards;
+  animation: professorSlideUp 0.3s ease-out forwards;
 }
 
 .retry-button-prof {
@@ -370,7 +370,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .retry-button-prof:hover {

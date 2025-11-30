@@ -293,7 +293,7 @@
   border: 1px solid #cbd5e1;
   border-radius: 12px;
   background: white;
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -425,6 +425,7 @@
   display: flex;
   justify-content: flex-end;
   padding: 15px;
+  padding-right: 0px;
 }
 
 /* Botões */

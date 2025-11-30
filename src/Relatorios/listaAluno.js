@@ -5,139 +5,328 @@ export function gerarRelatorioAlunos({
   dataHoraAgora,
   formatarData,
 }) {
+
+  function calcularIdadeRelatorio(dataNascimento) {
+    if (!dataNascimento) return "-";
+    try {
+      const data = new Date(dataNascimento);
+      if (isNaN(data.getTime())) return "-";
+
+      const hoje = new Date();
+      let idade = hoje.getFullYear() - data.getFullYear();
+      const mes = hoje.getMonth() - data.getMonth();
+
+      if (mes < 0 || (mes === 0 && hoje.getDate() < data.getDate())) {
+        idade--;
+      }
+      return idade;
+    } catch (error) {
+      return "-";
+    }
+  }
+
   return `
 <html>
 <head>
     <title>LISTA DE ALUNOS - ${turma.nome}</title>
 
     <style>
-
         /* ===========================
-                GERAIS
+                RESET E CONFIGURAÇÕES
         ============================ */
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px 25px;
-            padding-bottom: 70px; /* espaço para o footer */
-            color: #333;
-            line-height: 1.45;
-            min-height: 100vh;
-            position: relative;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h1, h2 {
-            margin: 0;
-            font-weight: bold;
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            padding: 20px;
+            color: #111827;
+            line-height: 1.5;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
         }
 
         /* ===========================
                 CABEÇALHO
         ============================ */
-        .header-text-only {
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #64748B;
+            position: relative;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 80px;
+        }
+
+        .graduation-logo {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 48px;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 50%;
+            border: 3px solid #64748B;
+            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
+        }
+
+        .school-info-container {
+            flex: 1;
+            text-align: left;
+        }
+
+        .school-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .school-info {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 4px 0;
+            font-weight: 500;
+        }
+
+        /* ===========================
+                TÍTULO PRINCIPAL
+        ============================ */
+        .main-title {
+            font-size: 17px;
+            font-weight: 670;
+            color: #111827;
+            margin-bottom: 15px;
+            text-align: left;
+            margin-top: -8px;
+        }
+
+        .turno {
+            font-size: 16px;
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        /* ===========================
+                INFORMAÇÕES DA TURMA
+        ============================ */
+        .turma-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 13px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-item {
             text-align: center;
         }
 
-        .header-text-only h2 {
-            font-size: 16px;
+        .info-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #64748B;
+            display: block;
         }
 
-        .header-text-only p {
-            font-size: 13px;
-            color: #555;
-            margin: 2px 0;
-        }
-
-        .divider {
-            height: 1px;
-            border: 0;
-            background: #aaa;
-            margin: 15px auto 18px;
-            width: 90%;
-        }
-
-        /* ===========================
-                INFO BOX
-        ============================ */
-        .info-box {
-            background: #f4f6fa;
-            border-left: 5px solid #4a90e2;
-            border-radius: 4px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
-        }
-
-        .info-box h1 {
-            font-size: 16px;
-            color: #2c3e50;
-        }
-
-        .report-subtitle {
+        .info-label {
             font-size: 14px;
-            color: #444;
-            margin: 4px 0 12px;
-        }
-
-        .info-box p {
-            font-size: 12px;
-            margin: 3px 0;
+            color: #6b7280;
+            margin-top: 4px;
+            font-weight: 600;
         }
 
         /* ===========================
-                TABELA
+                TABELA COM LARGURAS AJUSTADAS
         ============================ */
+        .table-container {
+            margin-top: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 10px;
-            border: 1px solid #000;
-            page-break-inside: auto;
+            font-size: 14px;
+            table-layout: fixed; /* Força as larguras definidas */
+        }
+
+        thead {
+            background: #64748B;
         }
 
         th {
-            background: #d9d9d9;
-            padding: 8px 4px;
-            border: 1px solid #000;
-            font-weight: bold;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: white;
+            text-align: left;
+            font-size: 13px;
             text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.05em;
+        }
+
+        /* LARGURAS DAS COLUNAS - 40% NOME, 20% CADA OUTRA */
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 40%; /* Nome */
+            text-align: left;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 20%; /* CPF */
+            text-align: center;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 20%; /* Data Nascimento */
+            text-align: center;
+        }
+
+        th:nth-child(4),
+        td:nth-child(4) {
+            width: 20%; /* Idade */
+            text-align: center;
         }
 
         td {
-            padding: 7px 4px;
-            border: 1px solid #000;
-            text-align: center;
-            font-size: 12px;
+            padding: 8px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+            word-wrap: break-word;
         }
 
-        tr {
-            page-break-inside: avoid;
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
         }
 
-        tr:nth-child(even) { background: #f2f2f2; }
-        tr:nth-child(odd)  { background: #ffffff; }
-        tr:hover { background: #e8f1ff; }
+        tbody tr:hover {
+            background: #f3f4f6;
+        }
+
+        .aluno-nome {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .idade {
+            color: #64748B;
+            /* REMOVIDO: font-weight: 600; */
+        }
 
         /* ===========================
-                FOOTER FIXO
+                FOOTER - ESTICADO NA LARGURA
         ============================ */
         .footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 6px 0;
+            padding: 12px 0;
             text-align: center;
-            font-size: 12px;
-            color: #555;
-            background: #fff;
-            border-top: 1px solid #aaa;
+            font-size: 13px;
+            font-weight: 500;
+            background: #ffffff;
+            border-top: 2px solid #e5e7eb;
         }
 
+        .footer p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* ===========================
+                IMPRESSÃO - FOOTER ESTICADO
+        ============================ */
         @media print {
-            @page { margin: 5mm; }
-            body { padding-bottom: 80px; }
+            @page { 
+                margin: 15mm;
+                margin-bottom: 5mm;
+            }
+            
+            body {
+                padding: 0;
+                max-width: none;
+                border: none;
+                box-shadow: none;
+            }
+            
+            .header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            
+            .turma-info {
+                margin-bottom: 20px;
+                background: transparent;
+                border: 1px solid #d1d5db;
+            }
+
+            .table-container {
+                border: 1px solid #d1d5db;
+                box-shadow: none;
+            }
+
+            thead {
+                background: #64748B !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 0mm;
+                left: 0mm;
+                right: 0mm;
+                padding: 8px 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-top: 2px solid #e5e7eb;
+                font-size: 12px;
+                background: #ffffff !important;
+            }
+
+            /* Garantir que o conteúdo não fique por baixo do footer */
+            .table-container {
+                margin-bottom: 25px;
+            }
+
+            .graduation-logo {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 3px solid #64748B !important;
+                background: #f8fafc !important;
+            }
+
+            /* Ajustes de impressão para as larguras das colunas */
+            table {
+                table-layout: fixed !important;
+            }
         }
 
     </style>
@@ -145,53 +334,68 @@ export function gerarRelatorioAlunos({
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
-    <div class="header-text-only">
-        <h2>ESCOLA EXPERIMENTAL EDUSYSTEM</h2>
-        <p>RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</p>
-        <p>edusystem@email.com • (54) 9 9876-5432</p>
+    <!-- CABEÇALHO COM LOGO NO LADO ESQUERDO -->
+    <div class="header">
+        <div class="logo-container">
+            <div class="graduation-logo">🎓</div>
+        </div>
+        <div class="school-info-container">
+            <div class="school-name">ESCOLA EXPERIMENTAL EDUSYSTEM</div>
+            <div class="school-info">RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</div>
+            <div class="school-info">edusystem@email.com • (54) 9 9876-5432</div>
+        </div>
     </div>
 
-    <hr class="divider" />
+    <!-- TÍTULO PRINCIPAL UNIFICADO -->
+    <div class="main-title">LISTA DE ALUNOS - ${turma.nome} - ${turma.turno.toUpperCase()}</div>
 
     <!-- INFORMAÇÕES DA TURMA -->
-    <div class="info-box">
-        <h1>LISTA DE ALUNOS</h1>
-        <div class="report-subtitle">${turma.nome.toUpperCase()}</div>
-
-        <p><strong>Turno:</strong> ${turma.turno}</p>
-        <p><strong>Total de alunos:</strong> ${alunos.length}</p>
-        <p><strong>Capacidade:</strong> ${qtdAtivos} de ${turma.quantidadeMaxima} vagas ocupadas</p>
+    <div class="turma-info">
+        <div class="info-item">
+            <span class="info-value">${alunos.length}</span>
+            <span class="info-label">Total de Alunos</span>
+        </div>
+        <div class="info-item">
+            <span class="info-value">${qtdAtivos}/${turma.quantidadeMaxima || alunos.length}</span>
+            <span class="info-label">Capacidade</span>
+        </div>
     </div>
 
-    <!-- TABELA -->
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Nascimento</th>
-            </tr>
-        </thead>
+    <!-- TABELA COM LARGURAS AJUSTADAS -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Nascimento</th>
+                    <th>Idade</th>
+                </tr>
+            </thead>
 
-        <tbody>
-            ${alunos
-              .map(
-                (aluno) => `
-                    <tr>
-                        <td>${aluno.nome}</td>
-                        <td>${aluno.cpf || "-"}</td>
-                        <td>${formatarData(aluno.nascimento)}</td>
-                    </tr>
-                `
-              )
-              .join("")}
-        </tbody>
-    </table>
+            <tbody>
+                ${alunos
+                  .map(
+                    (aluno) => {
+                      const idade = calcularIdadeRelatorio(aluno.nascimento);
+                      return `
+                        <tr>
+                            <td class="aluno-nome">${aluno.nome}</td>
+                            <td>${aluno.cpf || "-"}</td>
+                            <td>${formatarData(aluno.nascimento)}</td>
+                            <td class="idade">${typeof idade === 'number' ? `${idade} anos` : idade}</td>
+                        </tr>
+                    `;
+                    }
+                  )
+                  .join("")}
+            </tbody>
+        </table>
+    </div>
 
-    <!-- FOOTER FIXO -->
+    <!-- FOOTER - ESTICADO NA LARGURA -->
     <div class="footer">
-        Gerado automaticamente pelo EDU System — Impressão em ${dataHoraAgora}
+        <p>Gerado automaticamente pelo EduSystem — Impresso em ${dataHoraAgora}</p>
     </div>
 
 </body>

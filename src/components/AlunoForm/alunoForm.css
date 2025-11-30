@@ -380,7 +380,6 @@ textarea.input-error:hover {
   margin-bottom: 8px;
 }
 
-/* HISTÓRICO ESCOLAR - NOVA ESTRUTURA */
 .historico-container {
   display: flex;
   flex-direction: column;
@@ -475,13 +474,11 @@ textarea.input-error:hover {
   margin-top: 8px;
 }
 
-/* Quando for apenas 1 disciplina (Ensino Globalizado) */
 .notas-grid:has(> .form-group-aluno:only-child) {
   grid-template-columns: 1fr;
   max-width: 400px;
 }
 
-/* Botão salvar (modo edição) */
 .form-buttons-aluno .btn-save {
   background: #10b981;
   color: #fff;

@@ -41,8 +41,8 @@ export function useCreateUser() {
     };
 
     return {
-        createPublic, // Para criar sem estar logado
-        create,       // Para criar quando já está logado
+        createPublic,
+        create,     
         isLoading,
         error,
         data,

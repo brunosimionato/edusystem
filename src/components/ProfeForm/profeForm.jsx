@@ -106,7 +106,6 @@ const ProfeForm = ({
   // Popula o formulário quando for edição
   useEffect(() => {
     if (!professor) {
-      // Modo criação — reset total
       setFormData({
         nome: "",
         cpf: "",
@@ -193,12 +192,10 @@ const ProfeForm = ({
     setCamposInvalidos([]);
   }, [professor, turmasDisponiveis]);
 
-  // NOVA FUNÇÃO: Validar email e CPF duplicados
   const validarDuplicatas = () => {
     const cpfLimpo = formData.cpf.replace(/\D/g, "");
     const emailLimpo = formData.email.trim().toLowerCase();
 
-    // Verificar se há professores com mesmo email ou CPF
     const professorComMesmoEmail = professoresExistentes.find((prof) => {
       const profEmail = prof.usuario?.email?.trim().toLowerCase();
       return profEmail === emailLimpo;
@@ -209,7 +206,6 @@ const ProfeForm = ({
       return profCPF === cpfLimpo;
     });
 
-    // Se estiver editando, ignorar o próprio professor
     if (editing && professor?.id) {
       if (
         professorComMesmoEmail &&
@@ -229,7 +225,6 @@ const ProfeForm = ({
         };
       }
     } else {
-      // Se estiver criando
       if (professorComMesmoEmail) {
         return {
           duplicado: true,
@@ -249,7 +244,6 @@ const ProfeForm = ({
     return { duplicado: false };
   };
 
-  // Função para buscar o endereço pelo CEP
   const buscarEndereco = async (cep) => {
     try {
       const cepLimpo = cep.replace(/\D/g, "");
@@ -270,7 +264,6 @@ const ProfeForm = ({
           estado: data.uf || prev.estado,
         }));
 
-        // Remove campos do endereço dos inválidos se foram preenchidos
         if (data.logradouro) {
           setCamposInvalidos((prev) => prev.filter((c) => c !== "rua"));
         }
@@ -291,13 +284,11 @@ const ProfeForm = ({
     }
   };
 
-  // Handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     let formattedValue = value;
 
-    // Aplicar máscaras
     if (name === "cpf") {
       formattedValue = mascaraCPF(value);
     } else if (name === "telefone") {
@@ -591,11 +582,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("nome") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor medium">
                 <label>CPF*</label>
@@ -610,11 +596,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("cpf") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> CPF inválido
-                  </span>
-                )}
               </div>
               <div className="form-group-professor medium">
                 <label>Data de Nascimento*</label>
@@ -631,11 +612,6 @@ const ProfeForm = ({
                   disabled={isSubmitting}
                   max={new Date().toISOString().split("T")[0]}
                 />
-                {camposInvalidos.includes("dataNascimento") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
             </div>
             <div className="form-row-professor">
@@ -655,11 +631,6 @@ const ProfeForm = ({
                   <option value="feminino">Feminino</option>
                   <option value="outro">Outro</option>
                 </select>
-                {camposInvalidos.includes("genero") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor medium">
                 <label>Telefone*</label>
@@ -674,11 +645,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("telefone") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor flex-2">
                 <label>E-mail*</label>
@@ -692,11 +658,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("email") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> E-mail inválido
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -723,11 +684,6 @@ const ProfeForm = ({
                 {buscandoCep && (
                   <span className="info-message">Buscando endereço...</span>
                 )}
-                {camposInvalidos.includes("cep") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> CEP inválido
-                  </span>
-                )}
               </div>
               <div className="form-group-professor flex-3">
                 <label>Logradouro*</label>
@@ -741,11 +697,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("rua") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor small">
                 <label>Número*</label>
@@ -759,11 +710,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("numero") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Obrigatório
-                  </span>
-                )}
               </div>
             </div>
             <div className="form-row-professor">
@@ -779,11 +725,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("bairro") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor flex-2">
                 <label>Cidade*</label>
@@ -797,11 +738,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("cidade") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
               <div className="form-group-professor small">
                 <label>Estado*</label>
@@ -816,11 +752,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("estado") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> UF
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -843,11 +774,6 @@ const ProfeForm = ({
                   }
                   disabled={isSubmitting}
                 />
-                {camposInvalidos.includes("formacao") && (
-                  <span className="error-message">
-                    <AlertCircle size={14} /> Campo obrigatório
-                  </span>
-                )}
               </div>
             </div>
             <div className="form-row-professor">

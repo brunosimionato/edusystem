@@ -34,7 +34,7 @@ export const useFaltas = (filters = {}) => {
     const updateFalta = useCallback(async (id, updateData) => {
         try {
             const faltaAtualizada = await FaltaService.update(id, updateData);
-            setFaltas(prev => prev.map(falta => 
+            setFaltas(prev => prev.map(falta =>
                 falta.id === id ? faltaAtualizada : falta
             ));
             return faltaAtualizada;
@@ -81,23 +81,21 @@ export const useFaltas = (filters = {}) => {
     };
 };
 
-// Hook específico para faltas por turma em uma data
 export const useFaltasPorTurma = (turmaId, data) => {
-    const filters = { 
-        idTurma: turmaId, 
-        data 
+    const filters = {
+        idTurma: turmaId,
+        data
     };
-    
+
     return useFaltas(filters);
 };
 
-// Hook específico para faltas por aluno em um período
 export const useFaltasPorAluno = (alunoId, dataInicio, dataFim) => {
-    const filters = { 
+    const filters = {
         idAluno: alunoId,
         dataInicio,
         dataFim
     };
-    
+
     return useFaltas(filters);
 };

@@ -14,23 +14,6 @@ export function gerarBoletim({
         return notaNum >= 60 ? 'Aprovado' : 'Reprovado';
     };
 
-    const calcularMedia = () => {
-        if (turma.tipo === 'fundamental1') {
-            const notaGlobal = parseFloat(notas.globalizada);
-            return isNaN(notaGlobal) ? ' - ' : notaGlobal.toFixed(1);
-        } else {
-            const notasValidas = Object.values(notas).filter(nota => {
-                const notaNum = parseFloat(nota);
-                return !isNaN(notaNum) && notaNum > 0;
-            });
-
-            if (notasValidas.length === 0) return ' - ';
-
-            const soma = notasValidas.reduce((acc, nota) => acc + parseFloat(nota), 0);
-            return (soma / notasValidas.length).toFixed(1);
-        }
-    };
-
     const getNotaDisciplina = (disciplinaId) => {
         return notas[disciplinaId] || ' - ';
     };
@@ -43,122 +26,224 @@ export function gerarBoletim({
     <title>BOLETIM - ${aluno.nome} - ${turma.nome}</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px 25px;
-            padding-bottom: 70px; /* espaço para o footer */
-            color: #333;
-            line-height: 1.45;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        h1, h2, h3 {
+        /* ===========================
+                RESET E CONFIGURAÇÕES
+        ============================ */
+        * {
             margin: 0;
-            font-weight: bold;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .header-text-only {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .header-text-only h2 {
-            font-size: 16px;
-        }
-
-        .header-text-only p {
-            font-size: 13px;
-            color: #555;
-            margin: 2px 0;
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            padding: 20px;
+            color: #111827;
+            line-height: 1.5;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
         }
 
         /* ===========================
-                INFO BOX
+                CABEÇALHO
         ============================ */
-        .info-box {
-            background: #f4f6fa;
-            border-left: 5px solid #4a90e2;
-            border-radius: 4px;
-            padding: 12px 14px 10px;
-            margin-bottom: 18px;
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #64748B;
         }
 
-        .info-box h1 {
-            font-size: 16px;
-            color: #2c3e50;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 80px;
         }
 
-        .report-subtitle {
+        .graduation-logo {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 48px;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 50%;
+            border: 3px solid #64748B;
+            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
+        }
+
+        .school-info-container {
+            flex: 1;
+            text-align: left;
+        }
+
+        .school-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .school-info {
             font-size: 14px;
-            color: #444;
-            margin: 4px 0 12px;
+            color: #6b7280;
+            margin: 4px 0;
+            font-weight: 500;
         }
 
-        .info-box p {
-            font-size: 12px;
-            margin: 3px 0;
+        /* ===========================
+                TÍTULO PRINCIPAL
+        ============================ */
+        .main-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
         }
 
+        .trimestre-info {
+            font-size: 16px;
+            color: #64748B;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ===========================
+                INFORMAÇÕES DO ALUNO
+        ============================ */
         .aluno-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            row-gap: 1px;   /* quase sem espaço vertical */
-            column-gap: 6px;
-            margin-top: 0;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
         }
 
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: left;
+        }
 
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
 
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* ===========================
+                TABELA DE NOTAS
+        ============================ */
         .table-container {
             margin: 20px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            border: 1px solid #444;
-            page-break-inside: auto;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+
+        thead {
+            background: #64748B;
         }
 
         th {
-            background: #d9d9d9;
-            padding: 8px 4px;
-            border: 1px solid #444;
-            font-weight: bold;
-            text-transform: uppercase;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: white;
+            text-align: left;
             font-size: 12px;
-            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* LARGURAS DAS COLUNAS */
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 60%; /* Disciplina */
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 20%; /* Nota */
+            text-align: center;
+        }
+
+        th:nth-child(3),
+        td:nth-child(3) {
+            width: 20%; /* Situação */
+            text-align: center;
         }
 
         td {
-            padding: 7px 4px;
-            border: 1px solid #444;
-            text-align: center;
-            font-size: 12px;
+            padding: 10px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
+            word-wrap: break-word;
         }
 
-        tr {
-            page-break-inside: avoid;
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
         }
 
-        tr:nth-child(even) { background: #f2f2f2; }
-        tr:nth-child(odd)  { background: #ffffff; }
+        .disciplina-nome {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .nota {
+            font-weight: 600;
+            color: #374151;
+        }
 
         .situacao-aprovado {
-            color: #27ae60;
-            font-weight: bold;
+            color: #059669;
+            font-weight: 700;
         }
 
         .situacao-reprovado {
-            color: #e74c3c;
-            font-weight: bold;
+            color: #dc2626;
+            font-weight: 700;
         }
 
-        .media-final {
-            background: #e8f4fd !important;
-            font-weight: bold;
+        .situacao-indefinido {
+            color: #6b7280;
+            font-weight: 500;
         }
 
         /* ===========================
@@ -166,26 +251,29 @@ export function gerarBoletim({
         ============================ */
         .observacoes {
             margin: 20px 0;
-            padding: 12px;
+            padding: 15px;
             background: #fff9e6;
-            border-left: 4px solid #f39c12;
-            border-radius: 4px;
+            border-radius: 8px;
+            border: 1px solid #fbbf24;
         }
 
         .observacoes h3 {
-            font-size: 13px;
-            margin-bottom: 8px;
-            color: #e67e22;
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #d97706;
+            font-weight: 700;
         }
 
         .observacoes ul {
             margin: 0;
             padding-left: 20px;
-            font-size: 12px;
+            font-size: 13px;
+            color: #92400e;
         }
 
         .observacoes li {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            line-height: 1.4;
         }
 
         /* ===========================
@@ -195,9 +283,8 @@ export function gerarBoletim({
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
-            margin: 40px 0 20px;
-            padding-top: 20px;
-
+            margin: 30px 0 20px;
+            padding-top: 40px;
         }
 
         .assinatura {
@@ -205,36 +292,111 @@ export function gerarBoletim({
         }
 
         .linha-assinatura {
-            border-bottom: 1px solid #444;
-            margin-bottom: 5px;
-            padding-top: 30px;
+            border-bottom: 1px solid #374151;
+            margin-bottom: 8px;
+            padding-top: 40px;
         }
 
         .assinatura p {
-            font-size: 11px;
-            color: #666;
+            font-size: 12px;
+            color: #6b7280;
             margin: 0;
+            font-weight: 500;
         }
 
         /* ===========================
-                FOOTER FIXO
+                FOOTER - ESTICADO NA LARGURA
         ============================ */
         .footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 6px 0;
+            padding: 12px 0;
             text-align: center;
-            font-size: 12px;
-            color: #555;
-            background: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            background: #ffffff;
+            border-top: 2px solid #e5e7eb;
         }
 
+        .footer p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* ===========================
+                IMPRESSÃO
+        ============================ */
         @media print {
-            @page { margin: 5mm; }
-            body { padding-bottom: 80px; }
-            .footer { position: fixed; }
+            @page { 
+                margin: 15mm;
+                margin-bottom: 5mm;
+            }
+            
+            body {
+                padding: 0;
+                max-width: none;
+                border: none;
+                box-shadow: none;
+            }
+            
+            .header {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+            
+            .aluno-info {
+                margin-bottom: 15px;
+                background: transparent;
+                border: 1px solid #d1d5db;
+            }
+
+            .table-container {
+                border: 1px solid #d1d5db;
+                box-shadow: none;
+            }
+
+            thead {
+                background: #64748B !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 0mm;
+                left: 0mm;
+                right: 0mm;
+                padding: 8px 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-top: 2px solid #e5e7eb;
+                font-size: 12px;
+                background: #ffffff !important;
+            }
+
+            .assinaturas {
+                margin-bottom: 20px;
+            }
+
+            .graduation-logo {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 3px solid #64748B !important;
+                background: #f8fafc !important;
+            }
+
+            table {
+                table-layout: fixed !important;
+            }
+
+            .observacoes {
+                background: #fff9e6 !important;
+                border: 1px solid #fbbf24 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
 
     </style>
@@ -242,23 +404,37 @@ export function gerarBoletim({
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
-    <div class="header-text-only">
-        <h2>ESCOLA EXPERIMENTAL EDUSYSTEM</h2>
-        <p>RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</p>
-        <p>edusystem@email.com • (54) 9 9876-5432</p>
+    <!-- CABEÇALHO COM LOGO NO LADO ESQUERDO -->
+    <div class="header">
+        <div class="logo-container">
+            <div class="graduation-logo">🎓</div>
+        </div>
+        <div class="school-info-container">
+            <div class="school-name">ESCOLA EXPERIMENTAL EDUSYSTEM</div>
+            <div class="school-info">RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</div>
+            <div class="school-info">edusystem@email.com • (54) 9 9876-5432</div>
+        </div>
     </div>
 
-    <!-- INFORMAÇÕES DO BOLETIM -->
-    <div class="info-box">
-        <h1>BOLETIM ESCOLAR</h1>
-        <div class="report-subtitle">${anoLetivo} - ${trimestre}º TRIMESTRE</div>
+    <!-- TÍTULO PRINCIPAL -->
+    <div class="main-title">
+        BOLETIM ESCOLAR
+        <div class="trimestre-info">${anoLetivo} - ${trimestre}º TRIMESTRE</div>
+    </div>
 
-        <div class="aluno-info">
-            <p><strong>Aluno:</strong> ${aluno.nome}</p>
-            <p><strong>Turma:</strong> ${turma.nome}</p>
-            <p><strong>Turno:</strong> ${turma.turno}</p>
-            <p><strong>Data de Emissão:</strong> ${dataEmissao}</p>
+    <!-- INFORMAÇÕES DO ALUNO -->
+    <div class="aluno-info">
+        <div class="info-item">
+            <span class="info-label">Aluno</span>
+            <span class="info-value">${aluno.nome}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Turma</span>
+            <span class="info-value">${turma.nome}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Turno</span>
+            <span class="info-value">${turma.turno}</span>
         </div>
     </div>
 
@@ -275,22 +451,13 @@ export function gerarBoletim({
                 </thead>
                 <tbody>
                     <tr>
-                        <td>ENSINO GLOBALIZADO</td>
-                        <td>${notas.globalizada || ' - '}</td>
+                        <td class="disciplina-nome">ENSINO GLOBALIZADO</td>
+                        <td class="nota">${notas.globalizada || ' - '}</td>
                         <td class="situacao-${calcularSituacao(notas.globalizada).toLowerCase()}">
                             ${calcularSituacao(notas.globalizada)}
                         </td>
                     </tr>
                 </tbody>
-                <tfoot>
-                    <tr class="media-final">
-                        <td><strong>MÉDIA FINAL</strong></td>
-                        <td><strong>${calcularMedia()}</strong></td>
-                        <td class="situacao-${calcularSituacao(calcularMedia()).toLowerCase()}">
-                            <strong>${calcularSituacao(calcularMedia())}</strong>
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
         ` : `
             <table>
@@ -303,26 +470,21 @@ export function gerarBoletim({
                 </thead>
                 <tbody>
                     ${Object.keys(disciplinas)
-            .filter(discId => discId !== '2') // Remove Ensino Globalizado
-            .map(discId => `
-                        <tr>
-                            <td>${disciplinas[discId]}</td>
-                            <td>${getNotaDisciplina(discId)}</td>
-                            <td class="situacao-${calcularSituacao(getNotaDisciplina(discId)).toLowerCase()}">
-                                ${calcularSituacao(getNotaDisciplina(discId))}
-                            </td>
-                        </tr>
-                      `).join('')}
+                        .filter(discId => discId !== '2') // Remove Ensino Globalizado
+                        .map(discId => {
+                            const nota = getNotaDisciplina(discId);
+                            const situacao = calcularSituacao(nota);
+                            return `
+                                <tr>
+                                    <td class="disciplina-nome">${disciplinas[discId]}</td>
+                                    <td class="nota">${nota}</td>
+                                    <td class="situacao-${situacao.toLowerCase()}">
+                                        ${situacao}
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
                 </tbody>
-                <tfoot>
-                    <tr class="media-final">
-                        <td><strong>MÉDIA GERAL</strong></td>
-                        <td><strong>${calcularMedia()}</strong></td>
-                        <td class="situacao-${calcularSituacao(calcularMedia()).toLowerCase()}">
-                            <strong>${calcularSituacao(calcularMedia())}</strong>
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
         `}
     </div>
@@ -333,8 +495,6 @@ export function gerarBoletim({
         <ul>
             <li>Escala de avaliação: 0 a 100 pontos</li>
             <li>Média para aprovação: 60 pontos</li>
-            <li>Este documento é gerado automaticamente pelo sistema</li>
-            <li>Boletim referente ao ${trimestre}º trimestre do ano letivo de ${anoLetivo}</li>
         </ul>
     </div>
 
@@ -350,9 +510,9 @@ export function gerarBoletim({
         </div>
     </div>
 
-    <!-- FOOTER FIXO -->
+    <!-- FOOTER - ESTICADO NA LARGURA -->
     <div class="footer">
-        Gerado automaticamente pelo EDU System — Impressão em ${dataHoraAgora}
+        <p>Gerado automaticamente pelo EduSystem — Impresso em ${dataHoraAgora}</p>
     </div>
 
 </body>

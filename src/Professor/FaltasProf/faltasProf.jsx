@@ -78,7 +78,6 @@ const FaltasProfessor = () => {
 
       const novoEstadoFaltas = {};
 
-      // Preencher apenas com as faltas que existem no banco para ESTA data
       faltasDoBanco.forEach((falta) => {
         if (falta.periodo !== null && falta.periodo !== undefined) {
           // Fundamental II - falta por período
@@ -260,7 +259,6 @@ const FaltasProfessor = () => {
       const turma = turmasData.find((t) => t.id === turmaId);
       const tipoTurma = getTipoTurma(turma.nome);
 
-      // Buscar faltas existentes no banco para ESTA DATA
       const faltasExistentes = await FaltaService.getAll({
         data_inicio: dataSelecionada,
         data_fim: dataSelecionada,
@@ -364,7 +362,6 @@ const FaltasProfessor = () => {
         return novo;
       });
 
-      // Recarregar do banco para sincronizar
       await carregarFaltasDoBanco();
     } catch (error) {
       console.error("❌ Erro ao salvar:", error);
@@ -374,7 +371,6 @@ const FaltasProfessor = () => {
     }
   };
 
-  // Estados de loading e error
   if (isLoading) {
     return (
       <div className="fp-container">

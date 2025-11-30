@@ -1,6 +1,6 @@
 import { gerarRelatorioAlunos } from "../../Relatorios/listaAluno";
 import React, { useState } from "react";
-import { Edit, UserX, ChevronDown, ChevronRight, Printer } from "lucide-react";
+import { Edit, UserX, ChevronDown, ChevronUp, Printer } from "lucide-react";
 import AlunoService from "../../Services/AlunoService";
 
 function formatarData(data) {
@@ -11,8 +11,18 @@ function formatarData(data) {
 
 const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
   const [isExpandida, setIsExpandida] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const toggleTurma = () => setIsExpandida(!isExpandida);
+  const toggleTurma = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    setIsExpandida(!isExpandida);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+  };
 
   const alunos = turma.alunos ?? [];
 
@@ -20,6 +30,8 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
     ({
       manha: "turno-manha",
       tarde: "turno-tarde",
+      noite: "turno-noite",
+      integral: "turno-integral",
     }[turno?.toLowerCase()] || "turno-manha");
 
   const qtdAtivos = alunos.filter(
@@ -78,11 +90,9 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
       formatarData,
     });
 
-    // Remove iframe anterior caso exista
     const oldFrame = document.getElementById("print-frame");
     if (oldFrame) oldFrame.remove();
 
-    // Cria o iframe oculto
     const iframe = document.createElement("iframe");
     iframe.id = "print-frame";
     iframe.style.position = "fixed";
@@ -96,12 +106,10 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
     const frameDoc = iframe.contentWindow || iframe.contentDocument;
     const doc = frameDoc.document || frameDoc;
 
-    // Escreve o conteúdo do relatório
     doc.open();
     doc.write(html);
     doc.close();
 
-    // Aguarda o conteúdo carregar antes de imprimir
     iframe.onload = () => {
       setTimeout(() => {
         frameDoc.focus();
@@ -111,10 +119,14 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
   };
 
   return (
-    <div className={`turma-card ${statusTurma}`}>
+    <div className={`turma-card ${statusTurma} ${isAnimating ? "animating" : ""}`}>
       <div className="turma-info">
         <div className="turma-header clickable" onClick={toggleTurma}>
-          {isExpandida ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+          {isExpandida ? (
+            <ChevronDown size={20} style={{ color: "#64748b", flexShrink: 0 }} />
+          ) : (
+            <ChevronUp size={20} style={{ color: "#64748b", flexShrink: 0 }} />
+          )}
 
           <h3 className="turma-nome-aluno">{turma.nome}</h3>
 
@@ -141,27 +153,28 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
         <div className="progress-bar">
           <div
             className="progress-fill-lista"
-            style={{ width: `${percentualOcupacao}%` }}
+            style={{ 
+              width: `${percentualOcupacao}%`,
+              backgroundColor: "#64748b"
+            }}
           ></div>
         </div>
 
-        {/* Lista expandida */}
-        {isExpandida && (
-          <div className="alunos-table-container">
-            <div className="alunos-table-header">
-              <span>Nome do Aluno</span>
-              <span>Status</span>
-              <span>Ações</span>
+        {/* Container com animação de expansão/colapso */}
+        <div className={`alunos-container ${isExpandida ? "expanded" : "collapsed"}`}>
+          {alunos.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "20px", color: "#64748b", fontStyle: "italic" }}>
+              <p>Nenhum aluno cadastrado nesta turma.</p>
             </div>
-
-            {alunos.length === 0 ? (
-              <div className="aluno-row-lista-aluno">
-                <span className="aluno-nome vazio">
-                  Nenhum aluno cadastrado nesta turma
-                </span>
+          ) : (
+            <div className="alunos-table-container">
+              <div className="alunos-table-header">
+                <span>Nome do Aluno</span>
+                <span>Status</span>
+                <span>Ações</span>
               </div>
-            ) : (
-              alunos.map((aluno) => (
+
+              {alunos.map((aluno) => (
                 <div key={aluno.id} className="aluno-row-lista-aluno">
                   <div
                     className={`aluno-nome ${
@@ -197,10 +210,10 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
                     </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

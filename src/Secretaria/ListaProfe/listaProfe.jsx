@@ -4,7 +4,7 @@ import {
   User,
   Edit,
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
   GraduationCap,
   Printer,
   BookOpen,
@@ -89,7 +89,6 @@ const ListaProfe = () => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  // IMPRESSÃO RELATÓRIO
   const handlePrintProfessor = (professor) => {
     const dataHoraAgora = new Date().toLocaleString("pt-BR");
 
@@ -99,7 +98,6 @@ const ListaProfe = () => {
       formatarData: (d) => new Date(d).toLocaleDateString("pt-BR"),
     });
 
-    // Remove iframe antigo
     const oldFrame = document.getElementById("print-frame");
     if (oldFrame) oldFrame.remove();
 
@@ -227,6 +225,18 @@ const ListaProfe = () => {
 
 const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleToggle = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    setIsExpanded(!isExpanded);
+
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 300);
+  };
 
   const disciplinas = useMemo(() => {
     return (professor.disciplinas || []).map((disc) =>
@@ -241,17 +251,27 @@ const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
   }, [professor.turmas]);
 
   return (
-    <div className={`professor-card ${professor.status}`}>
+    <div
+      className={`professor-card ${professor.status} ${
+        isAnimating ? "animating" : ""
+      }`}
+    >
       <div className="professor-info">
         <div className="professor-header">
           <div
             className="professor-basic-info-container clickable"
-            onClick={() => setIsExpanded((p) => !p)}
+            onClick={handleToggle}
           >
             {isExpanded ? (
-              <ChevronDown size={20} />
+              <ChevronDown
+                size={20}
+                style={{ color: "#64748b", flexShrink: 0 }}
+              />
             ) : (
-              <ChevronRight size={20} />
+              <ChevronUp
+                size={20}
+                style={{ color: "#64748b", flexShrink: 0 }}
+              />
             )}
             <div className="professor-avatar">
               <User size={24} />
@@ -283,7 +303,11 @@ const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
           </div>
         </div>
 
-        {isExpanded && (
+        <div
+          className={`professor-details-wrapper ${
+            isExpanded ? "expanded" : "collapsed"
+          }`}
+        >
           <div className="professor-details-container">
             {disciplinas.length > 0 && (
               <div className="professor-lista-section">
@@ -321,7 +345,7 @@ const ProfessorCard = ({ professor, onEditar, onImprimir }) => {
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
