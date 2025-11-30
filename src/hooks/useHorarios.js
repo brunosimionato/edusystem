@@ -25,8 +25,7 @@ export const useHorarios = (filters = {}) => {
 
     const createHorario = useCallback(async (horarioData) => {
         try {
-            console.log('📤 Criando horário:', horarioData);
-            
+
             // CRIAR DIRETAMENTE sem verificar conflitos
             const novoHorario = await HorarioService.create(horarioData);
             setHorarios(prev => [...prev, novoHorario]);
@@ -43,7 +42,7 @@ export const useHorarios = (filters = {}) => {
         try {
             // ATUALIZAR DIRETAMENTE sem verificar conflitos
             const horarioAtualizado = await HorarioService.update(id, updateData);
-            setHorarios(prev => prev.map(horario => 
+            setHorarios(prev => prev.map(horario =>
                 horario.id === id ? horarioAtualizado : horario
             ));
             setUsingMock(HorarioService.useMock);
@@ -103,13 +102,13 @@ export const useHorarios = (filters = {}) => {
     };
 };
 
-// Hook específico para horários por turma
+// Hook para horários por turma
 export const useHorariosPorTurma = (turmaId) => {
     const filters = { idTurma: turmaId };
     return useHorarios(filters);
 };
 
-// Hook específico para horários por professor
+// Hook para horários por professor
 export const useHorariosPorProfessor = (professorId) => {
     const filters = { idProfessor: professorId };
     return useHorarios(filters);

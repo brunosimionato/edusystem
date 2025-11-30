@@ -1,26 +1,30 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search,
   Save,
   ChevronDown,
-  ChevronRight,
+  ChevronUp,
   BookOpen,
   Edit3,
   Loader,
+  RefreshCw,
 } from "lucide-react";
 import "./notas.css";
 import NotaService from "../../Services/NotaService";
 import TurmaService from "../../Services/NotaTurmaService";
 import AlunoService from "../../Services/AlunoService";
 import DisciplinaService from "../../Services/DisciplinaService";
-import TestService from "../../Services/TestService";
 import { gerarBoletim, gerarBoletimLote } from "../../Relatorios/boletins";
 
-const CadastroNotas = () => {
+const ANO_LETIVO = "2025";
+const ANIMATION_DURATION = 800;
+const EXPANSION_ANIMATION_DURATION = 300;
+
+const NotasSecretaria = () => {
   const [filtro, setFiltro] = useState("");
-  const [turmasExpandidas, setTurmasExpandidas] = useState(new Set());
+  const [turmasExpandidas, setTurmasExpandidas] = useState({});
   const [turmasEditaveis, setTurmasEditaveis] = useState(new Set());
-  const [anoLetivo, setAnoLetivo] = useState("2025");
+  const [anoLetivo, setAnoLetivo] = useState(ANO_LETIVO);
   const [trimestreSelecionado, setTrimestreSelecionado] = useState("1");
   const [notas, setNotas] = useState({});
   const [errosValidacao, setErrosValidacao] = useState(new Set());
@@ -28,179 +32,197 @@ const CadastroNotas = () => {
   const [disciplinas, setDisciplinas] = useState({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState({});
+  const [isAnimating, setIsAnimating] = useState({});
+  const [animandoTrimestre, setAnimandoTrimestre] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("testing");
   const [connectionError, setConnectionError] = useState("");
 
-  // FUNÇÃO DE ORDENAÇÃO AVANÇADA
-  const ordenarTurmas = (turmasArray) => {
-    return turmasArray.sort((a, b) => {
-      // Extrai números do nome (ex: "1º A" → 1, "6º B" → 6)
-      const numA = parseInt(a.nome.match(/\d+/)?.[0]) || 0;
-      const numB = parseInt(b.nome.match(/\d+/)?.[0]) || 0;
-      
-      if (numA !== 0 && numB !== 0) {
-        if (numA !== numB) {
-          return numA - numB;
-        }
-        return a.nome.localeCompare(b.nome, 'pt-BR');
-      }
+  useEffect(() => {
+    setAnimandoTrimestre(true);
+    const timer = setTimeout(() => {
+      setAnimandoTrimestre(false);
+    }, ANIMATION_DURATION);
 
-      return a.nome.localeCompare(b.nome, 'pt-BR', { numeric: true });
-    });
-  };
+    return () => clearTimeout(timer);
+  }, [trimestreSelecionado]);
 
-  const getTipoPorTurma = (turmaNome) => {
+  const getTipoPorTurma = useCallback((turmaNome) => {
     if (!turmaNome) return "fundamental1";
-
     const primeiroCaractere = turmaNome.trim().charAt(0);
-    console.log(
-      `🔍 Turma: "${turmaNome}" → Primeiro caractere: "${primeiroCaractere}"`
-    );
+    return ["6", "7", "8", "9"].includes(primeiroCaractere)
+      ? "fundamental2"
+      : "fundamental1";
+  }, []);
 
-    if (["6", "7", "8", "9"].includes(primeiroCaractere)) {
-      console.log("Classificado como Fundamental II (6º-9º)");
-      return "fundamental2";
-    }
-    // Verifica se é 1, 2, 3, 4 ou 5
-    else if (["1", "2", "3", "4", "5"].includes(primeiroCaractere)) {
-      console.log("✅ Classificado como Fundamental I (1º-5º)");
-      return "fundamental1";
-    }
+  const getDisciplinasPorTipo = useCallback(
+    (tipoTurma) => {
+      const disciplinasFiltradas = {};
+      Object.keys(disciplinas).forEach((disciplinaId) => {
+        if (!(tipoTurma === "fundamental2" && disciplinaId === "2")) {
+          disciplinasFiltradas[disciplinaId] = disciplinas[disciplinaId];
+        }
+      });
+      return disciplinasFiltradas;
+    },
+    [disciplinas]
+  );
 
-    console.log(
-      "⚠️  Primeiro caractere não identificado, usando padrão Fundamental I"
-    );
-    return "fundamental1";
-  };
+  const getTurnoClass = useCallback((turno) => {
+    const turnoLower = turno?.toLowerCase();
+    const turnoClasses = {
+      manhã: "cn-turno-manha",
+      manha: "cn-turno-manha",
+      tarde: "cn-turno-tarde",
+      noite: "cn-turno-noite",
+      integral: "cn-turno-integral",
+    };
+    return turnoClasses[turnoLower] || "";
+  }, []);
 
-  const formatarData = (dataString) => {
-    if (!dataString) return "-";
-    const data = new Date(dataString);
-    return data.toLocaleDateString("pt-BR");
-  };
+  const handleTrimestreChange = useCallback(
+    (novoTrimestre) => {
+      if (novoTrimestre === trimestreSelecionado) return;
 
-  // Filtrar disciplinas por tipo de turma
-  const getDisciplinasPorTipo = (tipoTurma) => {
-    const disciplinasFiltradas = {};
+      setAnimandoTrimestre(true);
+      setTimeout(() => {
+        setTrimestreSelecionado(novoTrimestre);
+      }, 100);
+      setTimeout(() => {
+        setAnimandoTrimestre(false);
+      }, ANIMATION_DURATION);
+    },
+    [trimestreSelecionado]
+  );
 
-    Object.keys(disciplinas).forEach((disciplinaId) => {
-      // Para Fundamental II (6º-9º), remove a disciplina 2 (Ensino Globalizado)
-      if (tipoTurma === "fundamental2" && disciplinaId === "2") {
-        return; // Pula a disciplina 2
-      }
-      disciplinasFiltradas[disciplinaId] = disciplinas[disciplinaId];
+  const toggleTurmaExpansao = useCallback(
+    (turmaId) => {
+      if (isAnimating[turmaId]) return;
+
+      setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
+      setTurmasExpandidas((prev) => ({
+        ...prev,
+        [turmaId]: !prev[turmaId],
+      }));
+
+      setTimeout(() => {
+        setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
+      }, EXPANSION_ANIMATION_DURATION);
+    },
+    [isAnimating]
+  );
+
+  const toggleEdicao = useCallback((turmaId) => {
+    setTurmasEditaveis((prev) => {
+      const novaSet = new Set(prev);
+      novaSet.has(turmaId) ? novaSet.delete(turmaId) : novaSet.add(turmaId);
+      return novaSet;
     });
+  }, []);
 
-    return disciplinasFiltradas;
-  };
+  const handleNotaChange = useCallback(
+    (alunoId, disciplina, valor) => {
+      let valorLimpo = valor.replace(/[^\d.,]/g, "").replace(",", ".");
 
-  // Carregar dados iniciais
+      if (valorLimpo.length > 3) {
+        valorLimpo = valorLimpo.slice(0, 3);
+      }
+
+      if (valorLimpo) {
+        const numero = parseFloat(valorLimpo);
+        if (numero > 100) valorLimpo = "100";
+        else if (numero < 0) valorLimpo = "0";
+      }
+
+      const chave = `${alunoId}-${trimestreSelecionado}`;
+      setNotas((prev) => ({
+        ...prev,
+        [chave]: {
+          ...prev[chave],
+          [disciplina]: valorLimpo,
+        },
+      }));
+
+      const chaveErro = `${alunoId}-${disciplina}`;
+      if (valorLimpo && valorLimpo.trim() !== "") {
+        setErrosValidacao((prev) => {
+          const novosErros = new Set(prev);
+          novosErros.delete(chaveErro);
+          return novosErros;
+        });
+      }
+    },
+    [trimestreSelecionado]
+  );
+
+  const getNotaAluno = useCallback(
+    (alunoId, disciplina) => {
+      const chave = `${alunoId}-${trimestreSelecionado}`;
+      return notas[chave]?.[disciplina] || "";
+    },
+    [notas, trimestreSelecionado]
+  );
+
+  const getNotaClass = useCallback((nota) => {
+    const notaNum = parseFloat(nota);
+    if (isNaN(notaNum) || nota === "") return "";
+    return notaNum >= 60 ? "cn-nota-aprovado" : "cn-nota-reprovado";
+  }, []);
+
+  const temErroValidacao = useCallback(
+    (alunoId, disciplina) => {
+      return errosValidacao.has(`${alunoId}-${disciplina}`);
+    },
+    [errosValidacao]
+  );
+
   useEffect(() => {
     testarConexao();
   }, []);
 
-  const testarConexao = async () => {
-    try {
-      setConnectionStatus("testing");
-      console.log("🔍 Iniciando teste de conexão completo...");
-
-      const baseResult = await TestService.testConnection();
-      console.log("✅ Teste base:", baseResult);
-
-      if (!baseResult.ok) {
-        setConnectionStatus("error");
-        setConnectionError(
-          `Não consegui conectar com o servidor: ${
-            baseResult.error || "Verifique a URL"
-          }`
-        );
-        return;
-      }
-
-      const turmasResult = await TestService.testTurmasEndpoint();
-      console.log("✅ Teste /turmas:", turmasResult);
-
-      if (turmasResult.status === 404) {
-        setConnectionStatus("error");
-        setConnectionError(
-          "Endpoint /turmas não encontrado. Verifique as rotas do backend."
-        );
-        return;
-      }
-
-      if (turmasResult.status === 401) {
-        setConnectionStatus("unauthorized");
-        setConnectionError("Não autenticado. Faça login novamente.");
-        return;
-      }
-
-      if (turmasResult.ok) {
-        setConnectionStatus("authenticated");
-        carregarDadosIniciais();
-      } else {
-        setConnectionStatus("error");
-        setConnectionError(`Erro no servidor: ${turmasResult.status}`);
-      }
-    } catch (error) {
-      console.error("❌ Erro no teste de conexão:", error);
-      setConnectionStatus("error");
-      setConnectionError(`Erro de rede: ${error.message}`);
-    }
-  };
+const testarConexao = async () => {
+  try {
+    setConnectionStatus("testing");
+    // Carrega diretamente ou faz um teste simples
+    setConnectionStatus("authenticated");
+    carregarDadosIniciais();
+  } catch (error) {
+    console.error("❌ Erro na conexão:", error);
+    setConnectionStatus("error");
+    setConnectionError(`Erro de rede: ${error.message}`);
+  }
+};
 
   const carregarDadosIniciais = async () => {
     setLoading(true);
     try {
-      console.log("📦 Iniciando carregamento de dados...");
+      const [turmasData, disciplinasData] = await Promise.all([
+        TurmaService.getAll(),
+        DisciplinaService.getAll(),
+      ]);
 
-      // 1. Carregar turmas
-      console.log("🔄 Carregando turmas...");
-      const turmasData = await TurmaService.getAll();
+      const turmasComTipo = turmasData.map((turma) => ({
+        ...turma,
+        tipo: getTipoPorTurma(turma.nome),
+      }));
 
-      // Ordenar turmas ANTES de processar
-      const turmasOrdenadas = ordenarTurmas(turmasData);
-      
-      // Determinar tipo baseado no PRIMEIRO CARACTERE do nome da turma
-      const turmasComTipo = turmasOrdenadas.map((turma) => {
-        const tipo = getTipoPorTurma(turma.nome);
-        console.log(`🏫 Turma: ${turma.nome} → Tipo: ${tipo}`);
-        return {
-          ...turma,
-          tipo: tipo,
-        };
-      });
-
-      console.log("✅ Turmas carregadas e ordenadas:", turmasComTipo);
-
-      // 2. Carregar disciplinas
-      console.log("🔄 Carregando disciplinas...");
-      const disciplinasData = await DisciplinaService.getAll();
       const disciplinasMap = {};
       disciplinasData.forEach((disc) => {
         disciplinasMap[disc.id] = disc.nome;
       });
       setDisciplinas(disciplinasMap);
-      console.log("✅ Disciplinas carregadas:", disciplinasMap);
-
-      // 3. Carregar alunos para cada turma
-      console.log("🔄 Carregando alunos por turma...");
-      const turmasComAlunosPromises = turmasComTipo.map(async (turma) => {
-        try {
-          const alunos = await AlunoService.getByTurma(turma.id);
-          return {
-            ...turma,
-            alunos: alunos,
-          };
-        } catch (error) {
-          console.warn(
-            `⚠️  Não foi possível carregar alunos da turma ${turma.id}`
-          );
-          return { ...turma, alunos: [] };
-        }
-      });
 
       const turmasComAlunos = await Promise.allSettled(
-        turmasComAlunosPromises
+        turmasComTipo.map(async (turma) => {
+          try {
+            const alunos = await AlunoService.getByTurma(turma.id);
+            return { ...turma, alunos };
+          } catch (error) {
+            console.warn(
+              `⚠️ Não foi possível carregar alunos da turma ${turma.id}`
+            );
+            return { ...turma, alunos: [] };
+          }
+        })
       ).then((results) =>
         results.map((result) =>
           result.status === "fulfilled" ? result.value : { alunos: [] }
@@ -208,15 +230,7 @@ const CadastroNotas = () => {
       );
 
       setTurmas(turmasComAlunos);
-      console.log("Todas as turmas processadas e ordenadas:", turmasComAlunos);
-
-      // 4. Carregar notas em background
-      console.log("🔄 Iniciando carregamento de notas em background...");
       carregarNotasExistentes(turmasComAlunos);
-
-      console.log(
-        "🎉 Interface carregada! Notas serão carregadas em background."
-      );
     } catch (error) {
       console.error("❌ Erro crítico ao carregar dados:", error);
       setConnectionStatus("error");
@@ -227,8 +241,6 @@ const CadastroNotas = () => {
   };
 
   const carregarNotasExistentes = async (turmasData) => {
-    console.log("🔄 Iniciando carregamento de notas existentes...");
-
     const notasCarregadas = {};
     const promises = [];
 
@@ -236,7 +248,7 @@ const CadastroNotas = () => {
       for (const aluno of turma.alunos) {
         const promise = NotaService.getByAluno(
           aluno.id,
-          parseInt(anoLetivo), //
+          parseInt(anoLetivo),
           parseInt(trimestreSelecionado)
         )
           .then((notasAluno) => {
@@ -248,25 +260,18 @@ const CadastroNotas = () => {
 
               const notaFrontend = (nota.nota * 10).toFixed(1);
 
-              if (turma.tipo === "fundamental1") {
-                // 1º-5º ANO: Se for disciplina 2 (Globalizada), armazena como "globalizada"
-                if (nota.idDisciplina === 2) {
-                  notasCarregadas[chave]["globalizada"] = notaFrontend;
-                }
-              } else {
-                // 6º-9º ANO: Armazena por disciplina (EXCETO disciplina 2)
-                if (nota.idDisciplina !== 2) {
-                  // ⚠️ IGNORA disciplina 2 para Fundamental II
-                  const disciplinaKey = nota.idDisciplina;
-                  notasCarregadas[chave][disciplinaKey] = notaFrontend;
-                }
+              if (turma.tipo === "fundamental1" && nota.idDisciplina === 2) {
+                notasCarregadas[chave]["globalizada"] = notaFrontend;
+              } else if (
+                turma.tipo === "fundamental2" &&
+                nota.idDisciplina !== 2
+              ) {
+                notasCarregadas[chave][nota.idDisciplina] = notaFrontend;
               }
             });
           })
-          .catch((error) => {
-            console.log(
-              `Nenhuma nota encontrada para o aluno ${aluno.nome}`
-            );
+          .catch(() => {
+            console.log(`Nenhuma nota encontrada para o aluno ${aluno.nome}`);
           });
 
         promises.push(promise);
@@ -274,176 +279,38 @@ const CadastroNotas = () => {
     }
 
     await Promise.allSettled(promises);
-    console.log("✅ Carregamento de notas concluído:", notasCarregadas);
     setNotas(notasCarregadas);
   };
 
-  // Filtrar turmas baseado no termo de busca
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return ordenarTurmas(turmas);
-    
-    const filtradas = turmas
-      .filter((turma) => {
-        const turmaNomeMatch = turma.nome
-          .toLowerCase()
-          .includes(filtro.toLowerCase());
-        const alunoNomeMatch = turma.alunos.some((aluno) =>
-          aluno.nome.toLowerCase().includes(filtro.toLowerCase())
-        );
-        return turmaNomeMatch || alunoNomeMatch;
-      })
+    if (!filtro.trim()) return turmas;
+
+    const filtroLower = filtro.toLowerCase();
+    return turmas
+      .filter(
+        (turma) =>
+          turma.nome.toLowerCase().includes(filtroLower) ||
+          turma.alunos.some((aluno) =>
+            aluno.nome.toLowerCase().includes(filtroLower)
+          )
+      )
       .map((turma) => ({
         ...turma,
         alunos: turma.alunos.filter(
           (aluno) =>
             !filtro ||
-            turma.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-            aluno.nome.toLowerCase().includes(filtro.toLowerCase())
+            turma.nome.toLowerCase().includes(filtroLower) ||
+            aluno.nome.toLowerCase().includes(filtroLower)
         ),
       }));
-
-    return ordenarTurmas(filtradas);
   }, [filtro, turmas]);
-
-  const toggleTurma = (turmaId) => {
-    setTurmasExpandidas((prev) => {
-      const novaSet = new Set(prev);
-      if (novaSet.has(turmaId)) {
-        novaSet.delete(turmaId);
-        setTurmasEditaveis((prevEdit) => {
-          const novaEditSet = new Set(prevEdit);
-          novaEditSet.delete(turmaId);
-          return novaEditSet;
-        });
-        setErrosValidacao((prev) => {
-          const novosErros = new Set(prev);
-          turmas
-            .find((t) => t.id === turmaId)
-            ?.alunos.forEach((aluno) => {
-              if (
-                turmas.find((t) => t.id === turmaId).tipo === "fundamental1"
-              ) {
-                novosErros.delete(`${aluno.id}-globalizada`);
-              } else {
-                Object.keys(disciplinas).forEach((discId) => {
-                  novosErros.delete(`${aluno.id}-${discId}`);
-                });
-              }
-            });
-          return novosErros;
-        });
-      } else {
-        novaSet.add(turmaId);
-      }
-      return novaSet;
-    });
-  };
-
-  const toggleEdicao = (turmaId) => {
-    setTurmasEditaveis((prev) => {
-      const novaSet = new Set(prev);
-      if (novaSet.has(turmaId)) {
-        novaSet.delete(turmaId);
-      } else {
-        novaSet.add(turmaId);
-      }
-      return novaSet;
-    });
-  };
-
-  const getTurnoClass = (turno) => {
-    const classes = {
-      manha: "notas-turno-manha",
-      tarde: "notas-turno-tarde",
-    };
-
-    const t = turno
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
-
-    return classes[t] || "";
-  };
-
-  const getTipoClass = (tipo) => {
-    return tipo === "fundamental1" ? "notas-tipo-fund1" : "notas-tipo-fund2";
-  };
-
-  const handleNotaChange = (alunoId, disciplina, valor) => {
-    const chave = `${alunoId}-${trimestreSelecionado}`;
-    setNotas((prev) => ({
-      ...prev,
-      [chave]: {
-        ...prev[chave],
-        [disciplina]: valor,
-      },
-    }));
-
-    const chaveErro = `${alunoId}-${disciplina}`;
-    if (valor && valor.trim() !== "") {
-      setErrosValidacao((prev) => {
-        const novosErros = new Set(prev);
-        novosErros.delete(chaveErro);
-        return novosErros;
-      });
-    }
-  };
-
-  const getNotaAluno = (alunoId, disciplina) => {
-    const chave = `${alunoId}-${trimestreSelecionado}`;
-    return notas[chave]?.[disciplina] || "";
-  };
-
-  const getNotaClass = (nota) => {
-    const notaNum = parseFloat(nota);
-    if (isNaN(notaNum) || nota === "") return "";
-    return notaNum >= 60 ? "nota-aprovado" : "nota-reprovado";
-  };
-
-  const verificarNotasCompletas = (turma) => {
-    const notasFaltando = [];
-
-    turma.alunos.forEach((aluno) => {
-      if (turma.tipo === "fundamental1") {
-        const nota = getNotaAluno(aluno.id, "globalizada");
-        if (!nota || nota.trim() === "") {
-          notasFaltando.push({
-            aluno: aluno.nome,
-            disciplina: "Nota Global",
-            chave: `${aluno.id}-globalizada`,
-          });
-        }
-      } else if (turma.tipo === "fundamental2") {
-        const disciplinasFiltradas = getDisciplinasPorTipo("fundamental2");
-        Object.keys(disciplinasFiltradas).forEach((disciplinaId) => {
-          const nota = getNotaAluno(aluno.id, disciplinaId);
-          if (!nota || nota.trim() === "") {
-            notasFaltando.push({
-              aluno: aluno.nome,
-              disciplina: disciplinasFiltradas[disciplinaId],
-              chave: `${aluno.id}-${disciplinaId}`,
-            });
-          }
-        });
-      }
-    });
-
-    return notasFaltando;
-  };
 
   const handleSalvarNotas = async (turmaId) => {
     setSaving((prev) => ({ ...prev, [turmaId]: true }));
 
     try {
       const turma = turmas.find((t) => t.id === turmaId);
-      const notasParaProcessar = [];
-
-      console.log(
-        "📝 Preparando notas para salvar da turma:",
-        turma.nome,
-        "Tipo:",
-        turma.tipo
-      );
+      if (!turma) return;
 
       const notasExistentes = await NotaService.getByTurma(
         turmaId,
@@ -451,98 +318,37 @@ const CadastroNotas = () => {
         parseInt(trimestreSelecionado)
       );
 
-      console.log("📊 Notas existentes encontradas:", notasExistentes);
-
-      // Criar um mapa rápido para verificar se a nota já existe
       const mapaNotasExistentes = {};
       notasExistentes.forEach((nota) => {
-        const chave = `${nota.idAluno}-${nota.idDisciplina}`;
-        mapaNotasExistentes[chave] = nota;
+        mapaNotasExistentes[`${nota.idAluno}-${nota.idDisciplina}`] = nota;
       });
+
+      const notasParaProcessar = [];
 
       turma.alunos.forEach((aluno) => {
         const chave = `${aluno.id}-${trimestreSelecionado}`;
         const notasAluno = notas[chave];
 
-        if (notasAluno) {
-          if (turma.tipo === "fundamental1") {
-            if (
-              notasAluno.globalizada &&
-              notasAluno.globalizada.trim() !== ""
-            ) {
-              const notaValor = parseFloat(notasAluno.globalizada);
+        if (!notasAluno) return;
 
-              if (isNaN(notaValor) || notaValor < 0 || notaValor > 100) {
-                console.error(
-                  `❌ Nota inválida para ${aluno.nome}: ${notasAluno.globalizada}`
-                );
-                return;
-              }
-
-              const chaveNotaExistente = `${aluno.id}-2`; // ID 2 para Ensino Globalizado
-              const notaExistente = mapaNotasExistentes[chaveNotaExistente];
-
-              notasParaProcessar.push({
-                operacao: notaExistente ? "update" : "create",
-                dados: {
-                  idAluno: aluno.id,
-                  idDisciplina: 2,
-                  idTurma: turmaId,
-                  trimestre: parseInt(trimestreSelecionado),
-                  nota: Math.round(notaValor), // SEM casas decimais
-                  anoLetivo: parseInt(anoLetivo),
-                },
-                idNotaExistente: notaExistente?.id,
-              });
-            }
-          } else {
-            // 6º ao 9º ANO - NOTAS POR DISCIPLINA (EXCETO DISCIPLINA 2)
-            Object.keys(notasAluno).forEach((disciplinaId) => {
-              if (disciplinaId === "2") return;
-
-              if (
-                notasAluno[disciplinaId] &&
-                notasAluno[disciplinaId].trim() !== ""
-              ) {
-                const notaValor = parseFloat(notasAluno[disciplinaId]);
-                const disciplinaIdNum = parseInt(disciplinaId);
-
-                if (isNaN(notaValor) || notaValor < 0 || notaValor > 100) {
-                  console.error(
-                    `❌ Nota inválida para ${aluno.nome} em disciplina ${disciplinaId}: ${notasAluno[disciplinaId]}`
-                  );
-                  return;
-                }
-
-                if (!disciplinas[disciplinaIdNum]) {
-                  console.error(
-                    `❌ Disciplina ${disciplinaIdNum} não existe no sistema`
-                  );
-                  return;
-                }
-
-                const chaveNotaExistente = `${aluno.id}-${disciplinaIdNum}`;
-                const notaExistente = mapaNotasExistentes[chaveNotaExistente];
-
-                notasParaProcessar.push({
-                  operacao: notaExistente ? "update" : "create",
-                  dados: {
-                    idAluno: aluno.id,
-                    idDisciplina: disciplinaIdNum,
-                    idTurma: turmaId,
-                    trimestre: parseInt(trimestreSelecionado),
-                    nota: Math.round(notaValor), // SEM casas decimais
-                    anoLetivo: parseInt(anoLetivo),
-                  },
-                  idNotaExistente: notaExistente?.id,
-                });
-              }
-            });
-          }
+        if (turma.tipo === "fundamental1") {
+          processarNotaGlobalizada(
+            aluno,
+            turmaId,
+            notasAluno,
+            mapaNotasExistentes,
+            notasParaProcessar
+          );
+        } else {
+          processarNotasFundamental2(
+            aluno,
+            turmaId,
+            notasAluno,
+            mapaNotasExistentes,
+            notasParaProcessar
+          );
         }
       });
-
-      console.log("📤 Notas para processar:", notasParaProcessar);
 
       if (notasParaProcessar.length === 0) {
         alert("Nenhuma nota para salvar!");
@@ -550,31 +356,17 @@ const CadastroNotas = () => {
       }
 
       const resultados = await Promise.allSettled(
-        notasParaProcessar.map((item, index) => {
-          console.log(
-            `📤 [${index + 1}/${notasParaProcessar.length}] Processando (${
-              item.operacao
-            }):`,
-            item.dados
-          );
-
-          if (item.operacao === "update") {
-            return NotaService.update(item.idNotaExistente, item.dados);
-          } else {
-            return NotaService.create(item.dados);
-          }
-        })
+        notasParaProcessar.map((item) =>
+          item.operacao === "update"
+            ? NotaService.update(item.idNotaExistente, item.dados)
+            : NotaService.create(item.dados)
+        )
       );
 
       const sucessos = resultados.filter((r) => r.status === "fulfilled");
       const falhas = resultados.filter((r) => r.status === "rejected");
 
-      console.log(`✅ ${sucessos.length} notas processadas com sucesso`);
-      console.log(`❌ ${falhas.length} notas com erro`);
-
       if (falhas.length > 0) {
-        console.error("❌ Erros ao processar notas:", falhas);
-
         const mensagensErro = falhas
           .map((falha, index) => {
             const notaComErro = notasParaProcessar[resultados.indexOf(falha)];
@@ -599,8 +391,6 @@ const CadastroNotas = () => {
       });
 
       alert(`Sucesso! ${sucessos.length} nota(s) salva(s)/atualizada(s).`);
-
-      // Recarrega as notas da turma para refletir as mudanças
       await carregarNotasExistentes([turma]);
     } catch (error) {
       console.error("❌ Erro crítico ao salvar notas:", error);
@@ -610,94 +400,202 @@ const CadastroNotas = () => {
     }
   };
 
-  const handleGerarBoletins = (turmaId, turmaNome) => {
-    const turma = turmas.find((t) => t.id === turmaId);
-    const notasFaltando = verificarNotasCompletas(turma);
+  const processarNotaGlobalizada = (
+    aluno,
+    turmaId,
+    notasAluno,
+    mapaNotasExistentes,
+    notasParaProcessar
+  ) => {
+    if (notasAluno.globalizada?.trim()) {
+      const notaValor = parseFloat(notasAluno.globalizada);
+      if (isNaN(notaValor) || notaValor < 0 || notaValor > 100) {
+        console.error(
+          `❌ Nota inválida para ${aluno.nome}: ${notasAluno.globalizada}`
+        );
+        return;
+      }
 
-    // Impede geração caso faltem notas
-    if (notasFaltando.length > 0) {
+      const chaveNotaExistente = `${aluno.id}-2`;
+      const notaExistente = mapaNotasExistentes[chaveNotaExistente];
+
+      notasParaProcessar.push({
+        operacao: notaExistente ? "update" : "create",
+        dados: {
+          idAluno: aluno.id,
+          idDisciplina: 2,
+          idTurma: turmaId,
+          trimestre: parseInt(trimestreSelecionado),
+          nota: Math.round(notaValor),
+          anoLetivo: parseInt(anoLetivo),
+        },
+        idNotaExistente: notaExistente?.id,
+      });
+    }
+  };
+
+  const processarNotasFundamental2 = (
+    aluno,
+    turmaId,
+    notasAluno,
+    mapaNotasExistentes,
+    notasParaProcessar
+  ) => {
+    Object.keys(notasAluno).forEach((disciplinaId) => {
+      if (disciplinaId === "2" || !notasAluno[disciplinaId]?.trim()) return;
+
+      const notaValor = parseFloat(notasAluno[disciplinaId]);
+      const disciplinaIdNum = parseInt(disciplinaId);
+
+      if (isNaN(notaValor) || notaValor < 0 || notaValor > 100) {
+        console.error(
+          `❌ Nota inválida para ${aluno.nome} em disciplina ${disciplinaId}: ${notasAluno[disciplinaId]}`
+        );
+        return;
+      }
+
+      if (!disciplinas[disciplinaIdNum]) {
+        console.error(`❌ Disciplina ${disciplinaIdNum} não existe no sistema`);
+        return;
+      }
+
+      const chaveNotaExistente = `${aluno.id}-${disciplinaIdNum}`;
+      const notaExistente = mapaNotasExistentes[chaveNotaExistente];
+
+      notasParaProcessar.push({
+        operacao: notaExistente ? "update" : "create",
+        dados: {
+          idAluno: aluno.id,
+          idDisciplina: disciplinaIdNum,
+          idTurma: turmaId,
+          trimestre: parseInt(trimestreSelecionado),
+          nota: Math.round(notaValor),
+          anoLetivo: parseInt(anoLetivo),
+        },
+        idNotaExistente: notaExistente?.id,
+      });
+    });
+  };
+
+  const verificarNotasCompletas = useCallback(
+    (turma) => {
+      const notasFaltando = [];
+
+      turma.alunos.forEach((aluno) => {
+        if (turma.tipo === "fundamental1") {
+          if (!getNotaAluno(aluno.id, "globalizada")?.trim()) {
+            notasFaltando.push({
+              aluno: aluno.nome,
+              disciplina: "Nota Global",
+              chave: `${aluno.id}-globalizada`,
+            });
+          }
+        } else if (turma.tipo === "fundamental2") {
+          const disciplinasFiltradas = getDisciplinasPorTipo("fundamental2");
+          Object.keys(disciplinasFiltradas).forEach((disciplinaId) => {
+            if (!getNotaAluno(aluno.id, disciplinaId)?.trim()) {
+              notasFaltando.push({
+                aluno: aluno.nome,
+                disciplina: disciplinasFiltradas[disciplinaId],
+                chave: `${aluno.id}-${disciplinaId}`,
+              });
+            }
+          });
+        }
+      });
+
+      return notasFaltando;
+    },
+    [getNotaAluno, getDisciplinasPorTipo]
+  );
+
+  const handleGerarBoletins = useCallback(
+    (turmaId, turmaNome) => {
+      const turma = turmas.find((t) => t.id === turmaId);
+      const notasFaltando = verificarNotasCompletas(turma);
+
+      if (notasFaltando.length > 0) {
+        const novosErros = new Set(errosValidacao);
+        notasFaltando.forEach((item) => novosErros.add(item.chave));
+        setErrosValidacao(novosErros);
+
+        alert(
+          `Não é possível gerar os boletins da turma ${turmaNome}.\nExistem ${notasFaltando.length} nota(s) não preenchida(s).`
+        );
+        return;
+      }
+
       const novosErros = new Set(errosValidacao);
-      notasFaltando.forEach((item) => novosErros.add(item.chave));
+      turma.alunos.forEach((aluno) => {
+        if (turma.tipo === "fundamental1") {
+          novosErros.delete(`${aluno.id}-globalizada`);
+        } else {
+          Object.keys(disciplinas).forEach((discId) =>
+            novosErros.delete(`${aluno.id}-${discId}`)
+          );
+        }
+      });
       setErrosValidacao(novosErros);
 
-      alert(
-        `Não é possível gerar os boletins da turma ${turmaNome}. Existem ${notasFaltando.length} nota(s) não preenchida(s):\n\n` +
-          notasFaltando
-            .map((item) => `• ${item.aluno} - ${item.disciplina}`)
-            .join("\n") +
-          `\n\nPreencha todas as notas desta turma antes de gerar os boletins.`
-      );
-      return;
-    }
+      const alunosComNotas = turma.alunos.map((aluno) => {
+        const chave = `${aluno.id}-${trimestreSelecionado}`;
+        return {
+          aluno,
+          notas:
+            turma.tipo === "fundamental1"
+              ? { globalizada: notas[chave]?.globalizada || " - " }
+              : Object.keys(getDisciplinasPorTipo("fundamental2")).reduce(
+                  (acc, discId) => ({
+                    ...acc,
+                    [discId]: notas[chave]?.[discId] || " - ",
+                  }),
+                  {}
+                ),
+        };
+      });
 
-    // Limpa erros de validação antes de gerar
-    const novosErros = new Set(errosValidacao);
-    turma.alunos.forEach((aluno) => {
-      if (turma.tipo === "fundamental1") {
-        novosErros.delete(`${aluno.id}-globalizada`);
-      } else {
-        Object.keys(disciplinas).forEach((discId) =>
-          novosErros.delete(`${aluno.id}-${discId}`)
-        );
-      }
-    });
-    setErrosValidacao(novosErros);
+      const boletinsHTML = gerarBoletimLote({
+        turma,
+        alunosComNotas,
+        disciplinas,
+        anoLetivo,
+        trimestre: trimestreSelecionado,
+        dataHoraAgora: new Date().toLocaleString("pt-BR"),
+        formatarData: (dataString) =>
+          dataString ? new Date(dataString).toLocaleDateString("pt-BR") : "-",
+      });
 
-    // Montar estrutura de alunos + notas para o relatório
-    const alunosComNotas = turma.alunos.map((aluno) => {
-      const chave = `${aluno.id}-${trimestreSelecionado}`;
-
-      return {
-        aluno,
-        notas:
-          turma.tipo === "fundamental1"
-            ? { globalizada: notas[chave]?.globalizada || " - " }
-            : Object.keys(getDisciplinasPorTipo("fundamental2")).reduce(
-                (acc, discId) => ({
-                  ...acc,
-                  [discId]: notas[chave]?.[discId] || " - ",
-                }),
-                {}
-              ),
-      };
-    });
-
-    const dataHoraAgora = new Date().toLocaleString("pt-BR");
-
-    // Gerar HTML completo de todos os boletins
-    const boletinsHTML = gerarBoletimLote({
-      turma,
-      alunosComNotas,
+      imprimirBoletim(boletinsHTML);
+    },
+    [
+      turmas,
+      verificarNotasCompletas,
+      errosValidacao,
       disciplinas,
+      trimestreSelecionado,
+      notas,
+      getDisciplinasPorTipo,
       anoLetivo,
-      trimestre: trimestreSelecionado,
-      dataHoraAgora,
-      formatarData,
-    });
+    ]
+  );
 
-    // Criar iframe oculto para imprimir
+  const imprimirBoletim = (htmlContent) => {
     const oldFrame = document.getElementById("print-boletim-frame");
     if (oldFrame) oldFrame.remove();
 
     const iframe = document.createElement("iframe");
     iframe.id = "print-boletim-frame";
-    iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
+    iframe.style.cssText =
+      "position:fixed;right:0;bottom:0;width:0;height:0;border:0;";
     document.body.appendChild(iframe);
 
     const frameDoc = iframe.contentWindow || iframe.contentDocument;
     const doc = frameDoc.document || frameDoc;
 
-    // Escrever boletins dentro do iframe
     doc.open();
-    doc.write(boletinsHTML);
+    doc.write(htmlContent);
     doc.close();
 
-    // Após carregar, imprime
     iframe.onload = () => {
       setTimeout(() => {
         frameDoc.focus();
@@ -706,57 +604,56 @@ const CadastroNotas = () => {
     };
   };
 
-  const temErroValidacao = (alunoId, disciplina) => {
-    return errosValidacao.has(`${alunoId}-${disciplina}`);
-  };
-
   if (loading) {
     return (
-      <div className="notas-container">
-        <div className="notas-loading">
-          <Loader size={32} className="notas-spinner" />
-          <p>Carregando dados...</p>
+      <div className="cn-container">
+        <div className="cn-loading-state">
+          <Loader size={48} className="cn-spinner" />
+          <h4>Carregando dados...</h4>
+          <p>Aguarde enquanto buscamos as turmas e alunos.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="notas-container">
-      <div className="notas-form-section">
-        <div className="notas-section-header">
+    <div className="cn-container">
+      {/* Seção de Filtros */}
+      <div className="cn-section">
+        <div className="cn-section-header">
           <span>Filtros e Configurações</span>
         </div>
-        <div className="notas-form-grid">
-          <div className="notas-form-group notas-third-width">
+        <div className="cn-form-grid">
+          <div className="cn-form-group cn-third-width">
             <label>Ano Letivo</label>
             <select
-              className="notas-select"
+              className="cn-select"
               value={anoLetivo}
               onChange={(e) => setAnoLetivo(e.target.value)}
             >
-              <option value="2025">2025</option>{" "}
+              <option value={ANO_LETIVO}>{ANO_LETIVO}</option>
             </select>
           </div>
-          <div className="notas-form-group notas-third-width">
+          <div className="cn-form-group cn-third-width">
             <label>Trimestre</label>
             <select
-              className="notas-select"
+              className="cn-select"
               value={trimestreSelecionado}
-              onChange={(e) => setTrimestreSelecionado(e.target.value)}
+              onChange={(e) => handleTrimestreChange(e.target.value)}
+              disabled={animandoTrimestre}
             >
               <option value="1">1º Trimestre</option>
               <option value="2">2º Trimestre</option>
               <option value="3">3º Trimestre</option>
             </select>
           </div>
-          <div className="notas-form-group notas-third-width">
+          <div className="cn-form-group cn-third-width">
             <label>Buscar por turma ou aluno</label>
-            <div className="notas-input-wrapper">
-              <Search className="notas-input-icon" size={18} />
+            <div className="cn-input-wrapper">
+              <Search className="cn-input-icon" size={18} />
               <input
                 type="text"
-                className="notas-input notas-search-input"
+                className="cn-input cn-search-input"
                 placeholder="Digite para buscar..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
@@ -766,12 +663,18 @@ const CadastroNotas = () => {
         </div>
       </div>
 
-      <div className="notas-form-section">
-        <div className="notas-section-header">
+      {/* Lista de Turmas */}
+      <div className="cn-section">
+        <div
+          className={`cn-section-header ${
+            animandoTrimestre ? "cn-trimestre-change" : ""
+          }`}
+        >
           <span>
-            Cadastro de Notas - {anoLetivo} - {trimestreSelecionado}º Trimestre
+            Lançamento de Notas - {anoLetivo} - {trimestreSelecionado}º
+            Trimestre
           </span>
-          <span className="notas-counter">
+          <span className="cn-turmas-count">
             {turmasFiltradas.length} turma
             {turmasFiltradas.length !== 1 ? "s" : ""} encontrada
             {turmasFiltradas.length !== 1 ? "s" : ""}
@@ -779,208 +682,56 @@ const CadastroNotas = () => {
         </div>
 
         {turmasFiltradas.length === 0 ? (
-          <div className="notas-empty-state">
-            <div className="notas-empty-icon">
+          <div
+            className={`cn-empty-state ${
+              animandoTrimestre ? "cn-trimestre-change" : ""
+            }`}
+          >
+            <div className="cn-empty-icon">
               <BookOpen size={40} />
             </div>
             <h4>Nenhuma turma encontrada</h4>
             <p>
-              Tente ajustar os filtros de busca ou verifique se há turmas
-              cadastradas.
+              {turmas.length === 0
+                ? "Não há turmas cadastradas no momento."
+                : "Tente ajustar os filtros de busca."}
             </p>
+            <button
+              className="cn-refresh-button"
+              onClick={carregarDadosIniciais}
+            >
+              <RefreshCw size={16} />
+              Tentar novamente
+            </button>
           </div>
         ) : (
-          <div className="notas-turmas-list">
-            {turmasFiltradas.map((turma) => {
-              const isExpandida = turmasExpandidas.has(turma.id);
-              const isEditavel = turmasEditaveis.has(turma.id);
-              const isSaving = saving[turma.id];
-              const disciplinasFiltradas = getDisciplinasPorTipo(turma.tipo);
-
-              return (
-                <div key={turma.id} className="notas-turma-card">
-                  <div className="notas-turma-info">
-                    <div className="notas-turma-header">
-                      <div
-                        className="notas-turma-header-left notas-clickable"
-                        onClick={() => toggleTurma(turma.id)}
-                      >
-                        {isExpandida ? (
-                          <ChevronDown size={20} />
-                        ) : (
-                          <ChevronRight size={20} />
-                        )}
-                        <h3 className="notas-turma-nome">{turma.nome}</h3>
-
-                        <span
-                          className={`notas-turno ${getTurnoClass(
-                            turma.turno
-                          )}`}
-                        >
-                          {turma.turno}
-                        </span>
-                      </div>
-
-                      <div className="notas-actions">
-                        <button
-                          className="notas-boletins-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleGerarBoletins(turma.id, turma.nome);
-                          }}
-                          title={`Gerar boletins apenas da turma ${turma.nome}`}
-                        >
-                          <BookOpen size={16} />
-                          Gerar Boletins
-                        </button>
-                      </div>
-                    </div>
-
-                    {isExpandida && (
-                      <>
-                        <div className="notas-table-container">
-                          {turma.tipo === "fundamental1" && (
-                            <>
-                              <div className="notas-table-header notas-globalizada">
-                                <span>Nome do Aluno</span>
-                                <span>Nota Global</span>
-                              </div>
-                              {turma.alunos.map((aluno) => (
-                                <div
-                                  key={aluno.id}
-                                  className="notas-aluno-row notas-globalizadas"
-                                >
-                                  <div className="notas-aluno-nome">
-                                    {aluno.nome}
-                                  </div>
-                                  <div className="notas-nota-input">
-                                    <input
-                                      type="number"
-                                      min="0"
-                                      max="100"
-                                      step="0.1"
-                                      className={`notas-input-nota ${getNotaClass(
-                                        getNotaAluno(aluno.id, "globalizada")
-                                      )} ${
-                                        temErroValidacao(
-                                          aluno.id,
-                                          "globalizada"
-                                        )
-                                          ? "notas-error"
-                                          : ""
-                                      }`}
-                                      placeholder="0.0"
-                                      value={getNotaAluno(
-                                        aluno.id,
-                                        "globalizada"
-                                      )}
-                                      onChange={(e) =>
-                                        handleNotaChange(
-                                          aluno.id,
-                                          "globalizada",
-                                          e.target.value
-                                        )
-                                      }
-                                      disabled={!isEditavel || isSaving}
-                                    />
-                                  </div>
-                                </div>
-                              ))}
-                            </>
-                          )}
-
-                          {turma.tipo === "fundamental2" && (
-                            <>
-                              <div className="notas-table-header-d notas-disciplinas">
-                                <span>Nome do Aluno</span>
-                                {Object.values(disciplinasFiltradas).map(
-                                  (discNome, index) => (
-                                    <span key={index}>{discNome}</span>
-                                  )
-                                )}
-                              </div>
-                              {turma.alunos.map((aluno) => (
-                                <div
-                                  key={aluno.id}
-                                  className="notas-aluno-row notas-disciplinas-d"
-                                >
-                                  <div className="notas-aluno-nome">
-                                    {aluno.nome}
-                                  </div>
-                                  {Object.keys(disciplinasFiltradas).map(
-                                    (discId, index) => (
-                                      <div
-                                        key={index}
-                                        className="notas-nota-input"
-                                        data-label={
-                                          disciplinasFiltradas[discId]
-                                        }
-                                      >
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          max="100"
-                                          step="0.1"
-                                          className={`notas-input-nota ${getNotaClass(
-                                            getNotaAluno(aluno.id, discId)
-                                          )} ${
-                                            temErroValidacao(aluno.id, discId)
-                                              ? "notas-error"
-                                              : ""
-                                          }`}
-                                          placeholder="0.0"
-                                          value={getNotaAluno(aluno.id, discId)}
-                                          onChange={(e) =>
-                                            handleNotaChange(
-                                              aluno.id,
-                                              discId,
-                                              e.target.value
-                                            )
-                                          }
-                                          disabled={!isEditavel || isSaving}
-                                        />
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </div>
-
-                        <div className="notas-table-actions">
-                          {!isEditavel ? (
-                            <button
-                              className="notas-editar-button"
-                              onClick={() => toggleEdicao(turma.id)}
-                              title="Editar notas"
-                              disabled={isSaving}
-                            >
-                              <Edit3 size={16} />
-                              Editar Notas
-                            </button>
-                          ) : (
-                            <button
-                              className="notas-salvar-button"
-                              onClick={() => handleSalvarNotas(turma.id)}
-                              title="Salvar notas"
-                              disabled={isSaving}
-                            >
-                              {isSaving ? (
-                                <Loader size={16} className="notas-spinner" />
-                              ) : (
-                                <Save size={16} />
-                              )}
-                              {isSaving ? "Salvando..." : "Salvar Notas"}
-                            </button>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+          <div
+            className={`cn-turmas-list ${
+              animandoTrimestre ? "cn-trimestre-change" : ""
+            }`}
+          >
+            {turmasFiltradas.map((turma, index) => (
+              <TurmaCard
+                key={turma.id}
+                turma={turma}
+                index={index}
+                animandoTrimestre={animandoTrimestre}
+                isAnimating={isAnimating}
+                isExpandida={turmasExpandidas[turma.id]}
+                isEditavel={turmasEditaveis.has(turma.id)}
+                isSaving={saving[turma.id]}
+                disciplinasFiltradas={getDisciplinasPorTipo(turma.tipo)}
+                onToggleExpansao={toggleTurmaExpansao}
+                onToggleEdicao={toggleEdicao}
+                onSalvarNotas={handleSalvarNotas}
+                onGerarBoletins={handleGerarBoletins}
+                getNotaAluno={getNotaAluno}
+                getNotaClass={getNotaClass}
+                handleNotaChange={handleNotaChange}
+                temErroValidacao={temErroValidacao}
+                getTurnoClass={getTurnoClass}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -988,4 +739,257 @@ const CadastroNotas = () => {
   );
 };
 
-export default CadastroNotas;
+
+const TurmaCard = React.memo(
+  ({
+    turma,
+    index,
+    animandoTrimestre,
+    isAnimating,
+    isExpandida,
+    isEditavel,
+    isSaving,
+    disciplinasFiltradas,
+    onToggleExpansao,
+    onToggleEdicao,
+    onSalvarNotas,
+    onGerarBoletins,
+    getNotaAluno,
+    getNotaClass,
+    handleNotaChange,
+    temErroValidacao,
+    getTurnoClass,
+  }) => {
+    return (
+      <div
+        className={`cn-turma-card ${
+          isAnimating[turma.id] ? "cn-animating" : ""
+        }`}
+        style={
+          animandoTrimestre ? { animationDelay: `${0.05 + index * 0.05}s` } : {}
+        }
+      >
+        <div className="cn-turma-info">
+          <div className="cn-turma-header-wrapper">
+            <div
+              className="cn-turma-header cn-clickable"
+              onClick={() => onToggleExpansao(turma.id)}
+            >
+              {isExpandida ? (
+                <ChevronUp
+                  size={20}
+                  style={{ color: "#64748b", flexShrink: 0 }}
+                />
+              ) : (
+                <ChevronDown
+                  size={20}
+                  style={{ color: "#64748b", flexShrink: 0 }}
+                />
+              )}
+              <h3 className="cn-turma-nome">{turma.nome}</h3>
+              <span className={`cn-turma-turno ${getTurnoClass(turma.turno)}`}>
+                {turma.turno}
+              </span>
+            </div>
+          </div>
+
+          <div className="cn-turma-details">
+            <div className="cn-alunos-count">
+              {turma.alunos.length} aluno{turma.alunos.length !== 1 ? "s" : ""}
+            </div>
+          </div>
+
+          <div
+            className={`cn-alunos-container ${
+              isExpandida ? "cn-expanded" : "cn-collapsed"
+            }`}
+          >
+            {turma.alunos && turma.alunos.length > 0 ? (
+              <div className="cn-turma-content">
+                <div className="cn-table-container">
+                  {turma.tipo === "fundamental1" ? (
+                    <NotasGlobalizadas
+                      alunos={turma.alunos}
+                      isEditavel={isEditavel}
+                      isSaving={isSaving}
+                      getNotaAluno={getNotaAluno}
+                      getNotaClass={getNotaClass}
+                      handleNotaChange={handleNotaChange}
+                      temErroValidacao={temErroValidacao}
+                    />
+                  ) : (
+                    <NotasPorDisciplina
+                      alunos={turma.alunos}
+                      disciplinasFiltradas={disciplinasFiltradas}
+                      isEditavel={isEditavel}
+                      isSaving={isSaving}
+                      getNotaAluno={getNotaAluno}
+                      getNotaClass={getNotaClass}
+                      handleNotaChange={handleNotaChange}
+                      temErroValidacao={temErroValidacao}
+                    />
+                  )}
+                </div>
+
+                <div className="cn-turma-actions">
+                  <button
+                    className="cn-boletins-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onGerarBoletins(turma.id, turma.nome);
+                    }}
+                    title={`Gerar boletins da turma ${turma.nome}`}
+                  >
+                    <BookOpen size={16} />
+                    Gerar Boletins
+                  </button>
+
+                  {!isEditavel ? (
+                    <button
+                      className="cn-editar-button"
+                      onClick={() => onToggleEdicao(turma.id)}
+                      title="Editar notas"
+                      disabled={isSaving}
+                    >
+                      <Edit3 size={16} />
+                      Editar Notas
+                    </button>
+                  ) : (
+                    <button
+                      className="cn-salvar-button"
+                      onClick={() => onSalvarNotas(turma.id)}
+                      title="Salvar notas"
+                      disabled={isSaving}
+                    >
+                      {isSaving ? (
+                        <Loader size={16} className="cn-spinner" />
+                      ) : (
+                        <Save size={16} />
+                      )}
+                      {isSaving ? "Salvando..." : "Salvar Notas"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="cn-empty-alunos-message">
+                <p>Nenhum aluno matriculado nesta turma.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+);
+
+// Componente para notas globalizadas
+const NotasGlobalizadas = React.memo(
+  ({
+    alunos,
+    isEditavel,
+    isSaving,
+    getNotaAluno,
+    getNotaClass,
+    handleNotaChange,
+    temErroValidacao,
+  }) => {
+    return (
+      <>
+        <div className="cn-table-header cn-globalizada">
+          <span>Nome do Aluno</span>
+          <span>Nota Global</span>
+        </div>
+        <div className="cn-alunos-list">
+          {alunos.map((aluno) => (
+            <div key={aluno.id} className="cn-aluno-row cn-globalizada">
+              <div className="cn-aluno-nome">{aluno.nome}</div>
+              <div className="cn-nota-input-global">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]{0,2}[,.]?[0-9]{0,1}"
+                  maxLength="3"
+                  className={`cn-input-nota ${getNotaClass(
+                    getNotaAluno(aluno.id, "globalizada")
+                  )} ${
+                    temErroValidacao(aluno.id, "globalizada") ? "cn-error" : ""
+                  }`}
+                  placeholder="00,0"
+                  value={getNotaAluno(aluno.id, "globalizada")}
+                  onChange={(e) =>
+                    handleNotaChange(aluno.id, "globalizada", e.target.value)
+                  }
+                  onKeyPress={(e) =>
+                    !/[\d,.]/.test(e.key) && e.preventDefault()
+                  }
+                  disabled={!isEditavel || isSaving}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+);
+
+// Componente para notas por disciplina
+const NotasPorDisciplina = React.memo(
+  ({
+    alunos,
+    disciplinasFiltradas,
+    isEditavel,
+    isSaving,
+    getNotaAluno,
+    getNotaClass,
+    handleNotaChange,
+    temErroValidacao,
+  }) => {
+    return (
+      <>
+        <div className="cn-table-header cn-disciplinas">
+          <span>Nome do Aluno</span>
+          {Object.values(disciplinasFiltradas).map((discNome, index) => (
+            <span key={index}>{discNome}</span>
+          ))}
+        </div>
+        <div className="cn-alunos-list">
+          {alunos.map((aluno) => (
+            <div key={aluno.id} className="cn-aluno-row cn-disciplinas">
+              <div className="cn-aluno-nome">{aluno.nome}</div>
+              {Object.keys(disciplinasFiltradas).map((discId, index) => (
+                <div
+                  key={index}
+                  className="cn-nota-input"
+                  data-label={disciplinasFiltradas[discId]}
+                >
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]{0,2}[,.]?[0-9]{0,1}"
+                    maxLength="3"
+                    className={`cn-input-nota ${getNotaClass(
+                      getNotaAluno(aluno.id, discId)
+                    )} ${temErroValidacao(aluno.id, discId) ? "cn-error" : ""}`}
+                    placeholder="00,0"
+                    value={getNotaAluno(aluno.id, discId)}
+                    onChange={(e) =>
+                      handleNotaChange(aluno.id, discId, e.target.value)
+                    }
+                    onKeyPress={(e) =>
+                      !/[\d,.]/.test(e.key) && e.preventDefault()
+                    }
+                    disabled={!isEditavel || isSaving}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </>
+    );
+  }
+);
+
+export default NotasSecretaria;

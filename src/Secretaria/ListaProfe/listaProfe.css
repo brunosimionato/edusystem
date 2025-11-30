@@ -1,7 +1,7 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -9,7 +9,15 @@
   }
 }
 
-/* Container principal */
+@keyframes simpleFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .cadastro-turma-form-container {
   display: flex;
   flex-direction: column;
@@ -17,10 +25,9 @@
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  animation: slideUp 0.8s ease-out;
+  animation: slideUp 0.5s ease-out;
 }
 
-/* Seções do formulário */
 .cadastro-turma-form-section {
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -34,7 +41,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Cabeçalho das seções */
 .cadastro-turma-section-header {
   font-size: 15px;
   font-weight: 600;
@@ -47,7 +53,6 @@
   align-items: center;
 }
 
-/* Grid do formulário */
 .cadastro-turma-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -55,7 +60,6 @@
   padding: 24px 30px;
 }
 
-/* Grupos */
 .cadastro-turma-form-group {
   display: flex;
   flex-direction: column;
@@ -82,14 +86,12 @@
   pointer-events: none;
 }
 
-/* Wrapper do input com ícone */
 .cadastro-turma-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-/* Ícone dentro do input */
 .cadastro-turma-input-icon-professor {
   position: absolute;
   left: 14px;
@@ -134,7 +136,6 @@
   transform: translateY(-1px);
 }
 
-/* Lista de professores */
 .professores-list {
   display: flex;
   flex-direction: column;
@@ -160,13 +161,16 @@
   border-color: #fca5a5;
 }
 
+.professor-card.animating {
+  pointer-events: none;
+}
+
 .professor-info {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* Header do professor com botões à direita */
 .professor-header {
   display: flex;
   align-items: center;
@@ -179,16 +183,15 @@
   user-select: none;
 }
 
-/* Container da info básica + avatar */
 .professor-basic-info-container {
   display: flex;
   align-items: center;
   gap: 16px;
   flex: 1;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Avatar do professor */
 .professor-avatar {
   display: flex;
   align-items: center;
@@ -206,7 +209,6 @@
   color: #dc2626;
 }
 
-/* Info básica do professor */
 .professor-basic-info {
   display: flex;
   flex-direction: column;
@@ -231,14 +233,12 @@
   font-weight: 500;
 }
 
-/* Container de ações do header */
 .professor-header-actions {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
 }
 
-/* Botões do professor */
 .action-button-professor {
   display: flex;
   align-items: center;
@@ -255,7 +255,6 @@
   transition: all 0.2s ease;
 }
 
-/* Editar */
 .edit-button-profe {
   background: #3b82f6;
   color: white;
@@ -267,7 +266,6 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* Imprimir */
 .print-button-profe {
   background: #6b7280;
   color: #fff;
@@ -279,7 +277,6 @@
   transform: translateY(-1px);
 }
 
-/* Botão de ativar (verde) */
 .activate-button {
   background: #10b981;
   color: white;
@@ -292,7 +289,6 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Botão de inativar (vermelho) */
 .deactivate-button {
   background: #ef4444;
   color: white;
@@ -305,17 +301,30 @@
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-/* Detalhes expandidos do professor */
+.professor-details-wrapper {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.professor-details-wrapper.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.professor-details-wrapper.expanded {
+  max-height: 1000px;
+  opacity: 1;
+}
+
 .professor-details-container {
   padding: 20px;
   border-top: 1px solid #f1f5f9;
-  margin-top: -1px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+  animation: simpleFade 0.3s ease;
 }
 
-/* Disciplinas */
 .professor-lista-section.horizontal {
   display: flex;
   flex-direction: row;
@@ -352,13 +361,14 @@
   border-radius: 16px;
   font-size: 12px;
   font-weight: 500;
+  animation: simpleFade 0.4s ease;
 }
 
-/* Tabela de turmas */
 .turmas-table-container {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   overflow: hidden;
+  animation: simpleFade 0.3s ease;
 }
 
 .turmas-table-header {
@@ -375,7 +385,7 @@
   letter-spacing: 0.05em;
 }
 
-.turmas-table-header> :nth-child(2) {
+.turmas-table-header > :nth-child(2) {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -389,6 +399,12 @@
   border-bottom: 1px solid #f1f5f9;
   align-items: center;
   font-size: 14px;
+  transition: background-color 0.2s ease;
+  animation: simpleFade 0.4s ease;
+}
+
+.turma-row:hover {
+  background-color: #f8fafc;
 }
 
 .turma-row > :nth-child(2) {
@@ -420,7 +436,6 @@
   color: #1d4ed8;
 }
 
-/* Estado vazio */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -455,21 +470,20 @@
   margin: 0;
 }
 
-/* MODAL */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: simpleFade 0.2s ease;
 }
 
-/* Modal em si */
 .modal-content {
   background: #fff;
   border-radius: 8px;
@@ -478,11 +492,38 @@
   max-width: 80%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   position: relative;
+  animation: slideUp 0.3s ease-out;
 }
 
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #64748b;
+}
 
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
 
-/* Responsividade */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 1024px) {
   .professor-contact-info {
     grid-template-columns: 1fr;
@@ -521,8 +562,8 @@
   }
 
   .professor-basic-info-container {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
   }
 
   .professor-header-actions {
@@ -535,7 +576,6 @@
     width: 100%;
   }
 
-  /* Tabela de turmas responsiva */
   .turmas-table-header,
   .turma-row {
     grid-template-columns: 1fr;
@@ -556,6 +596,10 @@
 
   .turma-materia-prof {
     align-self: flex-start;
+  }
+
+  .professor-details-wrapper.expanded {
+    max-height: 2000px;
   }
 }
 

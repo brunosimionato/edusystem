@@ -16,10 +16,8 @@ export const useProfessorDashboard = () => {
         setLoading(true);
         setError(null);
         
-        // Buscar todos os professores e encontrar o do usuário logado
         const professores = await ProfessorService.getAll();
         
-        // Encontrar professor ATIVO (prioriza por status)
         const professorAtivo = professores.find(p => 
           p.usuario?.status === 'ativo' || !p.usuario?.status
         );

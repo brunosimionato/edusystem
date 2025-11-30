@@ -10,7 +10,7 @@ export function useDisciplinas() {
     const fetchDisciplinas = async () => {
       try {
         setIsLoading(true);
-        // Supondo que você tenha um endpoint para disciplinas
+
         const data = await apiClient.get('/disciplinas');
         setDisciplinas(data);
       } catch (err) {

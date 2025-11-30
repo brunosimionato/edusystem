@@ -27,10 +27,8 @@ const NotasProfe = () => {
   const [isAnimating, setIsAnimating] = useState({});
   const [animandoTrimestre, setAnimandoTrimestre] = useState(false);
 
-  // Usar o hook para carregar as turmas do professor
   const { turmas, isLoading, refetch, professor } = useTurmasProfessor();
 
-  // Efeito para animar ao trocar o trimestre
   useEffect(() => {
     setAnimandoTrimestre(true);
     const timer = setTimeout(() => {
@@ -40,7 +38,6 @@ const NotasProfe = () => {
     return () => clearTimeout(timer);
   }, [trimestreSelecionado]);
 
-  // FUNÇÃO DE ORDENAÇÃO AVANÇADA
   const ordenarTurmas = (turmasArray) => {
     return turmasArray.sort((a, b) => {
       const numA = parseInt(a.nome.match(/\d+/)?.[0]) || 0;
@@ -74,7 +71,6 @@ const NotasProfe = () => {
     return "fundamental1";
   };
 
-  // Filtrar disciplinas por tipo de turma
   const getDisciplinasPorTipo = (tipoTurma) => {
     const disciplinasFiltradas = {};
 
@@ -88,7 +84,6 @@ const NotasProfe = () => {
     return disciplinasFiltradas;
   };
 
-  // Carregar disciplinas
   React.useEffect(() => {
     const carregarDisciplinas = async () => {
       try {
@@ -106,7 +101,6 @@ const NotasProfe = () => {
     carregarDisciplinas();
   }, []);
 
-  // Carregar notas quando as turmas mudarem
   React.useEffect(() => {
     if (turmas.length > 0) {
       carregarNotasExistentes(turmas);
@@ -159,7 +153,6 @@ const NotasProfe = () => {
     setNotas(notasCarregadas);
   };
 
-  // Filtrar turmas baseado no termo de busca
   const turmasFiltradas = useMemo(() => {
     if (!filtro) return ordenarTurmas(turmas);
 
@@ -493,12 +486,18 @@ const NotasProfe = () => {
 
       {/* Lista de Turmas */}
       <div className="nt-section">
-        <div className={`nt-section-header ${animandoTrimestre ? 'nt-smooth-fade' : ''}`}>
+        <div
+          className={`nt-section-header ${
+            animandoTrimestre ? "nt-smooth-fade" : ""
+          }`}
+        >
           <span>
             Lançamento de Notas - {anoLetivo} - {trimestreSelecionado}º
             Trimestre
           </span>
-          <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}>
+          <span
+            style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}
+          >
             {turmasFiltradas.length} turma
             {turmasFiltradas.length !== 1 ? "s" : ""} encontrada
             {turmasFiltradas.length !== 1 ? "s" : ""}
@@ -506,7 +505,11 @@ const NotasProfe = () => {
         </div>
 
         {turmasFiltradas.length === 0 ? (
-          <div className={`nt-empty-state ${animandoTrimestre ? 'nt-smooth-fade' : ''}`}>
+          <div
+            className={`nt-empty-state ${
+              animandoTrimestre ? "nt-smooth-fade" : ""
+            }`}
+          >
             <div className="nt-empty-icon">
               <BookOpen size={40} />
             </div>
@@ -522,7 +525,11 @@ const NotasProfe = () => {
             </button>
           </div>
         ) : (
-          <div className={`nt-turmas-list ${animandoTrimestre ? 'nt-smooth-fade' : ''}`}>
+          <div
+            className={`nt-turmas-list ${
+              animandoTrimestre ? "nt-smooth-fade" : ""
+            }`}
+          >
             {turmasFiltradas.map((turma) => {
               const isExpandida = turmasExpandidas[turma.id];
               const isEditavel = turmasEditaveis.has(turma.id);
@@ -535,7 +542,7 @@ const NotasProfe = () => {
                   key={turma.id}
                   className={`nt-turma-card ${
                     isAnimating[turma.id] ? "nt-animating" : ""
-                  } ${animandoTrimestre ? 'nt-smooth-fade' : ''}`}
+                  } ${animandoTrimestre ? "nt-smooth-fade" : ""}`}
                 >
                   <div className="nt-turma-info">
                     <div className="nt-turma-header-wrapper">
@@ -602,7 +609,10 @@ const NotasProfe = () => {
                                           pattern="[0-9]{0,2}[,.]?[0-9]{0,1}"
                                           maxLength="3"
                                           className={`nt-input-nota ${getNotaClass(
-                                            getNotaAluno(aluno.id, "globalizada")
+                                            getNotaAluno(
+                                              aluno.id,
+                                              "globalizada"
+                                            )
                                           )} ${
                                             temErroValidacao(
                                               aluno.id,
@@ -697,9 +707,7 @@ const NotasProfe = () => {
                                                   e.preventDefault();
                                                 }
                                               }}
-                                              disabled={
-                                                !isEditavel || isSaving
-                                              }
+                                              disabled={!isEditavel || isSaving}
                                             />
                                           </div>
                                         )

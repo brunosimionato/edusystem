@@ -83,7 +83,7 @@ export const useNotas = (filters = {}) => {
     };
 };
 
-// Hook específico para notas por turma
+// Hook para notas por turma
 export const useNotasPorTurma = (turmaId, anoLetivo, trimestre) => {
     const filters = { 
         idTurma: turmaId, 
@@ -94,7 +94,7 @@ export const useNotasPorTurma = (turmaId, anoLetivo, trimestre) => {
     return useNotas(filters);
 };
 
-// Hook específico para notas por aluno
+// Hook para notas por aluno
 export const useNotasPorAluno = (alunoId, anoLetivo, trimestre) => {
     const filters = { 
         idAluno: alunoId, 

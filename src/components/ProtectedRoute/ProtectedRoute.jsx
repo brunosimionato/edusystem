@@ -4,7 +4,7 @@ export default function ProtectedRoute({ children, requiredRole }) {
     if (isLoading) return <div>Carregando...</div>;
     if (!isAuthenticated) return <Navigate to="/login" replace />;
     
-    // Backend usa: 'professor', 'secretaria', 'aluno'
+    // Backend usa: professor, secretaria
     if (requiredRole && userRole !== requiredRole) {
       return <Navigate to="/unauthorized" replace />;
     }

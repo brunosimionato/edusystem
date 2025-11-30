@@ -3,108 +3,324 @@ export function gerarRelatorioProfessor({
   dataHoraAgora,
   formatarData,
 }) {
+  
+  // Funções de formatação
+  const formatarCPF = (cpf) => {
+    if (!cpf) return '-';
+    cpf = cpf.replace(/\D/g, '');
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  const formatarTelefone = (telefone) => {
+    if (!telefone) return '-';
+    telefone = telefone.replace(/\D/g, '');
+    if (telefone.length === 11) {
+      return telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (telefone.length === 10) {
+      return telefone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    }
+    return telefone;
+  };
+
+  const formatarCEP = (cep) => {
+    if (!cep) return '-';
+    cep = cep.replace(/\D/g, '');
+    return cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+  };
+
   return `
 <html>
 <head>
-    <title>RELATÓRIO DO PROFESSOR - ${professor.usuario?.nome}</title>
+    <title>RELATÓRIO DO PROFESSOR - ${professor.usuario?.nome.toUpperCase()}</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px 25px;
-            color: #333;
-            line-height: 1.45;
-        }
-
-        h1, h2 {
+        /* ===========================
+                RESET E CONFIGURAÇÕES
+        ============================ */
+        * {
             margin: 0;
-            font-weight: bold;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .header-text-only {
-            text-align: center;
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            padding: 20px;
+            color: #111827;
+            line-height: 1.5;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
         }
 
-        .header-text-only h2 {
-            font-size: 16px;
+        /* ===========================
+                CABEÇALHO
+        ============================ */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #64748B;
+            position: relative;
         }
 
-        .header-text-only p {
-            font-size: 13px;
-            color: #555;
-            margin: 2px 0;
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 80px;
         }
 
-
-        .info-box {
-            background: #f4f6fa;
-            border-left: 5px solid #4a90e2;
-            border-radius: 4px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
+        .graduation-logo {
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 48px;
+            color: #64748B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: #f8fafc;
+            border-radius: 50%;
+            border: 3px solid #64748B;
+            box-shadow: 0 4px 8px rgba(100, 116, 139, 0.2);
         }
 
-        .info-box h1 {
-            font-size: 16px;
-            color: #2c3e50;
+        .school-info-container {
+            flex: 1;
+            text-align: left;
         }
 
-        .info-grid {
-            margin-top: 10px;
-            font-size: 13px;
+        .school-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #64748B;
+            margin-bottom: 8px;
         }
 
-        .info-grid div {
+        .school-info {
+            font-size: 14px;
+            color: #6b7280;
             margin: 4px 0;
+            font-weight: 500;
         }
 
-        .subsection-title {
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: bold;
-            padding-bottom: 4px;
+        /* ===========================
+                TÍTULO PRINCIPAL
+        ============================ */
+        .main-title {
+            font-size: 17px;
+            font-weight: 670;
+            color: #111827;
+            margin-bottom: 15px;
+            text-align: left;
+            margin-top: -8px;
+        }
+
+        /* ===========================
+                INFORMAÇÕES DO PROFESSOR
+        ============================ */
+        .professor-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .info-value strong {
+            color: #111827;
+        }
+
+        /* ===========================
+                TABELAS
+        ============================ */
+        .table-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 670;
+            color: #111827;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #64748B;
+        }
+
+        .table-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            margin-top: 10px;
-            border: 1px solid #000;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        thead {
+            background: #64748B;
         }
 
         th {
-            background: #d9d9d9;
-            color: #000;
-            padding: 8px 4px;
-            border: 1px solid #000;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            font-size: 13px;
             text-transform: uppercase;
-            font-size: 12px;
+            letter-spacing: 0.05em;
         }
 
         td {
-            padding: 7px 4px;
-            border: 1px solid #000;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #374151;
             text-align: center;
-            font-size: 12px;
         }
 
-        tr:nth-child(even) { background: #f2f2f2; }
-        tr:nth-child(odd)  { background: #ffffff; }
-        tr:hover { background: #e8f1ff; }
+        tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
 
+        tbody tr:hover {
+            background: #f3f4f6;
+        }
+
+        /* ===========================
+                COLUNAS ESPECÍFICAS
+        ============================ */
+        .turma-column {
+            width: 20%;
+            padding-left: 10px;
+        }
+
+        .disciplinas-column {
+            width: 80%;
+            padding-left: 200px;
+        }
+
+        /* ===========================
+                FOOTER - ESTICADO NA LARGURA
+        ============================ */
         .footer {
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-            color: #555;
             position: fixed;
-            bottom: 10px;
+            bottom: 0;
             left: 0;
+            right: 0;
+            padding: 12px 0;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            background: #ffffff;
+            border-top: 2px solid #e5e7eb;
         }
 
+        .footer p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* ===========================
+                IMPRESSÃO - FOOTER ESTICADO
+        ============================ */
         @media print {
-            @page { margin: 5mm; }
+            @page { 
+                margin: 15mm;
+                margin-bottom: 5mm;
+            }
+            
+            body {
+                padding: 0;
+                max-width: none;
+                border: none;
+                box-shadow: none;
+            }
+            
+            .header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+            
+            .professor-info {
+                margin-bottom: 20px;
+                background: transparent;
+                border: 1px solid #d1d5db;
+            }
+
+            .table-container {
+                border: 1px solid #d1d5db;
+                box-shadow: none;
+            }
+
+            thead {
+                background: #64748B !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 0mm;
+                left: 0mm;
+                right: 0mm;
+                padding: 8px 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-top: 2px solid #e5e7eb;
+                font-size: 12px;
+                background: #ffffff !important;
+            }
+
+            /* Garantir que o conteúdo não fique por baixo do footer */
+            .table-section:last-child {
+                margin-bottom: 25px;
+            }
+
+            .graduation-logo {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border: 3px solid #64748B !important;
+                background: #f8fafc !important;
+            }
         }
 
     </style>
@@ -112,93 +328,91 @@ export function gerarRelatorioProfessor({
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
-    <div class="header-text-only">
-        <h2>ESCOLA EXPERIMENTAL EDUSYSTEM</h2>
-        <p>RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</p>
-        <p>edusystem@email.com • (54) 9 9876-5432</p>
+    <!-- CABEÇALHO COM LOGO NO LADO ESQUERDO -->
+    <div class="header">
+        <div class="logo-container">
+            <div class="graduation-logo">🎓</div>
+        </div>
+        <div class="school-info-container">
+            <div class="school-name">ESCOLA EXPERIMENTAL EDUSYSTEM</div>
+            <div class="school-info">RUA DO ALGORITMO, 342 – TECNOLOGIA – MODUS TOLLENS</div>
+            <div class="school-info">edusystem@email.com • (54) 9 9876-5432</div>
+        </div>
     </div>
 
-    <!-- INFORMAÇÕES GERAIS -->
-    <div class="info-box">
-        <h1>RELATÓRIO DO PROFESSOR</h1>
-        <p class="report-subtitle">${professor.usuario?.nome}</p>
+    <!-- TÍTULO PRINCIPAL UNIFICADO -->
+    <div class="main-title">RELATÓRIO DO PROFESSOR - ${professor.usuario?.nome.toUpperCase()}</div>
 
-        <div class="info-grid">
-            <div><strong>Email:</strong> ${professor.usuario?.email}</div>
-            <div><strong>CPF:</strong> ${professor.cpf}</div>
-            <div><strong>Nascimento:</strong> ${formatarData(professor.nascimento)}</div>
-            <div><strong>Telefone:</strong> ${professor.telefone}</div>
-
-            <div style="margin-top:8px;">
-                <strong>Endereço:</strong> 
-                ${professor.logradouro}, nº ${professor.numero},
-                ${professor.bairro}, ${professor.cidade} - ${professor.estado},
-                CEP ${professor.cep}
+    <!-- INFORMAÇÕES DO PROFESSOR -->
+    <div class="professor-info">
+        <div class="info-section">
+            <div class="info-item">
+                <span class="info-label">Email</span>
+                <span class="info-value">${professor.usuario?.email || "-"}</span>
             </div>
-
-            <div style="margin-top:8px;">
-                <strong>Formação Acadêmica:</strong> 
-                ${professor.formacaoAcademica}
+            <div class="info-item">
+                <span class="info-label">CPF</span>
+                <span class="info-value">${professor.cpf ? formatarCPF(professor.cpf) : "-"}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Data de Nascimento</span>
+                <span class="info-value">${formatarData(professor.nascimento)}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Telefone</span>
+                <span class="info-value">${professor.telefone ? formatarTelefone(professor.telefone) : "-"}</span>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-item">
+                <span class="info-label">Endereço</span>
+                <span class="info-value">
+                    ${professor.logradouro || ""}${professor.numero ? `, nº ${professor.numero}` : ""}${professor.bairro ? `, ${professor.bairro}` : ""}${professor.cidade ? `, ${professor.cidade}` : ""}${professor.estado ? ` - ${professor.estado}` : ""}${professor.cep ? `, CEP ${formatarCEP(professor.cep)}` : ""}
+                </span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Formação Acadêmica</span>
+                <span class="info-value">${professor.formacaoAcademica || "-"}</span>
             </div>
         </div>
     </div>
 
-    <!-- DISCIPLINAS -->
-    <div class="subsection-title">Disciplinas que Leciona</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Disciplina</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${
-              professor.disciplinas?.length
-                ? professor.disciplinas
-                    .map(
-                      (disc) => `
-                    <tr>
-                        <td>${disc.nome}</td>
-                    </tr>
-                `
-                    )
-                    .join("")
-                : `<tr><td>Nenhuma disciplina vinculada</td></tr>`
-            }
-        </tbody>
-    </table>
 
     <!-- TURMAS -->
-    <div class="subsection-title">Turmas que Leciona</div>
-    <table>
-        <thead>
-            <tr>
-                <th>Turma</th>
-                <th>Disciplinas ministradas</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${
-              professor.turmas?.length
-                ? professor.turmas
-                    .map(
-                      (turma) => `
+    <div class="table-section">
+        <div class="section-title"style="text-transform: uppercase;">Turmas e disciplinas</div>
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td>${turma.nome}</td>
-                        <td>${professor.disciplinas.map(d => d.nome).join(", ")}</td>
+                        <th class="turma-column">Turma</th>
+                        <th class="disciplinas-column">Disciplinas Ministradas</th>
                     </tr>
-                `
-                    )
-                    .join("")
-                : `<tr><td colspan="2">Nenhuma turma vinculada</td></tr>`
-            }
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                    ${
+                      professor.turmas?.length
+                        ? professor.turmas
+                            .map(
+                              (turma) => `
+                                <tr>
+                                    <td class="turma-column">${turma.nome}</td>
+                                    <td class="disciplinas-column">${professor.disciplinas?.map(d => d.nome).join(", ") || "-"}</td>
+                                </tr>
+                            `
+                            )
+                            .join("")
+                        : `<tr><td colspan="2">Nenhuma turma vinculada</td></tr>`
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <!-- RODAPÉ -->
+    <!-- FOOTER - ESTICADO NA LARGURA -->
     <div class="footer">
-        Gerado automaticamente pelo EDU System — Impressão em ${dataHoraAgora}
+        <p>Gerado automaticamente pelo EduSystem — Impresso em ${dataHoraAgora}</p>
     </div>
 
 </body>

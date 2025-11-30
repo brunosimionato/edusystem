@@ -7,7 +7,6 @@ import {
   mascaraCPF,
   mascaraTelefone,
 } from "../../utils/formatacao";
-
 import "./alunoForm.css";
 
 const AlunoForm = ({
@@ -230,8 +229,6 @@ const AlunoForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Dados do Formulário:", formData);
-    console.log("Histórico Escolar:", historicoEscolar);
 
     let invalidos = [];
 
@@ -300,8 +297,6 @@ const AlunoForm = ({
       id: formData.id,
       historicoEscolar: historicoToSend,
     };
-
-    console.log("➡️ PAYLOAD FINAL:", payload);
 
     if (onSave) {
       try {

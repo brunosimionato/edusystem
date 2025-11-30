@@ -67,12 +67,10 @@ const CriarTurma = () => {
     const frameWindow = iframe.contentWindow;
     const frameDoc = frameWindow.document;
 
-    // Escreve o conteúdo do relatório no iframe
     frameDoc.open();
     frameDoc.write(html);
     frameDoc.close();
 
-    // Aguarda o conteúdo carregar antes de imprimir
     iframe.onload = () => {
       setTimeout(() => {
         frameWindow.focus();
@@ -82,16 +80,16 @@ const CriarTurma = () => {
   };
 
   return (
-    <div className="cadastro-turma-form-container">
+    <div className="criar-turma-container">
       <NovaTurmaForm onCreated={refetch} />
 
-      <div className="cadastro-turma-form-section">
-        <div className="cadastro-turma-section-header-with-button">
-          <h3 className="cadastro-turma-section-header-turmas">
+      <div className="criar-turma-section">
+        <div className="criar-turma-header-with-button">
+          <h3 className="criar-turma-titulo-lista">
             Turmas Cadastradas
           </h3>
           <button
-            className="print-turmas-cadastradas-button"
+            className="criar-turma-print-button"
             onClick={handlePrintTurmas}
           >
             <Printer size={17} /> Imprimir
@@ -99,15 +97,15 @@ const CriarTurma = () => {
         </div>
 
         {turmas.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">
+          <div className="criar-turma-empty-state">
+            <div className="criar-turma-empty-icon">
               <Users size={48} />
             </div>
             <h4>Nenhuma turma cadastrada</h4>
             <p>Cadastre a primeira turma usando o formulário acima.</p>
           </div>
         ) : (
-          <div className="cadastro-turmas-list">
+          <div className="criar-turma-lista">
             {turmas.map((turma) => {
               const percentualOcupacao = (
                 (turma.alunosMatriculados / turma.quantidadeMaxima) *
@@ -115,20 +113,20 @@ const CriarTurma = () => {
               ).toFixed(0);
 
               return (
-                <div key={turma.id} className="cadastro-turma-card">
-                  <div className="turma-info">
-                    <div className="turma-header">
-                      <div className="turma-header-info">
-                        <h4 className="turma-nome">{turma.nome}</h4>
+                <div key={turma.id} className="criar-turma-card">
+                  <div className="criar-turma-info">
+                    <div className="criar-turma-header">
+                      <div className="criar-turma-header-info">
+                        <h4 className="criar-turma-nome">{turma.nome}</h4>
                         <span
-                          className={`turma-turno turno-${turma.turno.toLowerCase()}`}
+                          className={`criar-turma-turno criar-turno-${turma.turno.toLowerCase()}`}
                         >
                           {turma.turno}
                         </span>
                       </div>
 
                       <button
-                        className="remove-turma-button"
+                        className="criar-turma-remove-button"
                         onClick={() => handleRemoveTurma(turma.id)}
                         title="Remover turma"
                         disabled={isDeleting}
@@ -137,15 +135,15 @@ const CriarTurma = () => {
                       </button>
                     </div>
 
-                    <div className="turma-details">
-                      <span className="alunos-count">
+                    <div className="criar-turma-details">
+                      <span className="criar-turma-alunos-count">
                         <strong>{turma.alunosMatriculados}</strong> de{" "}
                         <strong>{turma.quantidadeMaxima}</strong> alunos
                         matriculados
                       </span>
-                      <div className="progress-bar">
+                      <div className="criar-turma-progress-bar">
                         <div
-                          className="progress-fill-lista"
+                          className="criar-turma-progress-fill"
                           style={{ width: `${percentualOcupacao}%` }}
                         ></div>
                       </div>
@@ -241,18 +239,18 @@ const NovaTurmaForm = ({ onCreated }) => {
   };
 
   return (
-    <div className="cadastro-turma-form-section">
-      <h3 className="cadastro-turma-section-header">Nova Turma</h3>
+    <div className="criar-turma-section">
+      <h3 className="criar-turma-titulo-form">Nova Turma</h3>
       <form onSubmit={handleCreateTurma}>
-        <div className="cadastro-turma-form-grid">
-          <div className="cadastro-turma-form-group half-width">
-            <label htmlFor="nomeTurma">Nome da Turma*</label>
-            <div className="cadastro-turma-input-wrapper">
+        <div className="criar-turma-form-grid">
+          <div className="criar-turma-form-group criar-half-width">
+            <label htmlFor="criar-turma-nome">Nome da Turma*</label>
+            <div className="criar-turma-input-wrapper">
               <input
                 type="text"
-                id="nomeTurma"
-                className={`cadastro-turma-input ${
-                  erros.nomeTurma ? "input-error" : ""
+                id="criar-turma-nome"
+                className={`criar-turma-input ${
+                  erros.nomeTurma ? "criar-input-error" : ""
                 }`}
                 value={nomeTurma}
                 onChange={(e) => setNomeTurma(e.target.value)}
@@ -260,13 +258,13 @@ const NovaTurmaForm = ({ onCreated }) => {
             </div>
           </div>
 
-          <div className="cadastro-turma-form-group quarter-width">
-            <label htmlFor="turno">Turno*</label>
-            <div className="cadastro-turma-input-wrapper">
+          <div className="criar-turma-form-group criar-quarter-width">
+            <label htmlFor="criar-turma-turno">Turno*</label>
+            <div className="criar-turma-input-wrapper">
               <select
-                id="turno"
-                className={`cadastro-turma-select ${
-                  erros.turno ? "input-error" : ""
+                id="criar-turma-turno"
+                className={`criar-turma-select ${
+                  erros.turno ? "criar-input-error" : ""
                 }`}
                 value={turno}
                 onChange={(e) => setTurno(e.target.value)}
@@ -278,14 +276,14 @@ const NovaTurmaForm = ({ onCreated }) => {
             </div>
           </div>
 
-          <div className="cadastro-turma-form-group quarter-width">
-            <label htmlFor="quantidadeMaxima">Máximo de Alunos*</label>
-            <div className="cadastro-turma-input-wrapper">
+          <div className="criar-turma-form-group criar-quarter-width">
+            <label htmlFor="criar-turma-qtd-maxima">Máximo de Alunos*</label>
+            <div className="criar-turma-input-wrapper">
               <input
                 type="number"
-                id="quantidadeMaxima"
-                className={`cadastro-turma-input ${
-                  erros.quantidadeMaxima ? "input-error" : ""
+                id="criar-turma-qtd-maxima"
+                className={`criar-turma-input ${
+                  erros.quantidadeMaxima ? "criar-input-error" : ""
                 }`}
                 value={quantidadeMaxima}
                 onChange={(e) => setQuantidadeMaxima(e.target.value)}
@@ -295,17 +293,17 @@ const NovaTurmaForm = ({ onCreated }) => {
           </div>
         </div>
 
-        <div className="cadastro-turma-form-actions">
+        <div className="criar-turma-form-actions">
           <button
             type="button"
-            className="cadastro-turma-clear-button red-button"
+            className="criar-turma-clear-button"
             onClick={() => handleClearForm(true)}
           >
             <XCircle size={17} /> Limpar
           </button>
           <button
             type="submit"
-            className="cadastro-turma-submit-button blue-button"
+            className="criar-turma-submit-button"
             disabled={isCreating}
           >
             <Plus size={17} />{" "}

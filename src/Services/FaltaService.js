@@ -125,8 +125,6 @@ class FaltaService {
      */
     async delete(id) {
         const token = localStorage.getItem('token');
-
-        console.log("🗑️ Deletando falta ID:", id);
         
         const res = await fetch(`${API_URL}/faltas/${id}`, {
             method: 'DELETE',

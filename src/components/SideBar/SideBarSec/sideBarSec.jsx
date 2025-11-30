@@ -15,14 +15,12 @@ import "./sideBarSec.css";
 import { useAuth } from "../../../context/AuthContext";
 
 const SideBarSec = () => {
-  // Agora inclui o "user" para mostrar o nome e o cargo
   const { user, logout } = useAuth();
 
   const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Abre/fecha menus
   const toggleMenu = (menuKey) => {
     setExpandedMenus((prev) => ({
       ...prev,
@@ -30,20 +28,17 @@ const SideBarSec = () => {
     }));
   };
 
-  // Retorna o caminho completo do item
   const getPathForMenuItem = (item, parentId = null) => {
     if (item.path) return item.path;
     if (parentId) return `/secretaria/${parentId}/${item.id}`;
     return `/secretaria/${item.id}`;
   };
 
-  // Verifica se o item está ativo (para destacar no menu)
   const isItemActive = (item, parentId = null) => {
     const targetPath = getPathForMenuItem(item, parentId);
     return location.pathname.startsWith(targetPath);
   };
 
-  // Estrutura dos menus
   const menuItems = [
     {
       id: "dashboard",
@@ -129,7 +124,6 @@ const SideBarSec = () => {
     },
   ];
 
-  // Ações dos menus
   const handleMenuClick = (item) => {
     if (item.submenu) {
       toggleMenu(item.id);

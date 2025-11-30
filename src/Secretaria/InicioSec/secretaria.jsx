@@ -17,7 +17,6 @@ const Secretaria = () => {
   const navigate = useNavigate();
   const { authToken } = useAuth();
 
-  // Estado que armazena os dados vindos do backend
   const [stats, setStats] = useState({
     alunos: 0,
     professores: 0,
@@ -25,7 +24,6 @@ const Secretaria = () => {
     disciplinas: 0,
   });
 
-  // Busca os dados do backend assim que o componente for carregado
   useEffect(() => {
     if (!authToken) return;
 
@@ -61,7 +59,6 @@ const Secretaria = () => {
     fetchStats();
   }, [authToken]);
 
-  // Dados para renderização dos cards
   const dashboardStats = [
     {
       label: "Total de Alunos",
@@ -89,7 +86,6 @@ const Secretaria = () => {
     },
   ];
 
-  // Botões de ações rápidas
   const quickActions = [
     {
       icon: UserPlus,

@@ -26,7 +26,6 @@ const ListaAlunos = () => {
     9: "edFisica",
   };
 
-  // Filtro otimizado
   const turmasFiltradas = useMemo(() => {
     if (!filtro.trim()) return turmas;
 
@@ -51,14 +50,9 @@ const ListaAlunos = () => {
       .filter((turma) => turma.alunos.length > 0);
   }, [filtro, turmas]);
 
-  // -------------- EDITAR ALUNO ----------------
   const handleEditAluno = async (aluno, turmaId) => {
     try {
-      console.log("🔍 Buscando dados completos do aluno:", aluno.id);
-
       const alunoCompleto = await AlunoService.getById(aluno.id);
-
-      console.log("📥 Aluno completo recebido:", alunoCompleto);
 
       const alunoNormalizado = {
         id: alunoCompleto.id,
@@ -95,8 +89,6 @@ const ListaAlunos = () => {
         alunoOutraEscola: (alunoCompleto.historicoEscolar?.length ?? 0) > 0,
       };
 
-      console.log("📤 Aluno pronto para o formulário:", alunoNormalizado);
-
       setSelectedAluno(alunoNormalizado);
       setModalOpen(true);
     } catch (error) {
@@ -105,10 +97,7 @@ const ListaAlunos = () => {
     }
   };
 
-  // -------------- ATUALIZAR ALUNO ----------------
   const handleUpdateAluno = async (payload) => {
-    console.log("📌 PAYLOAD RECEBIDO DO FORM:", payload);
-
     // segurança extra
     if (!payload.id) {
       console.error("❌ ERRO: payload.id está vazio! Payload:", payload);
@@ -117,8 +106,6 @@ const ListaAlunos = () => {
     }
 
     try {
-      console.log("📤 Enviando atualização para backend:", payload);
-
       await AlunoService.update(payload.id, payload);
 
       alert("Aluno atualizado com sucesso!");
@@ -139,12 +126,10 @@ const ListaAlunos = () => {
   };
 
   const handleAlunoSaved = () => {
-    console.log("🔄 Recarregando lista após salvar...");
     refetch();
     handleCancelEdit();
   };
 
-  // ESC para fechar modal
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Escape") handleCancelEdit();
@@ -154,7 +139,6 @@ const ListaAlunos = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  // Estados de Loading
   if (isLoading) {
     return (
       <div className="cadastro-turma-form-container">
@@ -184,7 +168,6 @@ const ListaAlunos = () => {
 
   return (
     <div className="cadastro-turma-form-container">
-
       {/* FILTRO */}
       <div className="cadastro-turma-form-section">
         <div className="cadastro-turma-section-header">
@@ -227,7 +210,6 @@ const ListaAlunos = () => {
         </div>
       </div>
 
-      {/* LISTA DE TURMAS */}
       <div className="cadastro-turma-form-section">
         <div className="cadastro-turma-section-header">
           <span>Turmas e Alunos</span>
@@ -266,7 +248,6 @@ const ListaAlunos = () => {
         )}
       </div>
 
-      {/* MODAL DE EDIÇÃO */}
       {modalOpen && (
         <div className="modal-overlay" onClick={handleCancelEdit}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

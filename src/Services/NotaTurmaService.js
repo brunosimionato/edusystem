@@ -31,7 +31,6 @@ class TurmaService {
   async getAll() {
     try {
       const token = localStorage.getItem('token');
-      console.log('🔍 Buscando turmas de:', `${API_URL}/turmas`);
       
       const response = await fetch(`${API_URL}/turmas`, {
         method: 'GET',
@@ -40,15 +39,12 @@ class TurmaService {
           'Content-Type': 'application/json',
         },
       });
-
-      console.log('📊 Status da resposta:', response.status);
       
       if (!response.ok) {
         throw new Error(`Erro ${response.status}: ${response.statusText}`);
       }
 
       const turmas = await response.json();
-      console.log('✅ Turmas recebidas da API:', turmas);
       
       return turmas.map(turma => ({
         id: turma.id,
@@ -77,8 +73,6 @@ class TurmaService {
         },
         body: JSON.stringify(turmaData),
       });
-
-      console.log('📊 Status da criação:', response.status);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -86,7 +80,6 @@ class TurmaService {
       }
 
       const novaTurma = await response.json();
-      console.log('✅ Turma criada:', novaTurma);
       return novaTurma;
     } catch (error) {
       console.error('❌ Erro no TurmaService.create:', error);

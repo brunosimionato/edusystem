@@ -3,14 +3,12 @@
     opacity: 0;
     transform: translateY(30px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Container principal */
 .cadastro-horario-form-container {
   display: flex;
   flex-direction: column;
@@ -21,7 +19,6 @@
   animation: slideUp 0.8s ease-out;
 }
 
-/* Seções do formulário */
 .cadastro-horario-form-section {
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -35,7 +32,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Cabeçalhos das seções */
 .cadastro-horario-section-header {
   font-size: 15px;
   font-weight: 600;
@@ -62,7 +58,6 @@
   margin: 0;
 }
 
-/* Container dos campos do formulário */
 .form-fields-container {
   background: white;
 }
@@ -75,7 +70,6 @@
   border-top: 1px solid #e2e8f0;
 }
 
-/* Grid do formulário */
 .cadastro-horario-form-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -83,7 +77,6 @@
   padding: 24px 30px;
 }
 
-/* Grupos de formulário */
 .cadastro-horario-form-group {
   display: flex;
   flex-direction: column;
@@ -114,7 +107,6 @@
   pointer-events: none;
 }
 
-/* Wrapper do input */
 .cadastro-horario-input-wrapper {
   position: relative;
   display: flex;
@@ -211,7 +203,6 @@
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Container da tabela */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -238,7 +229,6 @@
   background: #9ca3af;
 }
 
-/* Tabela */
 .table-wrapper table {
   width: 100%;
   border-collapse: collapse;
@@ -273,7 +263,6 @@
   color: #1e293b;
 }
 
-/* Célula de horário */
 .horario-cell {
   min-width: 140px;
   background: #f9fafb;
@@ -302,7 +291,6 @@
   color: #64748b;
 }
 
-/* Célula de matéria */
 .materia-cell {
   min-width: 120px;
   padding: 6px 8px;
@@ -310,7 +298,6 @@
   text-align: center;
 }
 
-/* Inputs de matéria e professor */
 .input-materia,
 .input-professor {
   width: 100%;
@@ -341,7 +328,6 @@
   font-size: 11px;
 }
 
-/* Linhas de intervalo */
 .break-row {
   background: #cbd5e1 !important;
 }
@@ -374,7 +360,6 @@
   height: 32px;
 }
 
-/* Cards de grades */
 .grade-card {
   border: 1px solid #cbd5e1;
   border-radius: 12px;
@@ -389,14 +374,16 @@
   transform: translateY(-2px);
 }
 
-/* Estrutura da grade - seguindo padrão professor */
+.grade-card.professor-animating {
+  transition: all 0.3s ease-in-out;
+}
+
 .grade-info {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-/* Header da grade */
 .grade-header {
   display: flex;
   align-items: center;
@@ -409,7 +396,6 @@
   user-select: none;
 }
 
-/* Container da info básica + avatar */
 .grade-basic-info-container {
   display: flex;
   align-items: center;
@@ -418,7 +404,6 @@
   cursor: pointer;
 }
 
-/* Avatar da grade */
 .grade-avatar {
   display: flex;
   align-items: center;
@@ -431,7 +416,6 @@
   flex-shrink: 0;
 }
 
-/* Info básica da grade */
 .grade-basic-info {
   display: flex;
   flex-direction: column;
@@ -452,14 +436,12 @@
   font-weight: 500;
 }
 
-/* Container de ações do header */
 .grade-header-actions {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
 }
 
-/* Botões da grade */
 .action-button-horarios {
   display: flex;
   align-items: center;
@@ -520,19 +502,72 @@
   transform: translateY(-1px);
 }
 
-/* Detalhes expandidos */
-.grade-details-container {
-  padding: 20px;
-  border-top: 1px solid #f1f5f9;
-  margin-top: -1px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.action-button-horarios:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
-/* Conteúdo da grade */
+.action-button-horarios:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.cadastro-horario-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cadastro-horario-submit-button:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.cadastro-horario-clear-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cadastro-horario-clear-button:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.grade-details-container {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.grade-details-container.professor-expanded {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.grade-details-container.professor-animating {
+  transition: all 0.3s ease-in-out;
+}
+
 .grade-content {
   background: white;
+  animation: professorSimpleFade 0.5s ease-in-out;
+}
+
+@keyframes professorSimpleFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .grade-content .table-wrapper {
@@ -556,7 +591,6 @@
   border-bottom-right-radius: 12px;
 }
 
-/* Lista de turmas */
 .turmas-list {
   display: flex;
   flex-direction: column;
@@ -564,7 +598,6 @@
   padding: 24px 30px;
 }
 
-/* Estado vazio */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -593,7 +626,6 @@
   color: #64748b;
 }
 
-/* View de matéria e professor */
 .materia-professor-view {
   display: flex;
   flex-direction: column;
@@ -607,10 +639,101 @@
   color: #1e293b;
 }
 
+.professor-nome-visualizacao {
+  font-size: 11px;
+  color: #64748b;
+}
+
 .materia-professor-inputs {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.connection-status {
+  padding: 16px 24px;
+  background: #fef3c7;
+  border-bottom: 1px solid #f59e0b;
+}
+
+.connection-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.reconnect-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.reconnect-btn:hover {
+  background: #d97706;
+}
+
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.loading-state h4,
+.error-state h4 {
+  margin: 16px 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.loading-state p,
+.error-state p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retry-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #2563eb;
 }
 
 /* Responsividade */
@@ -688,6 +811,10 @@
     padding: 4px 6px;
     font-size: 10px;
   }
+
+  .grade-details-container.professor-expanded {
+    max-height: 2000px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -714,5 +841,22 @@
   .input-professor {
     padding: 3px 4px;
     font-size: 9px;
+  }
+
+  .turmas-list {
+    padding: 16px;
+  }
+
+  .grade-header {
+    padding: 16px;
+  }
+
+  .grade-basic-info-container {
+    gap: 12px;
+  }
+
+  .grade-avatar {
+    width: 40px;
+    height: 40px;
   }
 }

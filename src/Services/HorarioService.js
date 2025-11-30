@@ -94,8 +94,6 @@ class HorarioService {
             const token = localStorage.getItem('token');
             const validatedData = novoHorarioSchema.parse(horarioData);
 
-            console.log('📤 Enviando horário para o backend:', validatedData);
-
             const res = await fetch(`${API_URL}/horarios`, {
                 method: 'POST',
                 headers: {
@@ -155,8 +153,6 @@ class HorarioService {
     async delete(id) {
         try {
             const token = localStorage.getItem('token');
-
-            console.log(`🗑️ Deletando horário ${id}`);
 
             const res = await fetch(`${API_URL}/horarios/${id}`, {
                 method: 'DELETE',

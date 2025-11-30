@@ -33,9 +33,11 @@ const Horarios = () => {
     turmaSelecionada: false,
     periodoSelecionado: false,
   });
-
   const [isAnimating, setIsAnimating] = useState({});
-  
+  const [turmaSalva, setTurmaSalva] = useState(null);
+  const [horariosPorTurma, setHorariosPorTurma] = useState({});
+  const [salvandoTurma, setSalvandoTurma] = useState(null);
+
   const {
     turmas,
     isLoading: isLoadingTurmas,
@@ -53,6 +55,18 @@ const Horarios = () => {
     usingMock,
     tryReconnect,
   } = useHorarios();
+
+  // Recalcular horariosPorTurma quando horariosExistentes mudar
+  useEffect(() => {
+    const horariosAgrupados = horariosExistentes.reduce((acc, horario) => {
+      if (!acc[horario.idTurma]) {
+        acc[horario.idTurma] = [];
+      }
+      acc[horario.idTurma].push(horario);
+      return acc;
+    }, {});
+    setHorariosPorTurma(horariosAgrupados);
+  }, [horariosExistentes]);
 
   const horariosManha = [
     { inicio: "07:30", fim: "08:15", periodo: "1º Período", numero: 1 },
@@ -90,7 +104,6 @@ const Horarios = () => {
   const handleAdicionarHorario = async (event) => {
     event.preventDefault();
 
-    // Validações básicas
     if (!turmaSelecionada || !periodoSelecionado) {
       setErros({
         turmaSelecionada: !turmaSelecionada,
@@ -105,7 +118,6 @@ const Horarios = () => {
       const horariosAtivos =
         periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-      // Coletar todos os horários preenchidos SEM verificar conflitos
       diasSemana.forEach((dia) => {
         horariosAtivos.forEach((horario) => {
           if (!horario.isBreak) {
@@ -128,13 +140,11 @@ const Horarios = () => {
         });
       });
 
-      // Verificar se há horários para criar
       if (horariosParaCriar.length === 0) {
         alert("Por favor, preencha pelo menos um horário antes de salvar.");
         return;
       }
 
-      // Criar horários individualmente
       let horariosCriados = 0;
       let errosCriacao = [];
 
@@ -150,7 +160,6 @@ const Horarios = () => {
         }
       }
 
-      // Feedback ao usuário
       if (errosCriacao.length > 0) {
         alert(
           `Alguns horários foram criados (${horariosCriados}), mas ocorreram erros:\n\n${errosCriacao.join(
@@ -163,7 +172,6 @@ const Horarios = () => {
         );
       }
 
-      // Limpar formulário e recarregar dados
       handleClearForm(false);
       refetchHorarios();
     } catch (error) {
@@ -204,9 +212,8 @@ const Horarios = () => {
     if (!confirmar) return;
 
     try {
-      const horariosDaTurma = horariosPorTurma[turmaId];
+      const horariosDaTurma = horariosPorTurma[turmaId] || [];
 
-      // Deletar horários individualmente
       for (const horario of horariosDaTurma) {
         await deleteHorario(horario.id);
       }
@@ -222,21 +229,20 @@ const Horarios = () => {
   const toggleGradeExpansao = (turmaId) => {
     if (isAnimating[turmaId]) return;
 
-    setIsAnimating(prev => ({ ...prev, [turmaId]: true }));
+    setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
     setGradeExpandida((prev) => ({
       ...prev,
       [turmaId]: !prev[turmaId],
     }));
 
-    // Remove a classe de animação após a transição
     setTimeout(() => {
-      setIsAnimating(prev => ({ ...prev, [turmaId]: false }));
+      setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
     }, 300);
   };
 
   const iniciarEdicao = (turmaId) => {
     setGradeEditando(turmaId);
-    const horariosDaTurma = horariosPorTurma[turmaId];
+    const horariosDaTurma = horariosPorTurma[turmaId] || [];
     const horariosMap = {};
 
     horariosDaTurma.forEach((h) => {
@@ -248,6 +254,8 @@ const Horarios = () => {
   };
 
   const salvarEdicao = async (turmaId) => {
+    setSalvandoTurma(turmaId);
+
     try {
       const turma = turmas.find((t) => t.id == turmaId);
       const horariosAtivos =
@@ -255,7 +263,6 @@ const Horarios = () => {
 
       const horariosParaCriar = [];
 
-      // Coletar horários da edição SEM verificar conflitos
       diasSemana.forEach((dia) => {
         horariosAtivos.forEach((horario) => {
           if (!horario.isBreak) {
@@ -278,24 +285,38 @@ const Horarios = () => {
         });
       });
 
-      // Remover horários antigos
-      const horariosAntigos = horariosPorTurma[turmaId];
+      const horariosAntigos = horariosPorTurma[turmaId] || [];
+
+      // Primeiro deleta os horários antigos
       for (const horario of horariosAntigos) {
         await deleteHorario(horario.id);
       }
 
-      // Criar novos horários
+      // Depois cria os novos horários
       for (const horarioData of horariosParaCriar) {
         await createHorario(horarioData);
       }
 
+      // PRIMEIRO: Atualiza o estado para sair do modo de edição
       setGradeEditando(null);
       setHorariosEdicao({});
-      alert("Grade de horários atualizada com sucesso!");
+
+      // DEPOIS: Recarrega os horários em segundo plano
       refetchHorarios();
+
+      // FINALMENTE: Mostra o alerta (não bloqueante)
+      setTimeout(() => {
+        alert("Horários atualizados com sucesso!");
+      }, 100);
     } catch (error) {
       console.error("Erro ao atualizar horários:", error);
       alert(`Erro ao atualizar horários: ${error.message}`);
+
+      // Em caso de erro, também sai do modo de edição
+      setGradeEditando(null);
+      setHorariosEdicao({});
+    } finally {
+      setSalvandoTurma(null);
     }
   };
 
@@ -311,19 +332,18 @@ const Horarios = () => {
     }
   };
 
-const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
-  const key = `${diaNumero}_${periodoNumero}_${tipo}`; // CORRIGIDO: dia.numero para diaNumero
-  setHorariosEdicao((prev) => ({
-    ...prev,
-    [key]: valor,
-  }));
-};
+  const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
+    const key = `${diaNumero}_${periodoNumero}_${tipo}`;
+    setHorariosEdicao((prev) => ({
+      ...prev,
+      [key]: valor,
+    }));
+  };
 
   const handlePrintHorario = (turmaId) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
 
-    // Organizar os dados para o relatório
     const horariosProcessados = [];
 
     const horariosBase =
@@ -353,7 +373,6 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
       dataHoraAgora,
     });
 
-    // Remove iframe antigo
     const old = document.getElementById("print-frame");
     if (old) old.remove();
 
@@ -398,18 +417,9 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
   const horariosAtivos =
     periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-  // Agrupar horários por turma
-  const horariosPorTurma = horariosExistentes.reduce((acc, horario) => {
-    if (!acc[horario.idTurma]) {
-      acc[horario.idTurma] = [];
-    }
-    acc[horario.idTurma].push(horario);
-    return acc;
-  }, {});
-
-  // FILTRAR TURMAS: Mostrar apenas as que NÃO têm horários cadastrados
   const turmasDisponiveis = turmas.filter(
-    (turma) => !horariosPorTurma[turma.id]
+    (turma) =>
+      !horariosPorTurma[turma.id] || horariosPorTurma[turma.id].length === 0
   );
 
   const renderTabelaHorarios = (turmaId, isEdicao = false) => {
@@ -419,7 +429,6 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
       periodo === "manha" ? horariosManha : horariosTarde;
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
 
-    // Criar mapa de horários para acesso rápido
     const horariosMap = {};
     horariosDaTurma.forEach((h) => {
       const key = `${h.diaSemana}_${h.periodo}`;
@@ -550,7 +559,6 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
     );
   };
 
-  // Estados de loading
   if (isLoadingTurmas) {
     return (
       <div className="cadastro-horario-form-container">
@@ -649,11 +657,14 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
                 disabled={isLoadingHorarios}
               >
                 {isLoadingHorarios ? (
-                  <Loader size={17} className="spinner" />
+                  <>
+                    <Loader size={17} className="spinner" /> Salvando...
+                  </>
                 ) : (
-                  <Plus size={17} />
+                  <>
+                    <Plus size={17} /> Cadastrar Horário
+                  </>
                 )}
-                {isLoadingHorarios ? "Salvando..." : "Cadastrar Horário"}
               </button>
             </div>
           </form>
@@ -793,16 +804,22 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
               ([turmaId, horariosDaTurma]) => {
                 const turma = turmas.find((t) => t.id == turmaId);
                 const isExpandido = gradeExpandida[turmaId];
+                const foiSalvaAgora = turmaSalva === turmaId;
+                const estaSalvando = salvandoTurma === turmaId;
 
                 return (
-                  <div 
-                    key={turmaId} 
-                    className={`grade-card ${isAnimating[turmaId] ? 'professor-animating' : ''}`}
+                  <div
+                    key={turmaId}
+                    className={`grade-card ${
+                      isAnimating[turmaId] ? "professor-animating" : ""
+                    }`}
                   >
                     <div className="grade-info">
                       <div className="grade-header">
                         <div
-                          className="grade-basic-info-container clickable"
+                          className={`grade-basic-info-container clickable ${
+                            foiSalvaAgora ? "grade-header-salvo" : ""
+                          }`}
                           onClick={() => toggleGradeExpansao(turmaId)}
                         >
                           {isExpandido ? (
@@ -836,11 +853,19 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
                               e.stopPropagation();
                               handleEditarOuSalvar(turmaId);
                             }}
+                            disabled={estaSalvando}
                           >
                             {gradeEditando === turmaId ? (
-                              <>
-                                <Save size={16} /> Salvar
-                              </>
+                              estaSalvando ? (
+                                <>
+                                  <Loader size={16} className="spinner" />{" "}
+                                  Salvando...
+                                </>
+                              ) : (
+                                <>
+                                  <Save size={16} /> Salvar
+                                </>
+                              )
                             ) : (
                               <>
                                 <Edit size={16} /> Editar
@@ -853,6 +878,7 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
                               e.stopPropagation();
                               handleRemoverGrade(turmaId);
                             }}
+                            disabled={estaSalvando}
                           >
                             <Trash2 size={17} /> Remover
                           </button>
@@ -862,26 +888,25 @@ const handleMateriaEdicaoChange = (diaNumero, periodoNumero, valor, tipo) => {
                               e.stopPropagation();
                               handlePrintHorario(turmaId);
                             }}
+                            disabled={estaSalvando}
                           >
                             <Printer size={16} /> Imprimir
                           </button>
                         </div>
                       </div>
 
-                      {isExpandido && (
-                        <div 
-                          className={`grade-details-container professor-expanded ${
-                            isAnimating[turmaId] ? 'professor-animating' : ''
-                          }`}
-                        >
-                          <div className="grade-content">
-                            {renderTabelaHorarios(
-                              turmaId,
-                              gradeEditando === turmaId
-                            )}
-                          </div>
+                      <div
+                        className={`grade-details-container ${
+                          isExpandido ? "professor-expanded" : ""
+                        } ${isAnimating[turmaId] ? "professor-animating" : ""}`}
+                      >
+                        <div className="grade-content">
+                          {renderTabelaHorarios(
+                            turmaId,
+                            gradeEditando === turmaId
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 );

@@ -11,7 +11,7 @@ export function useCreateAluno() {
     setError(null);
     
     try {
-      // Formata as datas para string ISO
+      // Formata as datas para string
       const formattedData = {
         ...alunoData,
         nascimento: alunoData.nascimento instanceof Date 
