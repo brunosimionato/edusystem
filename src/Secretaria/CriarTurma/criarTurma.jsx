@@ -79,6 +79,35 @@ const CriarTurma = () => {
     };
   };
 
+  // Ordenar turmas por nome (1º, 2º, 3º...)
+  const turmasOrdenadas = [...turmas].sort((a, b) => {
+    // Extrair números do nome da turma
+    const numA = extrairNumeroTurma(a.nome);
+    const numB = extrairNumeroTurma(b.nome);
+    
+    // Se ambos têm números, ordena numericamente
+    if (numA !== null && numB !== null) {
+      return numA - numB;
+    }
+    
+    // Se só um tem número, o com número vem primeiro
+    if (numA !== null && numB === null) return -1;
+    if (numA === null && numB !== null) return 1;
+    
+    // Se nenhum tem número, ordena alfabeticamente
+    return a.nome.localeCompare(b.nome);
+  });
+
+  // Função para extrair número do nome da turma
+  function extrairNumeroTurma(nome) {
+    // Procura por padrões como "1º", "1°", "1º ano", "1 ano", "Turma 1", etc.
+    const match = nome.match(/(\d+)(?:º|°|ª)?/);
+    if (match) {
+      return parseInt(match[1], 10);
+    }
+    return null;
+  }
+
   return (
     <div className="criar-turma-container">
       <NovaTurmaForm onCreated={refetch} />
@@ -86,7 +115,7 @@ const CriarTurma = () => {
       <div className="criar-turma-section">
         <div className="criar-turma-header-with-button">
           <h3 className="criar-turma-titulo-lista">
-            Turmas Cadastradas
+            Turmas Cadastradas ({turmasOrdenadas.length})
           </h3>
           <button
             className="criar-turma-print-button"
@@ -96,7 +125,7 @@ const CriarTurma = () => {
           </button>
         </div>
 
-        {turmas.length === 0 ? (
+        {turmasOrdenadas.length === 0 ? (
           <div className="criar-turma-empty-state">
             <div className="criar-turma-empty-icon">
               <Users size={48} />
@@ -106,7 +135,7 @@ const CriarTurma = () => {
           </div>
         ) : (
           <div className="criar-turma-lista">
-            {turmas.map((turma) => {
+            {turmasOrdenadas.map((turma) => {
               const percentualOcupacao = (
                 (turma.alunosMatriculados / turma.quantidadeMaxima) *
                 100

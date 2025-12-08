@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search,
   Save,
@@ -11,7 +11,7 @@ import {
   ChevronRight as ChevronRightIcon,
 } from "lucide-react";
 import "./faltasProf.css";
-import { useTurmasComAlunosFaltas } from "../../hooks/useTurmasComAlunosFaltas";
+import { useTurmasProfessor } from "../../hooks/useTurmasProfessor"; // Alterado
 import FaltaService from "../../Services/FaltaService";
 
 const FaltasProfessor = () => {
@@ -28,12 +28,14 @@ const FaltasProfessor = () => {
   const [isAnimating, setIsAnimating] = useState({});
   const [animandoData, setAnimandoData] = useState(false);
 
+  // Usando o hook que filtra apenas as turmas do professor
   const {
     turmas: turmasData,
     refetch,
     hasError,
     isLoading,
-  } = useTurmasComAlunosFaltas();
+    professor
+  } = useTurmasProfessor(); // Alterado
 
   // Períodos de aula para Fundamental II
   const periodos = {
@@ -44,15 +46,83 @@ const FaltasProfessor = () => {
     5: "5º Período",
   };
 
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano;
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
+
   // Determinar se a turma é Fundamental I (1-5) ou II (6-9)
-  const getTipoTurma = (turmaNome) => {
+  const getTipoTurma = useCallback((turmaNome) => {
     const match = turmaNome.match(/(\d+)/);
     if (match) {
       const serie = parseInt(match[1]);
       return serie <= 5 ? "fundamental1" : "fundamental2";
     }
     return "fundamental1";
-  };
+  }, []);
 
   useEffect(() => {
     setFaltas({});
@@ -65,7 +135,7 @@ const FaltasProfessor = () => {
     }
   }, [dataSelecionada, turmasData]);
 
-  const carregarFaltasDoBanco = async () => {
+  const carregarFaltasDoBanco = useCallback(async () => {
     if (!dataSelecionada || !turmasData || turmasData.length === 0) return;
 
     setCarregandoFaltas(true);
@@ -97,9 +167,9 @@ const FaltasProfessor = () => {
     } finally {
       setCarregandoFaltas(false);
     }
-  };
+  }, [dataSelecionada, turmasData]);
 
-  const iniciarAnimacaoData = (novaDataCallback) => {
+  const iniciarAnimacaoData = useCallback((novaDataCallback) => {
     setAnimandoData(true);
 
     setTimeout(() => {
@@ -109,9 +179,9 @@ const FaltasProfessor = () => {
     setTimeout(() => {
       setAnimandoData(false);
     }, 400);
-  };
+  }, []);
 
-  const avancarData = () => {
+  const avancarData = useCallback(() => {
     const dataAtual = new Date(dataSelecionada);
     dataAtual.setDate(dataAtual.getDate() + 1);
     const novaData = dataAtual.toISOString().split("T")[0];
@@ -121,9 +191,9 @@ const FaltasProfessor = () => {
         setDataSelecionada(novaData);
       });
     }
-  };
+  }, [dataSelecionada, iniciarAnimacaoData]);
 
-  const retrocederData = () => {
+  const retrocederData = useCallback(() => {
     const dataAtual = new Date(dataSelecionada);
     dataAtual.setDate(dataAtual.getDate() - 1);
     const novaData = dataAtual.toISOString().split("T")[0];
@@ -131,48 +201,56 @@ const FaltasProfessor = () => {
     iniciarAnimacaoData(() => {
       setDataSelecionada(novaData);
     });
-  };
+  }, [dataSelecionada, iniciarAnimacaoData]);
 
-  const handleDataChange = (novaData) => {
+  const handleDataChange = useCallback((novaData) => {
     if (!isDataFutura(novaData)) {
       iniciarAnimacaoData(() => {
         setDataSelecionada(novaData);
       });
     }
-  };
+  }, [iniciarAnimacaoData]);
 
-  const isDataFutura = (data) => {
+  const isDataFutura = useCallback((data) => {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     const dataComparar = new Date(data + "T00:00:00");
     return dataComparar > hoje;
-  };
+  }, []);
 
   // Filtrar turmas
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return turmasData || [];
-    return (turmasData || [])
-      .filter((turma) => {
-        const turmaNomeMatch = turma.nome
-          .toLowerCase()
-          .includes(filtro.toLowerCase());
-        const alunoNomeMatch = turma.alunos.some((aluno) =>
-          aluno.nome.toLowerCase().includes(filtro.toLowerCase())
-        );
-        return turmaNomeMatch || alunoNomeMatch;
-      })
-      .map((turma) => ({
-        ...turma,
-        alunos: turma.alunos.filter(
-          (aluno) =>
-            !filtro ||
-            turma.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-            aluno.nome.toLowerCase().includes(filtro.toLowerCase())
-        ),
-      }));
-  }, [filtro, turmasData]);
+    if (!turmasData) return [];
+    
+    let turmasParaFiltrar = turmasData;
 
-  const toggleTurma = (turmaId) => {
+    if (filtro.trim()) {
+      turmasParaFiltrar = turmasData
+        .filter((turma) => {
+          const turmaNomeMatch = turma.nome
+            .toLowerCase()
+            .includes(filtro.toLowerCase());
+          const alunoNomeMatch = turma.alunos.some((aluno) =>
+            aluno.nome.toLowerCase().includes(filtro.toLowerCase())
+          );
+          return turmaNomeMatch || alunoNomeMatch;
+        })
+        .map((turma) => ({
+          ...turma,
+          alunos: turma.alunos.filter(
+            (aluno) =>
+              !filtro ||
+              turma.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+              aluno.nome.toLowerCase().includes(filtro.toLowerCase())
+          ),
+        }));
+    }
+
+    // Ordenar as turmas
+    return ordenarTurmasCrescente(turmasParaFiltrar);
+  }, [filtro, turmasData, ordenarTurmasCrescente]);
+
+  const toggleTurma = useCallback((turmaId) => {
     if (isAnimating[turmaId]) return;
 
     setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
@@ -184,9 +262,9 @@ const FaltasProfessor = () => {
     setTimeout(() => {
       setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
     }, 300);
-  };
+  }, [isAnimating]);
 
-  const toggleEdicao = (turmaId) => {
+  const toggleEdicao = useCallback((turmaId) => {
     setTurmasEditaveis((prev) => {
       const novaSet = new Set(prev);
       if (novaSet.has(turmaId)) {
@@ -196,9 +274,9 @@ const FaltasProfessor = () => {
       }
       return novaSet;
     });
-  };
+  }, []);
 
-  const getTurnoClass = (turno) => {
+  const getTurnoClass = useCallback((turno) => {
     const turnoLower = turno?.toLowerCase();
     if (turnoLower === "manhã" || turnoLower === "manha")
       return "fp-turno-manha";
@@ -206,9 +284,9 @@ const FaltasProfessor = () => {
     if (turnoLower === "noite") return "fp-turno-noite";
     if (turnoLower === "integral") return "fp-turno-integral";
     return "";
-  };
+  }, []);
 
-  const handleFaltaChange = (alunoId, faltou, periodo = null) => {
+  const handleFaltaChange = useCallback((alunoId, faltou, periodo = null) => {
     let chave;
     if (periodo !== null) {
       chave = `${alunoId}-${periodo}`;
@@ -229,9 +307,9 @@ const FaltasProfessor = () => {
 
       return novoEstado;
     });
-  };
+  }, []);
 
-  const getFaltaAluno = (alunoId, periodo = null) => {
+  const getFaltaAluno = useCallback((alunoId, periodo = null) => {
     let chave;
     if (periodo !== null) {
       chave = `${alunoId}-${periodo}`;
@@ -240,9 +318,9 @@ const FaltasProfessor = () => {
     }
 
     return !!faltas[chave];
-  };
+  }, [faltas]);
 
-  const formatarData = (data) => {
+  const formatarData = useCallback((data) => {
     const dataObj = new Date(data + "T00:00:00");
     return dataObj.toLocaleDateString("pt-BR", {
       weekday: "long",
@@ -250,9 +328,9 @@ const FaltasProfessor = () => {
       month: "long",
       day: "numeric",
     });
-  };
+  }, []);
 
-  const handleSalvarFaltas = async (turmaId) => {
+  const handleSalvarFaltas = useCallback(async (turmaId) => {
     setSalvando((prev) => ({ ...prev, [turmaId]: true }));
 
     try {
@@ -369,7 +447,7 @@ const FaltasProfessor = () => {
     } finally {
       setSalvando((prev) => ({ ...prev, [turmaId]: false }));
     }
-  };
+  }, [turmasData, getTipoTurma, dataSelecionada, getFaltaAluno, carregarFaltasDoBanco]);
 
   if (isLoading) {
     return (
@@ -392,12 +470,45 @@ const FaltasProfessor = () => {
     );
   }
 
+  // Verificar se o professor não tem turmas vinculadas
+  if (professor && turmasData.length === 0) {
+    return (
+      <div className="fp-container">
+        <div className="fp-section">
+          <div className="fp-section-header">
+            <span>Registro de Faltas</span>
+          </div>
+          <div className="fp-empty-state">
+            <div className="fp-empty-icon">
+              <Users size={40} />
+            </div>
+            <h4>Nenhuma turma vinculada</h4>
+            <p>
+              Você não está vinculado a nenhuma turma no momento.
+              Entre em contato com a coordenação para ser vinculado a uma turma.
+            </p>
+            {professor && (
+              <div className="fp-professor-info">
+                <small>Professor: {professor.nome}</small>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fp-container">
       {/* Seção de Filtros */}
       <div className="fp-section">
         <div className="fp-section-header">
           <span>Filtros e Configurações</span>
+          {professor && (
+            <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}>
+              Professor: {professor.nome}
+            </span>
+          )}
         </div>
         <div className="fp-form-grid">
           <div className="fp-form-group fp-third-width">
@@ -491,7 +602,7 @@ const FaltasProfessor = () => {
           </div>
         ) : (
           <div className={`fp-turmas-list ${animandoData ? "fp-fading" : ""}`}>
-            {turmasFiltradas.map((turma) => {
+            {turmasFiltradas.map((turma, index) => {
               const isExpandida = turmasExpandidas[turma.id];
               const isEditavel = turmasEditaveis.has(turma.id);
               const isSalvando = salvando[turma.id];
@@ -503,6 +614,7 @@ const FaltasProfessor = () => {
                   className={`fp-turma-card ${
                     isAnimating[turma.id] ? "fp-animating" : ""
                   }`}
+                  style={animandoData ? { animationDelay: `${0.05 + index * 0.05}s` } : {}}
                 >
                   <div className="fp-turma-info">
                     <div className="fp-turma-header-wrapper">

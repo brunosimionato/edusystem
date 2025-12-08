@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Search, Users, Loader, AlertCircle } from "lucide-react";
 
 import TurmaCard from "./TurmaCard";
@@ -26,29 +26,101 @@ const ListaAlunos = () => {
     9: "edFisica",
   };
 
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano;
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
+
   const turmasFiltradas = useMemo(() => {
-    if (!filtro.trim()) return turmas;
+    let turmasParaFiltrar = turmas;
 
-    const termo = filtro.toLowerCase();
+    if (filtro.trim()) {
+      const termo = filtro.toLowerCase();
+      turmasParaFiltrar = turmas
+        .filter((turma) => {
+          const turmaNomeMatch = turma.nome.toLowerCase().includes(termo);
+          const alunoNomeMatch = turma.alunos.some((aluno) =>
+            aluno.nome.toLowerCase().includes(termo)
+          );
+          return turmaNomeMatch || alunoNomeMatch;
+        })
+        .map((turma) => ({
+          ...turma,
+          alunos: turma.alunos.filter(
+            (aluno) =>
+              aluno.nome.toLowerCase().includes(termo) ||
+              turma.nome.toLowerCase().includes(termo)
+          ),
+        }))
+        .filter((turma) => turma.alunos.length > 0);
+    }
 
-    return turmas
-      .filter((turma) => {
-        const turmaNomeMatch = turma.nome.toLowerCase().includes(termo);
-        const alunoNomeMatch = turma.alunos.some((aluno) =>
-          aluno.nome.toLowerCase().includes(termo)
-        );
-        return turmaNomeMatch || alunoNomeMatch;
-      })
-      .map((turma) => ({
-        ...turma,
-        alunos: turma.alunos.filter(
-          (aluno) =>
-            aluno.nome.toLowerCase().includes(termo) ||
-            turma.nome.toLowerCase().includes(termo)
-        ),
-      }))
-      .filter((turma) => turma.alunos.length > 0);
-  }, [filtro, turmas]);
+    // Ordenar as turmas
+    return ordenarTurmasCrescente(turmasParaFiltrar);
+  }, [filtro, turmas, ordenarTurmasCrescente]);
 
   const handleEditAluno = async (aluno, turmaId) => {
     try {
@@ -236,10 +308,11 @@ const ListaAlunos = () => {
           </div>
         ) : (
           <div className="turmas-list-alunos">
-            {turmasFiltradas.map((turma) => (
+            {turmasFiltradas.map((turma, index) => (
               <TurmaCard
                 key={turma.id}
                 turma={turma}
+                index={index}
                 onEditAluno={handleEditAluno}
                 onAlunoUpdated={refetch}
               />

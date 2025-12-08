@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Calendar,
   Printer,
@@ -57,6 +57,74 @@ const HorariosProfe = () => {
     { nome: "Sexta", numero: 5 },
   ];
 
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano;
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
+
   // Encontrar o professor logado
   useEffect(() => {
     if (professores.length > 0 && !professorLogadoId) {
@@ -75,15 +143,17 @@ const HorariosProfe = () => {
   }, [professores, professorLogadoId]);
 
   // Agrupar horários por turma
-  const horariosPorTurma = horariosExistentes.reduce((acc, horario) => {
-    if (!acc[horario.idTurma]) {
-      acc[horario.idTurma] = [];
-    }
-    acc[horario.idTurma].push(horario);
-    return acc;
-  }, {});
+  const horariosPorTurma = useMemo(() => {
+    return horariosExistentes.reduce((acc, horario) => {
+      if (!acc[horario.idTurma]) {
+        acc[horario.idTurma] = [];
+      }
+      acc[horario.idTurma].push(horario);
+      return acc;
+    }, {});
+  }, [horariosExistentes]);
 
-  const toggleGradeExpansao = (turmaId) => {
+  const toggleGradeExpansao = useCallback((turmaId) => {
     if (isAnimating[turmaId]) return;
 
     setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
@@ -95,9 +165,9 @@ const HorariosProfe = () => {
     setTimeout(() => {
       setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
     }, 300);
-  };
+  }, [isAnimating]);
 
-  const handlePrintHorario = (turmaId) => {
+  const handlePrintHorario = useCallback((turmaId) => {
     const professorLogado = professores.find((p) => p.id === professorLogadoId);
     const turma = turmas.find((t) => t.id == turmaId);
     const horariosDaTurma = horariosPorTurma[turmaId] || [];
@@ -184,9 +254,9 @@ const HorariosProfe = () => {
         doc.defaultView.print();
       }, 300);
     };
-  };
+  }, [professores, professorLogadoId, turmas, horariosPorTurma, disciplinas]);
 
-  const renderTabelaHorarios = (turmaId) => {
+  const renderTabelaHorarios = useCallback((turmaId) => {
     const turma = turmas.find((t) => t.id == turmaId);
     const periodo = turma?.turno?.toLowerCase() === "manhã" ? "manha" : "tarde";
     const horariosParaUsar =
@@ -281,9 +351,9 @@ const HorariosProfe = () => {
         </table>
       </div>
     );
-  };
+  }, [turmas, horariosPorTurma, disciplinas, professores]);
 
-  const getGradeDetailsClasses = (id) => {
+  const getGradeDetailsClasses = useCallback((id) => {
     const baseClasses = "grade-details-container-visualizacao";
     const isExpanded = gradeExpandida[id];
     const isAnimatingClass = isAnimating[id] ? "professor-animating" : "";
@@ -291,14 +361,25 @@ const HorariosProfe = () => {
     return `${baseClasses} ${
       isExpanded ? "professor-expanded" : ""
     } ${isAnimatingClass}`;
-  };
+  }, [gradeExpandida, isAnimating]);
 
-  const getGradeCardClasses = (id) => {
+  const getGradeCardClasses = useCallback((id) => {
     const baseClasses = "grade-card-visualizacao";
     const isAnimatingClass = isAnimating[id] ? "professor-animating" : "";
 
     return `${baseClasses} ${isAnimatingClass}`;
-  };
+  }, [isAnimating]);
+
+  // Filtrar e ordenar turmas com horários
+  const turmasComHorarios = useMemo(() => {
+    const turmasComHorariosFiltradas = turmas.filter(
+      (turma) =>
+        horariosPorTurma[turma.id] && horariosPorTurma[turma.id].length > 0
+    );
+    
+    // Ordenar as turmas
+    return ordenarTurmasCrescente(turmasComHorariosFiltradas);
+  }, [turmas, horariosPorTurma, ordenarTurmasCrescente]);
 
   const isLoading =
     isLoadingHorarios ||
@@ -317,11 +398,6 @@ const HorariosProfe = () => {
       </div>
     );
   }
-
-  const turmasComHorarios = turmas.filter(
-    (turma) =>
-      horariosPorTurma[turma.id] && horariosPorTurma[turma.id].length > 0
-  );
 
   return (
     <div className="visualizacao-horario-container">
@@ -355,11 +431,15 @@ const HorariosProfe = () => {
               {turmasComHorarios.length} turma(s) com horários cadastrados
             </div>
 
-            {turmasComHorarios.map((turma) => {
+            {turmasComHorarios.map((turma, index) => {
               const isExpandido = gradeExpandida[turma.id];
 
               return (
-                <div key={turma.id} className={getGradeCardClasses(turma.id)}>
+                <div 
+                  key={turma.id} 
+                  className={getGradeCardClasses(turma.id)}
+                  style={{ animationDelay: `${0.05 + index * 0.05}s` }}
+                >
                   <div className="grade-info-visualizacao">
                     <div className="grade-header-visualizacao">
                       <div

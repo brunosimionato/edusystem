@@ -379,3 +379,102 @@
     padding: 16px;
   }
 }
+
+/* Estilos para o CPF desabilitado na edição */
+.cpf-container {
+  position: relative;
+  width: 100%;
+}
+
+.cpf-container.cpf-disabled {
+  opacity: 0.7;
+}
+
+.cpf-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff;
+}
+
+.cpf-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.cpf-input.cpf-input-disabled {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cpf-input.cpf-input-disabled:hover {
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.cpf-input.cpf-input-disabled:focus {
+  border-color: #e5e7eb;
+  box-shadow: none;
+}
+
+.cpf-lock-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.cpf-container.cpf-disabled:hover .cpf-input {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.cpf-container.cpf-disabled:hover .cpf-lock-icon {
+  color: #6b7280;
+}
+
+.cpf-input[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #374151;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  margin-bottom: 5px;
+}
+
+.cpf-input[title]:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #374151 transparent transparent transparent;
+  margin-bottom: -5px;
+  z-index: 10;
+}
+
+.field-info {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+}

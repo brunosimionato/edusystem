@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Search,
   Save,
@@ -47,14 +47,82 @@ const FaltasSecretaria = () => {
   };
 
   // Determinar se a turma é Fundamental I (1-5) ou II (6-9)
-  const getTipoTurma = (turmaNome) => {
+  const getTipoTurma = useCallback((turmaNome) => {
     const match = turmaNome.match(/(\d+)/);
     if (match) {
       const serie = parseInt(match[1]);
       return serie <= 5 ? "fundamental1" : "fundamental2";
     }
     return "fundamental1";
-  };
+  }, []);
+
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano;
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
 
   useEffect(() => {
     setFaltas({});
@@ -153,29 +221,38 @@ const FaltasSecretaria = () => {
 
   // Filtrar turmas
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return turmasData || [];
-    return (turmasData || [])
-      .filter((turma) => {
-        const turmaNomeMatch = turma.nome
-          .toLowerCase()
-          .includes(filtro.toLowerCase());
-        const alunoNomeMatch = turma.alunos.some((aluno) =>
-          aluno.nome.toLowerCase().includes(filtro.toLowerCase())
-        );
-        return turmaNomeMatch || alunoNomeMatch;
-      })
-      .map((turma) => ({
-        ...turma,
-        alunos: turma.alunos.filter(
-          (aluno) =>
-            !filtro ||
-            turma.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+    if (!turmasData) return [];
+    
+    let turmasParaFiltrar = turmasData;
+    
+    // Aplicar filtro se houver
+    if (filtro) {
+      turmasParaFiltrar = turmasData
+        .filter((turma) => {
+          const turmaNomeMatch = turma.nome
+            .toLowerCase()
+            .includes(filtro.toLowerCase());
+          const alunoNomeMatch = turma.alunos.some((aluno) =>
             aluno.nome.toLowerCase().includes(filtro.toLowerCase())
-        ),
-      }));
-  }, [filtro, turmasData]);
+          );
+          return turmaNomeMatch || alunoNomeMatch;
+        })
+        .map((turma) => ({
+          ...turma,
+          alunos: turma.alunos.filter(
+            (aluno) =>
+              !filtro ||
+              turma.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+              aluno.nome.toLowerCase().includes(filtro.toLowerCase())
+          ),
+        }));
+    }
+    
+    // Ordenar as turmas
+    return ordenarTurmasCrescente(turmasParaFiltrar);
+  }, [filtro, turmasData, ordenarTurmasCrescente]);
 
-  const toggleTurma = (turmaId) => {
+  const toggleTurma = useCallback((turmaId) => {
     if (isAnimating[turmaId]) return;
 
     setIsAnimating((prev) => ({ ...prev, [turmaId]: true }));
@@ -187,9 +264,9 @@ const FaltasSecretaria = () => {
     setTimeout(() => {
       setIsAnimating((prev) => ({ ...prev, [turmaId]: false }));
     }, 300);
-  };
+  }, [isAnimating]);
 
-  const toggleEdicao = (turmaId) => {
+  const toggleEdicao = useCallback((turmaId) => {
     setTurmasEditaveis((prev) => {
       const novaSet = new Set(prev);
       if (novaSet.has(turmaId)) {
@@ -199,9 +276,9 @@ const FaltasSecretaria = () => {
       }
       return novaSet;
     });
-  };
+  }, []);
 
-  const getTurnoClass = (turno) => {
+  const getTurnoClass = useCallback((turno) => {
     const turnoLower = turno?.toLowerCase();
     if (turnoLower === "manhã" || turnoLower === "manha")
       return "fs-turno-manha";
@@ -209,9 +286,9 @@ const FaltasSecretaria = () => {
     if (turnoLower === "noite") return "fs-turno-noite";
     if (turnoLower === "integral") return "fs-turno-integral";
     return "";
-  };
+  }, []);
 
-  const handleFaltaChange = (alunoId, faltou, periodo = null) => {
+  const handleFaltaChange = useCallback((alunoId, faltou, periodo = null) => {
     let chave;
     if (periodo !== null) {
       chave = `${alunoId}-${periodo}`;
@@ -230,9 +307,9 @@ const FaltasSecretaria = () => {
 
       return novoEstado;
     });
-  };
+  }, []);
 
-  const getFaltaAluno = (alunoId, periodo = null) => {
+  const getFaltaAluno = useCallback((alunoId, periodo = null) => {
     let chave;
     if (periodo !== null) {
       chave = `${alunoId}-${periodo}`;
@@ -241,9 +318,9 @@ const FaltasSecretaria = () => {
     }
 
     return !!faltas[chave];
-  };
+  }, [faltas]);
 
-  const formatarData = (data) => {
+  const formatarData = useCallback((data) => {
     const dataObj = new Date(data + "T00:00:00");
     return dataObj.toLocaleDateString("pt-BR", {
       weekday: "long",
@@ -251,7 +328,7 @@ const FaltasSecretaria = () => {
       month: "long",
       day: "numeric",
     });
-  };
+  }, []);
 
   const handleSalvarFaltas = async (turmaId) => {
     setSalvando((prev) => ({ ...prev, [turmaId]: true }));
@@ -374,8 +451,10 @@ const FaltasSecretaria = () => {
     }
   };
 
-  const handleGerarRelatorioPDF = (turmaId, turmaNome) => {
+  const handleGerarRelatorioPDF = useCallback((turmaId, turmaNome) => {
     const turma = turmasData.find((t) => t.id === turmaId);
+    if (!turma) return;
+    
     const tipoTurma = getTipoTurma(turma.nome);
 
     // Preparar dados dos alunos com faltas
@@ -451,7 +530,7 @@ const FaltasSecretaria = () => {
         frameDoc.print();
       }, 200);
     };
-  };
+  }, [turmasData, getTipoTurma, getFaltaAluno, dataSelecionada, periodos, formatarData]);
 
   // Estados de loading e error
   if (isLoading) {
@@ -574,7 +653,7 @@ const FaltasSecretaria = () => {
           </div>
         ) : (
           <div className={`fs-turmas-list ${animandoData ? "fs-fading" : ""}`}>
-            {turmasFiltradas.map((turma) => {
+            {turmasFiltradas.map((turma, index) => {
               const isExpandida = turmasExpandidas[turma.id];
               const isEditavel = turmasEditaveis.has(turma.id);
               const isSalvando = salvando[turma.id];
@@ -586,6 +665,9 @@ const FaltasSecretaria = () => {
                   className={`fs-turma-card ${
                     isAnimating[turma.id] ? "fs-animating" : ""
                   }`}
+                  style={
+                    animandoData ? { animationDelay: `${0.05 + index * 0.05}s` } : {}
+                  }
                 >
                   <div className="fs-turma-info">
                     <div className="fs-turma-header-wrapper">

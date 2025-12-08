@@ -68,6 +68,55 @@ const Horarios = () => {
     setHorariosPorTurma(horariosAgrupados);
   }, [horariosExistentes]);
 
+  // Função para extrair número do nome da turma
+  function extrairNumeroTurma(nome) {
+    // Procura por padrões como "1º", "1°", "1º ano", "1 ano", "Turma 1", etc.
+    const match = nome.match(/(\d+)(?:º|°|ª)?/);
+    if (match) {
+      return parseInt(match[1], 10);
+    }
+    return null;
+  }
+
+  // Ordenar turmas por nome (1º, 2º, 3º...)
+  const turmasOrdenadas = [...turmas].sort((a, b) => {
+    // Extrair números do nome da turma
+    const numA = extrairNumeroTurma(a.nome);
+    const numB = extrairNumeroTurma(b.nome);
+    
+    // Se ambos têm números, ordena numericamente
+    if (numA !== null && numB !== null) {
+      return numA - numB;
+    }
+    
+    // Se só um tem número, o com número vem primeiro
+    if (numA !== null && numB === null) return -1;
+    if (numA === null && numB !== null) return 1;
+    
+    // Se nenhum tem número, ordena alfabeticamente
+    return a.nome.localeCompare(b.nome);
+  });
+
+  // Ordenar turmas com horários cadastrados (para exibição)
+  const turmasComHorariosOrdenadas = Object.entries(horariosPorTurma)
+    .map(([turmaId, horariosDaTurma]) => {
+      const turma = turmas.find((t) => t.id == turmaId);
+      return { turmaId, turma, horariosDaTurma };
+    })
+    .sort((a, b) => {
+      const numA = extrairNumeroTurma(a.turma?.nome || "");
+      const numB = extrairNumeroTurma(b.turma?.nome || "");
+      
+      if (numA !== null && numB !== null) {
+        return numA - numB;
+      }
+      
+      if (numA !== null && numB === null) return -1;
+      if (numA === null && numB !== null) return 1;
+      
+      return (a.turma?.nome || "").localeCompare(b.turma?.nome || "");
+    });
+
   const horariosManha = [
     { inicio: "07:30", fim: "08:15", periodo: "1º Período", numero: 1 },
     { inicio: "08:15", fim: "09:00", periodo: "2º Período", numero: 2 },
@@ -417,10 +466,12 @@ const Horarios = () => {
   const horariosAtivos =
     periodoSelecionado === "manha" ? horariosManha : horariosTarde;
 
-  const turmasDisponiveis = turmas.filter(
-    (turma) =>
-      !horariosPorTurma[turma.id] || horariosPorTurma[turma.id].length === 0
-  );
+  // Filtrar turmas disponíveis (sem horários cadastrados) e ordenar
+  const turmasDisponiveisOrdenadas = turmasOrdenadas
+    .filter(
+      (turma) =>
+        !horariosPorTurma[turma.id] || horariosPorTurma[turma.id].length === 0
+    );
 
   const renderTabelaHorarios = (turmaId, isEdicao = false) => {
     const turma = turmas.find((t) => t.id == turmaId);
@@ -618,7 +669,7 @@ const Horarios = () => {
                     onChange={handleSelecionarTurma}
                   >
                     <option value="">Selecione uma turma</option>
-                    {turmasDisponiveis.map((turma) => (
+                    {turmasDisponiveisOrdenadas.map((turma) => (
                       <option key={turma.id} value={turma.id}>
                         {turma.nome} - {turma.turno}
                       </option>
@@ -781,7 +832,7 @@ const Horarios = () => {
       <div className="cadastro-horario-form-section">
         <div className="cadastro-horario-section-header-with-button">
           <h3 className="cadastro-horario-section-header-turmas">
-            Horários Cadastrados
+            Horários Cadastrados ({turmasComHorariosOrdenadas.length})
           </h3>
         </div>
 
@@ -790,7 +841,7 @@ const Horarios = () => {
             <Loader size={32} className="spinner" />
             <p>Carregando horários...</p>
           </div>
-        ) : Object.keys(horariosPorTurma).length === 0 ? (
+        ) : turmasComHorariosOrdenadas.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">
               <Calendar size={48} />
@@ -800,9 +851,8 @@ const Horarios = () => {
           </div>
         ) : (
           <div className="turmas-list">
-            {Object.entries(horariosPorTurma).map(
-              ([turmaId, horariosDaTurma]) => {
-                const turma = turmas.find((t) => t.id == turmaId);
+            {turmasComHorariosOrdenadas.map(
+              ({ turmaId, turma, horariosDaTurma }) => {
                 const isExpandido = gradeExpandida[turmaId];
                 const foiSalvaAgora = turmaSalva === turmaId;
                 const estaSalvando = salvandoTurma === turmaId;

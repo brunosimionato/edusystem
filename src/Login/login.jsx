@@ -8,28 +8,18 @@ import {
   Users,
   BarChart3,
   ChevronRight,
-  Loader2,
 } from "lucide-react";
+
 import { useNavigate } from "react-router-dom";
-
 import AuthService from "../Services/AuthService";
-
-import "./login.css";
 import { useAuth } from "../context/AuthContext";
 
+import "./login.css";
+
 const features = [
-  {
-    icon: BookOpen,
-    text: "Gerenciamento intuitivo",
-  },
-  {
-    icon: Users,
-    text: "Controle de Usuários",
-  },
-  {
-    icon: BarChart3,
-    text: "Interface simples e eficiente",
-  },
+  { icon: BookOpen, text: "Gerenciamento intuitivo" },
+  { icon: Users, text: "Controle de Usuários" },
+  { icon: BarChart3, text: "Interface simples e eficiente" },
 ];
 
 const Login = () => {
@@ -40,17 +30,29 @@ const Login = () => {
     if (authToken) {
       if (userRole === "professor") {
         navigate("/professor/dashboard");
-        return;
       } else if (userRole === "secretaria") {
         navigate("/secretaria/dashboard");
-        return;
       }
     }
   }, [authToken, userRole, navigate]);
 
+  // Impede voltar à tela após login
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+    const handleBackButton = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, []);
+
   return (
     <div className="login-page">
       <div className="login-container">
+
         {/* Lado Esquerdo */}
         <div className="login-left">
           <div className="logo-section">
@@ -66,13 +68,12 @@ const Login = () => {
             <h2>Bem-vindo de volta!</h2>
             <p>
               Acesse sua conta e gerencie todas as atividades escolares de forma
-              simples e eficiente. Nossa plataforma oferece ferramentas
-              completas para educadores e administradores.
+              simples e eficiente.
             </p>
 
             <div className="features-list">
-              {features.map((feature, index) => (
-                <div key={index} className="feature-item">
+              {features.map((feature, i) => (
+                <div key={i} className="feature-item">
                   <div className="feature-icon">
                     <feature.icon size={20} />
                   </div>
@@ -103,6 +104,11 @@ const Login = () => {
 
 export default Login;
 
+
+// ------------------------------------------------------------
+// FORMULÁRIO
+// ------------------------------------------------------------
+
 const userTypes = [
   {
     id: "professor",
@@ -124,11 +130,13 @@ const LoginForm = () => {
   const [selectedRole, setSelectedUserType] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
   });
+
   const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
@@ -156,18 +164,19 @@ const LoginForm = () => {
         role: selectedRole,
       });
 
+      // Deixa o loading ativo até desmontar
       login(token, role);
+
     } catch (error) {
-      console.error("Login failed:", error);
       setError(error.message || "Erro ao fazer login.");
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      {/* Tipos de Usuário */}
+
+      {/* Tipo usuário */}
       <div className="user-types">
         {userTypes.map((type) => (
           <div
@@ -178,6 +187,7 @@ const LoginForm = () => {
             <div className="user-icon">
               <type.icon size={24} />
             </div>
+
             <div className="user-info">
               <div className="user-title">{type.title}</div>
               <div className="user-description">{type.description}</div>
@@ -186,7 +196,7 @@ const LoginForm = () => {
         ))}
       </div>
 
-      {/* Campos do Formulário */}
+      {/* Email */}
       <div className="form-group">
         <label htmlFor="email">Email</label>
         <input
@@ -200,8 +210,10 @@ const LoginForm = () => {
         />
       </div>
 
+      {/* Senha */}
       <div className="form-group">
         <label htmlFor="password">Senha</label>
+
         <div className="password-input-wrapper">
           <input
             type={showPassword ? "text" : "password"}
@@ -212,18 +224,18 @@ const LoginForm = () => {
             onChange={handleInputChange}
             required
           />
+
           <button
             type="button"
             className="password-toggle"
             onClick={() => setShowPassword(!showPassword)}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Opções do Formulário */}
+      {/* Lembrar */}
       <div className="form-options">
         <label className="remember-checkbox">
           <input
@@ -236,13 +248,18 @@ const LoginForm = () => {
         </label>
       </div>
 
+      {/* Erro */}
       <div className="error-message">{error && <p>{error}</p>}</div>
 
-      {/* Botão de Login */}
+      {/* Botão */}
       <button type="submit" className="login-button" disabled={isLoading}>
         {isLoading ? (
           <>
-            <Loader2 className="loading-spinner" size={18} />
+            <div className="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
             Entrando...
           </>
         ) : (
@@ -252,6 +269,7 @@ const LoginForm = () => {
           </>
         )}
       </button>
+
     </form>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { Search, Users, ChevronDown, ChevronUp, Printer } from "lucide-react";
 
 import "./listaTurma.css";
@@ -12,7 +12,75 @@ const ListaTurmas = () => {
 
   const { turmas, refetch, hasError, isLoading } = useTurmasProfessor();
 
-  const calcularIdade = (dataNascimento) => {
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano;
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
+
+  const calcularIdade = useCallback((dataNascimento) => {
     if (!dataNascimento) return "-";
 
     try {
@@ -32,10 +100,10 @@ const ListaTurmas = () => {
       console.error("Erro ao calcular idade:", error);
       return "-";
     }
-  };
+  }, []);
 
   // Função para formatar data
-  const formatarData = (data) => {
+  const formatarData = useCallback((data) => {
     if (!data) return "-";
 
     try {
@@ -47,10 +115,10 @@ const ListaTurmas = () => {
       console.error("Erro ao formatar data:", error);
       return "-";
     }
-  };
+  }, []);
 
   // Função para obter a data de nascimento do aluno (tenta diferentes campos)
-  const obterDataNascimento = (aluno) => {
+  const obterDataNascimento = useCallback((aluno) => {
     return (
       aluno.dataNascimento ||
       aluno.data_nascimento ||
@@ -58,10 +126,10 @@ const ListaTurmas = () => {
       aluno.dt_nascimento ||
       aluno.birthdate
     );
-  };
+  }, []);
 
   // Função para obter a capacidade da turma (tenta diferentes campos)
-  const obterCapacidade = (turma) => {
+  const obterCapacidade = useCallback((turma) => {
     return (
       turma.capacidade ||
       turma.capacity ||
@@ -71,9 +139,9 @@ const ListaTurmas = () => {
       turma.maxAlunos ||
       30
     );
-  };
+  }, []);
 
-  const handlePrint = (turma, e) => {
+  const handlePrint = useCallback((turma, e) => {
     if (e) e.stopPropagation();
 
     const alunos = turma.alunos || [];
@@ -117,33 +185,38 @@ const ListaTurmas = () => {
         frameDoc.print();
       }, 150);
     };
-  };
+  }, [obterCapacidade, formatarData]);
 
   const turmasFiltradas = useMemo(() => {
-    if (!filtro) return turmas;
+    let turmasParaFiltrar = turmas;
 
-    return turmas
-      .filter((turma) => {
-        const turmaNomeMatch = turma.nome
-          ?.toLowerCase()
-          .includes(filtro.toLowerCase());
-        const alunoNomeMatch = turma.alunos?.some((aluno) =>
-          aluno.nome?.toLowerCase().includes(filtro.toLowerCase())
-        );
-        return turmaNomeMatch || alunoNomeMatch;
-      })
-      .map((turma) => ({
-        ...turma,
-        alunos: turma.alunos?.filter(
-          (aluno) =>
-            !filtro ||
-            turma.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
+    if (filtro.trim()) {
+      turmasParaFiltrar = turmas
+        .filter((turma) => {
+          const turmaNomeMatch = turma.nome
+            ?.toLowerCase()
+            .includes(filtro.toLowerCase());
+          const alunoNomeMatch = turma.alunos?.some((aluno) =>
             aluno.nome?.toLowerCase().includes(filtro.toLowerCase())
-        ),
-      }));
-  }, [filtro, turmas]);
+          );
+          return turmaNomeMatch || alunoNomeMatch;
+        })
+        .map((turma) => ({
+          ...turma,
+          alunos: turma.alunos?.filter(
+            (aluno) =>
+              !filtro ||
+              turma.nome?.toLowerCase().includes(filtro.toLowerCase()) ||
+              aluno.nome?.toLowerCase().includes(filtro.toLowerCase())
+          ),
+        }));
+    }
 
-  const TurmaCardProfessor = ({ turma }) => {
+    // Ordenar as turmas
+    return ordenarTurmasCrescente(turmasParaFiltrar);
+  }, [filtro, turmas, ordenarTurmasCrescente]);
+
+  const TurmaCardProfessor = React.memo(({ turma, index }) => {
     const [expanded, setExpanded] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
@@ -152,13 +225,13 @@ const ListaTurmas = () => {
     const percentualOcupacao =
       capacidade > 0 ? (alunosCount / capacidade) * 100 : 0;
 
-    const getStatusClass = () => {
+    const getStatusClass = useCallback(() => {
       if (percentualOcupacao >= 100) return "professor-turma-lotada";
       if (percentualOcupacao >= 80) return "professor-turma-quase-lotada";
       return "";
-    };
+    }, [percentualOcupacao]);
 
-    const getTurnoClass = (turno) => {
+    const getTurnoClass = useCallback((turno) => {
       const turnoLower = turno?.toLowerCase();
       if (turnoLower === "manhã" || turnoLower === "manha")
         return "professor-turno-manha";
@@ -166,7 +239,7 @@ const ListaTurmas = () => {
       if (turnoLower === "noite") return "professor-turno-noite";
       if (turnoLower === "integral") return "professor-turno-integral";
       return "";
-    };
+    }, []);
 
     const handleToggle = () => {
       if (isAnimating) return;
@@ -184,6 +257,7 @@ const ListaTurmas = () => {
         className={`professor-turma-card ${getStatusClass()} ${
           isAnimating ? "professor-animating" : ""
         }`}
+        style={{ animationDelay: index !== undefined ? `${0.05 + index * 0.05}s` : '0s' }}
       >
         <div className="professor-turma-info">
           <div className="professor-turma-header-wrapper">
@@ -280,7 +354,7 @@ const ListaTurmas = () => {
         </div>
       </div>
     );
-  };
+  });
 
   if (isLoading) {
     return (
@@ -363,8 +437,8 @@ const ListaTurmas = () => {
           </div>
         ) : (
           <div className="professor-turmas-list">
-            {turmasFiltradas.map((turma) => (
-              <TurmaCardProfessor key={turma.id} turma={turma} />
+            {turmasFiltradas.map((turma, index) => (
+              <TurmaCardProfessor key={turma.id} turma={turma} index={index} />
             ))}
           </div>
         )}

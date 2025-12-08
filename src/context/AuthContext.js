@@ -54,6 +54,8 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('userRole');
+        
+        window.location.href = '/';
     };
 
     const value = {
