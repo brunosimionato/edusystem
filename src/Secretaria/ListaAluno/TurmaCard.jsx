@@ -1,7 +1,7 @@
-import { gerarRelatorioAlunos } from "../../Relatorios/listaAluno";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Edit, UserX, ChevronDown, ChevronUp, Printer } from "lucide-react";
 import AlunoService from "../../Services/AlunoService";
+import { gerarRelatorioAlunos } from "../../Relatorios/listaAluno";
 
 function formatarData(data) {
   if (!data) return "-";
@@ -9,7 +9,7 @@ function formatarData(data) {
   return d.toLocaleDateString("pt-BR", { timeZone: "UTC" });
 }
 
-const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
+const TurmaCard = ({ turma, index, onEditAluno, onAlunoUpdated }) => {
   const [isExpandida, setIsExpandida] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -26,19 +26,19 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
 
   const alunos = turma.alunos ?? [];
 
-  const getTurnoClass = (turno) =>
+  const getTurnoClass = useCallback((turno) =>
     ({
       manha: "turno-manha",
       tarde: "turno-tarde",
       noite: "turno-noite",
       integral: "turno-integral",
-    }[turno?.toLowerCase()] || "turno-manha");
+    }[turno?.toLowerCase()] || "turno-manha"), []);
 
   const qtdAtivos = alunos.filter(
     (a) => (a.status ?? "ativo") === "ativo"
   ).length;
 
-  const getStatusTurma = () => {
+  const getStatusTurma = useCallback(() => {
     const capacidade = turma.quantidadeMaxima ?? 0;
     if (capacidade === 0) return "";
 
@@ -46,7 +46,7 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
     if (ocupacao >= 100) return "lotada";
     if (ocupacao >= 80) return "quase-lotada";
     return "";
-  };
+  }, [qtdAtivos, turma.quantidadeMaxima]);
 
   const statusTurma = getStatusTurma();
 
@@ -55,29 +55,48 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
     Math.round((qtdAtivos / turma.quantidadeMaxima) * 100)
   );
 
-  const handleEditClick = (e, aluno) => {
+  const handleEditClick = useCallback((e, aluno) => {
     e.stopPropagation();
     onEditAluno(aluno, turma.id);
-  };
+  }, [onEditAluno, turma.id]);
 
-  const handleToggleStatus = async (e, aluno) => {
+  const handleDeleteAluno = useCallback(async (e, aluno) => {
     e.stopPropagation();
 
     const confirmar = window.confirm(
-      `Tem certeza que deseja remover o aluno "${aluno.nome}" da turma?`
+      `ATENÇÃO: Esta ação excluirá PERMANENTEMENTE o aluno "${aluno.nome}" e TODOS os registros relacionados (faltas, notas, histórico, etc.).\n\n` +
+      `Deseja continuar?\n\n` +
+      `Esta ação não pode ser desfeita!`
     );
+    
     if (!confirmar) return;
 
     try {
       await AlunoService.delete(aluno.id);
-      if (onAlunoUpdated) onAlunoUpdated();
+      alert(`Aluno "${aluno.nome}" excluído com sucesso!`);
+      
+      if (onAlunoUpdated) {
+        await onAlunoUpdated();
+      }
     } catch (error) {
-      console.error("❌ Erro ao remover aluno:", error);
-      alert("Erro ao remover aluno. Verifique o console.");
+      console.error("❌ Erro ao excluir aluno:", error);
+      
+      let errorMessage = error.message || "Erro desconhecido ao excluir aluno";
+      
+      // Verifica tipo de erro para dar mensagem mais específica
+      if (errorMessage.includes("registros vinculados")) {
+        errorMessage = `Não foi possível excluir "${aluno.nome}" pois existem registros vinculados. Contate o administrador.`;
+      } else if (errorMessage.includes("foreign key") || errorMessage.includes("constraint")) {
+        errorMessage = `Erro de restrição no banco de dados. Não é possível excluir "${aluno.nome}".`;
+      } else if (errorMessage.includes("não autenticado") || errorMessage.includes("401")) {
+        errorMessage = "Sessão expirada. Faça login novamente.";
+      }
+      
+      alert(`❌ ${errorMessage}`);
     }
-  };
+  }, [onAlunoUpdated]);
 
-  const handlePrint = (e) => {
+  const handlePrint = useCallback((e) => {
     e.stopPropagation();
 
     const dataHoraAgora = new Date().toLocaleString("pt-BR");
@@ -116,10 +135,13 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
         frameDoc.print();
       }, 150);
     };
-  };
+  }, [turma, alunos, qtdAtivos]);
 
   return (
-    <div className={`turma-card ${statusTurma} ${isAnimating ? "animating" : ""}`}>
+    <div 
+      className={`turma-card ${statusTurma} ${isAnimating ? "animating" : ""}`}
+      style={{ animationDelay: index !== undefined ? `${0.05 + index * 0.05}s` : '0s' }}
+    >
       <div className="turma-info">
         <div className="turma-header clickable" onClick={toggleTurma}>
           {isExpandida ? (
@@ -203,8 +225,8 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
 
                     <button
                       className="action-button-lista-aluno deactivate-button-aluno"
-                      onClick={(e) => handleToggleStatus(e, aluno)}
-                      title={`Excluir ${aluno.nome}`}
+                      onClick={(e) => handleDeleteAluno(e, aluno)}
+                      title={`Excluir permanentemente ${aluno.nome}`}
                     >
                       <UserX size={16} />
                     </button>
@@ -219,4 +241,4 @@ const TurmaCard = ({ turma, onEditAluno, onAlunoUpdated }) => {
   );
 };
 
-export default TurmaCard;
+export default React.memo(TurmaCard);

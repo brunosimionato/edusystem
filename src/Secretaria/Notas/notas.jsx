@@ -175,22 +175,90 @@ const NotasSecretaria = () => {
     [errosValidacao]
   );
 
+  // Função para extrair informações da turma para ordenação
+  const extrairInfoTurma = useCallback((nomeTurma) => {
+    const info = {
+      ano: 99,
+      numero: 999,
+      letra: ''
+    };
+    
+    if (!nomeTurma) return info;
+    
+    // Padronizar: remover acentos e converter para minúsculas
+    const nomePadronizado = nomeTurma
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+    
+    // Tentar diferentes padrões de turma
+    const padroes = [
+      /(\d+)\s*[º°]\s*(\w+)/,  // "1º A", "2ºB"
+      /turma\s*(\d+)\s*(\w*)/i, // "Turma 1 A", "Turma 2B"
+      /(\d+)\s*ano\s*(\w*)/i,   // "1 ano A", "2anoB"
+      /(\d+)\s*[a-z]*/,         // "1A", "2B", "10C"
+      /(\d+)/,                  // "1", "2", "10"
+    ];
+    
+    for (const padrao of padroes) {
+      const match = nomePadronizado.match(padrao);
+      if (match) {
+        info.ano = parseInt(match[1], 10) || 99;
+        info.letra = (match[2] || '').toUpperCase();
+        info.numero = info.ano; // Para compatibilidade
+        break;
+      }
+    }
+    
+    return info;
+  }, []);
+
+  // Função para ordenar turmas por ordem crescente
+  const ordenarTurmasCrescente = useCallback((turmasArray) => {
+    if (!Array.isArray(turmasArray)) return [];
+    
+    return [...turmasArray].sort((a, b) => {
+      const nomeA = a.nome || '';
+      const nomeB = b.nome || '';
+      
+      // Extrair número e série da turma
+      const infoA = extrairInfoTurma(nomeA);
+      const infoB = extrairInfoTurma(nomeB);
+      
+      // Primeiro ordenar por ano (1º ano, 2º ano, etc.)
+      if (infoA.ano !== infoB.ano) {
+        return infoA.ano - infoB.ano;
+      }
+      
+      // Se mesmo ano, ordenar por letra (A, B, C)
+      if (infoA.letra !== infoB.letra) {
+        return infoA.letra.localeCompare(infoB.letra);
+      }
+      
+      // Por último, ordenar por turno
+      const ordemTurno = { manhã: 1, manha: 1, tarde: 2, noite: 3, integral: 4 };
+      const turnoA = ordemTurno[a.turno?.toLowerCase()] || 99;
+      const turnoB = ordemTurno[b.turno?.toLowerCase()] || 99;
+      
+      return turnoA - turnoB;
+    });
+  }, [extrairInfoTurma]);
+
   useEffect(() => {
     testarConexao();
   }, []);
 
-const testarConexao = async () => {
-  try {
-    setConnectionStatus("testing");
-    // Carrega diretamente ou faz um teste simples
-    setConnectionStatus("authenticated");
-    carregarDadosIniciais();
-  } catch (error) {
-    console.error("❌ Erro na conexão:", error);
-    setConnectionStatus("error");
-    setConnectionError(`Erro de rede: ${error.message}`);
-  }
-};
+  const testarConexao = async () => {
+    try {
+      setConnectionStatus("testing");
+      // Carrega diretamente ou faz um teste simples
+      setConnectionStatus("authenticated");
+      carregarDadosIniciais();
+    } catch (error) {
+      console.error("❌ Erro na conexão:", error);
+      setConnectionStatus("error");
+      setConnectionError(`Erro de rede: ${error.message}`);
+    }
+  };
 
   const carregarDadosIniciais = async () => {
     setLoading(true);
@@ -205,6 +273,9 @@ const testarConexao = async () => {
         tipo: getTipoPorTurma(turma.nome),
       }));
 
+      // Ordenar as turmas após carregar
+      const turmasOrdenadas = ordenarTurmasCrescente(turmasComTipo);
+
       const disciplinasMap = {};
       disciplinasData.forEach((disc) => {
         disciplinasMap[disc.id] = disc.nome;
@@ -212,7 +283,7 @@ const testarConexao = async () => {
       setDisciplinas(disciplinasMap);
 
       const turmasComAlunos = await Promise.allSettled(
-        turmasComTipo.map(async (turma) => {
+        turmasOrdenadas.map(async (turma) => {
           try {
             const alunos = await AlunoService.getByTurma(turma.id);
             return { ...turma, alunos };
@@ -283,10 +354,13 @@ const testarConexao = async () => {
   };
 
   const turmasFiltradas = useMemo(() => {
-    if (!filtro.trim()) return turmas;
+    if (!filtro.trim()) {
+      // Ordenar todas as turmas quando não há filtro
+      return ordenarTurmasCrescente(turmas);
+    }
 
     const filtroLower = filtro.toLowerCase();
-    return turmas
+    const turmasFiltradas = turmas
       .filter(
         (turma) =>
           turma.nome.toLowerCase().includes(filtroLower) ||
@@ -303,7 +377,10 @@ const testarConexao = async () => {
             aluno.nome.toLowerCase().includes(filtroLower)
         ),
       }));
-  }, [filtro, turmas]);
+
+    // Ordenar as turmas filtradas
+    return ordenarTurmasCrescente(turmasFiltradas);
+  }, [filtro, turmas, ordenarTurmasCrescente]);
 
   const handleSalvarNotas = async (turmaId) => {
     setSaving((prev) => ({ ...prev, [turmaId]: true }));
@@ -738,7 +815,6 @@ const testarConexao = async () => {
     </div>
   );
 };
-
 
 const TurmaCard = React.memo(
   ({

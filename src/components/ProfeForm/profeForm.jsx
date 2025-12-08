@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./profeForm.css";
-import { XCircle, UserPlus, Save, AlertCircle } from "lucide-react";
+import { XCircle, UserPlus, Save, AlertCircle, Lock } from "lucide-react"; // Adicionado Lock
 import {
   mascaraCPF,
   mascaraTelefone,
@@ -585,17 +585,27 @@ const ProfeForm = ({
               </div>
               <div className="form-group-professor medium">
                 <label>CPF*</label>
-                <input
-                  type="text"
-                  name="cpf"
-                  value={formData.cpf}
-                  onChange={handleInputChange}
-                  maxLength="14"
-                  className={
-                    camposInvalidos.includes("cpf") ? "input-error" : ""
-                  }
-                  disabled={isSubmitting}
-                />
+                <div className={`cpf-container ${editing ? "cpf-disabled" : ""}`}>
+                  <input
+                    type="text"
+                    name="cpf"
+                    value={formData.cpf}
+                    onChange={handleInputChange}
+                    maxLength="14"
+                    className={`cpf-input ${
+                      camposInvalidos.includes("cpf") ? "input-error" : ""
+                    } ${editing ? "cpf-input-disabled" : ""}`}
+                    readOnly={editing}
+                    disabled={isSubmitting}
+                    title={editing ? "CPF não pode ser alterado após o cadastro" : ""}
+                  />
+                  {editing && (
+                    <div className="cpf-lock-icon">
+                      <Lock size={14} />
+                    </div>
+                  )}
+                </div>
+
               </div>
               <div className="form-group-professor medium">
                 <label>Data de Nascimento*</label>
